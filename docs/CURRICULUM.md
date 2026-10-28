@@ -14,7 +14,7 @@ This document is the canonical source of truth for the `red-blue-lab` curriculum
 - [Phase 1: Understand the Building Blocks](#phase-1-understand-the-building-blocks)
   - [Chapter 00 — Your First Security Lab](#chapter-00--your-first-security-lab-set-up-the-learning-environment)
   - [Chapter 01 — Decode the Bytes](#chapter-01--decode-the-bytes-build-a-byte-inspector)
-  - [Chapter 02 — Trace the Network Path](#chapter-02--trace-the-network-path-build-a-network-diagnostic-tool)
+  - [Chapter 02 — See Your Network](#chapter-02--see-your-network-build-a-network-diagnostic-tool)
 - [Phase 2: Discover What's Running on a Network](#phase-2-discover-whats-running-on-a-network)
   - [Chapter 03 — Who's Listening?](#chapter-03--whos-listening-build-a-tcp-port-scanner)
   - [Chapter 04 — Turn Names into Addresses](#chapter-04--turn-names-into-addresses-build-a-dns-inspector)
@@ -50,7 +50,7 @@ This document is the canonical source of truth for the `red-blue-lab` curriculum
 |---|---|---|---|---|
 | 1 | 00 | Your First Security Lab | Lab environment | — |
 | 1 | 01 | Decode the Bytes | Byte Inspector | L2 |
-| 1 | 02 | Trace the Network Path | Network Diagnostic Tool | L1 |
+| 1 | 02 | See Your Network | Network Diagnostic Tool | L1 |
 | 2 | 03 | Who's Listening? | TCP Port Scanner | L2 |
 | 2 | 04 | Turn Names into Addresses | DNS Inspector | L2 |
 | 2 | 05 | Identify the Service | Service Fingerprinter | L2 |
@@ -322,13 +322,13 @@ By completing Chapter 01, the learner can:
 
 ---
 
-### Chapter 02 — Trace the Network Path: Build a Network Diagnostic Tool
+### Chapter 02 — See Your Network: Build a Network Diagnostic Tool
 
 #### 8.1 Chapter Identity
 
 - **Phase:** 1 — Understand the Building Blocks
-- **Primary capability:** The learner can inspect local network configuration, test connectivity, and explain the path from one host to another.
-- **Primary tool:** **netdiag** — a command-line diagnostic tool reporting interface addresses, routing information, and basic connectivity results.
+- **Primary capability:** The learner can inspect local network configuration, classify IP addresses, test TCP connectivity, and assemble the results into a diagnostic report.
+- **Primary tool:** **netdiag** — a command-line diagnostic tool reporting interface addresses, target address classification, and TCP connectivity results. Route tracing is outside this chapter's scope.
 - **Intended level:** Beginner to intermediate.
 - **Real-world relevance:** Network diagnostic skills are the first thing a security engineer uses when a connection fails or behaves unexpectedly. Knowing what is reachable and from where is a prerequisite for all scanning and inspection work.
 
@@ -385,8 +385,8 @@ By completing Chapter 02, the learner can:
 - *Tool evolution:* Add `netdiag connect <host:port>` subcommand with a configurable `--timeout` flag (default 3s).
 - *Challenge:* Report one of three distinct outcomes: `connected`, `refused`, `timeout`. Print the round-trip time for a successful connection. On success, close the connection cleanly.
 - *Constraints:* Must close the connection after reporting. Do not leave connections open. Timeout must be enforced — a 3-second timeout must not block for 30 seconds.
-- *Acceptance criteria:* Connecting to a local listener returns `connected`. Connecting to a closed port on loopback returns `refused`. Connecting to a non-routable address with a short timeout returns `timeout`.
-- *Verification:* Use the test server pattern from Chapter 00. Write a Go test that spins up a listener, verifies `connected`, then closes the listener and verifies `refused`.
+- *Acceptance criteria:* Connecting to a local listener returns `connected`. Connecting to a closed port on loopback returns `refused`. A deterministic unit test verifies that a timeout error is classified as `timeout`.
+- *Verification:* Use the test server pattern from Chapter 00. Write integration tests that spin up a local listener to verify `connected`, then close the listener and verify `refused`. Inject a controlled dial function or equivalent test seam that returns a timeout error to verify `timeout` classification. Do not depend on non-routable addresses or public network conditions.
 - *Enables:* Chapter 03 (Port Scanner) directly extends this single-connection test to a range of ports.
 
 **02.4 — The Diagnostic Report: Assemble All Findings**
@@ -414,8 +414,8 @@ By completing Chapter 02, the learner can:
 
 #### 8.6 Testing and Acceptance
 
-- At minimum: unit test for address classification (loopback, private, public, link-local). Integration test for connectivity outcomes using local listeners. Test that timeout is actually enforced within acceptable margin.
-- The "refused" test is platform-sensitive: ensure the test closes the listener before attempting the connection.
+- At minimum: unit tests for address classification (loopback, private, public, link-local) and timeout-error classification using an injected/controlled dialer; integration tests for `connected` and `refused` using local listeners. If testing elapsed timeout behavior, use a controlled deadline-aware test double rather than a non-routable or public address.
+- The `refused` test is platform-sensitive: ensure the listener is closed before attempting the connection. No test should depend on external network availability or routing configuration.
 
 #### 8.7 Red/Blue Learning
 
