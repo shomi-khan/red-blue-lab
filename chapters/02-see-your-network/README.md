@@ -198,12 +198,12 @@ Timeout মানে এই vantage point থেকে deadline-এর মধ্
 
 | বৈশিষ্ট্য | TCP | UDP |
 |---|---|---|
-| Communication | Connection-oriented byte stream | Connectionless datagram |
-| Handshake | Three-way handshake | TCP-style handshake নেই |
-| Delivery/order | Reliable ordered stream semantics | UDP নিজে delivery/order guarantee করে না |
+| যোগাযোগের ধরন | Connection-oriented byte stream | Connectionless datagram |
+| সংযোগ স্থাপন | Three-way handshake | TCP-style handshake নেই |
+| সরবরাহ ও ক্রম | Reliable ordered stream semantics | UDP নিজে delivery/order guarantee করে না |
 | এই milestone | পরীক্ষা হবে | তুলনার জন্য ধারণা |
 
-| State | প্রমাণ | যা প্রমাণ করে না |
+| অবস্থা | প্রমাণ | যা প্রমাণ করে না |
 |---|---|---|
 | connected | TCP handshake সম্পন্ন | Application health |
 | refused | Explicit refusal | Host সম্পূর্ণ unavailable |
@@ -344,7 +344,7 @@ flowchart TD
 
 ## Tool-এর ধাপ ও চূড়ান্ত Contract
 
-| Milestone | সক্ষমতা | আগের behavior |
+| ধাপ | সক্ষমতা | আগের আচরণ |
 |---|---|---|
 | 02.1 | Interface listing ও address classification | Initial inventory |
 | 02.2 | IP/CIDR ব্যাখ্যা | Listing/classification |
@@ -363,7 +363,7 @@ flowchart TD
 
 ## Testing কৌশল
 
-| ক্ষেত্র | আবশ্যিক case | কী যাচাই করে |
+| ক্ষেত্র | আবশ্যিক পরীক্ষা | কী যাচাই করে |
 |---|---|---|
 | Address classification | Loopback, link-local, private, global, special-use | Boundary |
 | Interface formatting | Multiple/no address, IPv4 + IPv6 | Grouping |
