@@ -92,6 +92,11 @@
 **Rationale:** গল্পের সম্ভাবনা বাড়িয়েও পাঠকের বাস্তব engineering knowledge ও technical trust অক্ষুণ্ণ রাখা।  
 **Consequences:** Fictional system-এর architecture, dependency, trust boundary, failure mode ও limitation internally consistent হবে। বাস্তব engineering principle নাটকীয়তার জন্য বিকৃত করা যাবে না। ক্ষতিকর operational construction বা compromise guide নয়, safe analysis ও defensive engineering-এ focus থাকবে।
 
+### D-026 — Markdown-first content storage
+**Decision:** Project-এর মূল narrative ও learning content Markdown file-এ সংরক্ষিত হবে। YAML Frontmatter structured metadata রাখবে; Mermaid Markdown-এর ভেতরে text-based diagram প্রকাশের standard option হবে। Knowledge Graph Markdown content ও তার structured metadata/explicit references থেকে ভবিষ্যতে generate করা যেতে পারে। Markdown হবে canonical content source; JSON বা database primary content storage নয়।
+**Rationale:** Content human-readable, version-control-friendly, diff/reviewable এবং দীর্ঘমেয়াদে portable রাখা, একই সঙ্গে machine-readable knowledge structure তৈরির সুযোগ বজায় রাখা।
+**Consequences:** Content authoring Markdown-first হবে। Metadata contract, identifier/reference convention, validation rules এবং graph extraction implementation আলাদা design decision হিসেবে open থাকবে।
+
 ## Open decisions
 
 পরবর্তী planning phase-এ স্থির হবে:
