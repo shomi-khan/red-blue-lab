@@ -361,9 +361,9 @@ By completing Chapter 02, the learner can:
 - *New theory:* `net.Interfaces()`. Interface flags (up, loopback, multicast). IPv4 vs. IPv6. Loopback (`127.0.0.1`, `::1`). Link-local addresses. Private address ranges (RFC 1918).
 - *Visualizations:* Table of address ranges: loopback, link-local, RFC 1918 private, public. Diagram of a machine with multiple interfaces (loopback + Ethernet + Wi-Fi).
 - *Tool evolution:* Print each interface: name, flags, and all assigned addresses with their CIDR prefix.
-- *Challenge:* For each address, label it as loopback, link-local, private, or public. Suppress interfaces with no assigned addresses unless `--all` flag is given.
+- *Challenge:* For each address, label it as loopback, link-local, private (IPv4 RFC1918), unique-local (IPv6 ULA `fc00::/7`), public, or other. Do not classify IANA special-purpose ranges as public. Suppress interfaces with no assigned addresses unless `--all` flag is given.
 - *Constraints:* IPv4 and IPv6 addresses both supported. No external network calls.
-- *Acceptance criteria:* Loopback interface appears with correct address labels. At least one non-loopback interface appears on a typical workstation.
+- *Acceptance criteria:* Loopback interface appears with correct address labels. IPv4 RFC1918 is private; IPv6 `fc00::/7` is unique-local; IPv4/IPv6 loopback and link-local ranges are distinct; IANA special-purpose ranges are never labeled public. At least one non-loopback interface appears on a typical workstation.
 - *Verification:* Compare against `ip addr` or `ifconfig` output manually.
 - *Enables:* 02.2.
 
@@ -396,7 +396,7 @@ By completing Chapter 02, the learner can:
 - *Capability gained:* The tool produces a structured human-readable diagnostic report combining interface info, address analysis, and connectivity test results.
 - *New theory:* Organizing multi-section CLI output. Exit codes and their conventions. When to write to stderr vs. stdout.
 - *Tool evolution:* Add `netdiag report <host:port>` subcommand. Run 02.1 (interfaces), 02.2 (classify the target address), and 02.3 (connectivity test) and format results as a coherent report.
-- *Challenge:* The report must be structured in clearly labeled sections. Resolve a hostname once, select one address using a documented deterministic rule (the first resolver result is sufficient), and pass that IP literal to the dial operation. Report the exact same literal as the address attempted. Section-level failures must not prevent the report from completing: report what succeeded, explain what failed, and return exit code 0 whenever a report is successfully produced. Exit non-zero only for fatal request or report-generation/output errors, such as invalid arguments or timeout configuration.
+- *Challenge:* The report must be structured in clearly labeled sections. Resolve a hostname once. Deduplicate answers, prefer IPv4 when at least one IPv4 answer exists, then select the lowest address by parsed IP-byte order within that family; if no IPv4 answer exists, select the lowest IPv6 address by the same rule. Do not use textual string ordering. Pass that IP literal to the dial operation and report the exact same literal as the address attempted. The selected address must not change when DNS answer order changes. Section-level failures must not prevent the report from completing: report what succeeded, explain what failed, and return exit code 0 whenever a report is successfully produced. Exit non-zero only for fatal request or report-generation/output errors, such as invalid arguments or timeout configuration.
 - *Constraints:* No interactive prompts. Accept all options as flags. Timeout configurable.
 - *Acceptance criteria:* `netdiag report 127.0.0.1:8080` produces a report with at least three sections: local interfaces, target address classification, and connectivity result. Refused, timeout, DNS-resolution, and interface-enumeration section failures remain visible in a partial report and do not by themselves cause a non-zero exit. Invalid arguments/configuration or inability to produce the report do cause a non-zero exit.
 - *Verification:* Integration test that runs the binary with a local server and verifies the report structure.
@@ -551,7 +551,7 @@ By completing Chapter 03, the learner can:
 - **Core behavior:** Attempt TCP connections; classify results honestly; close all connections; exit cleanly.
 - **Important error states:** Invalid host; DNS resolution failure; all ports timeout (possible network issue or firewall); port range validation errors.
 - **Security invariants:** Default timeout enforced. Default worker count safe for loopback. Users must explicitly set high worker counts. Tool must not be used against hosts without authorization (documented in the chapter).
-- **Output contract:** Each completed attempt has exactly one of three states: `open`, `closed`, `unknown`. The `unknown` state is never omitted in favor of a boolean. Cancellation-interrupted and unattempted ports have no result record and are represented in interruption summary counts.
+- **Output contract:** Each completed attempt has exactly one of three states: `open`, `closed`, `unknown`. The `unknown` state is never omitted in favor of a boolean. Cancellation-interrupted and unattempted ports have no result record and are represented in interruption summary counts. Exit code is `0` when every selected attempt completes, regardless of findings; invalid input/configuration or an interrupted scan exits non-zero.
 - **Testing expectations:** Unit test for error classification. Integration test with local listeners. Goroutine leak test with `-race`. Partial cancellation test.
 - **Downstream consumers:** Chapter 05 (Service Fingerprinter) takes open port list as input. Chapter 18 (Final Engagement) reuses as reconnaissance step.
 - **Maturity target:** L2.
