@@ -274,7 +274,7 @@ Rayhan's first output is accurate but cumbersome. A file with thousands of bytes
 
 ### What you will build
 
-Extend \`byteinspect\` with a \`--hex\` mode that prints sixteen bytes per row, including an offset, hexadecimal values, and a printable-ASCII sidebar.
+Extend \`byteinspect\` with a temporary \`--hex\` mode that prints sixteen bytes per row, including an offset, hexadecimal values, and a printable-ASCII sidebar. In 01.5, this milestone-specific flag is replaced by the unified \`--format hex\` interface; the final tool does not accept \`--hex\`.
 
 ### Prerequisites
 
@@ -756,7 +756,7 @@ producer stdout ───────► byteinspect stdin
 
 From the reader's perspective, stdin is an input stream. It does not need to know whether the bytes came from a file, a pipe, or another source.
 
-A stream may not have a known total size in advance. This affects resource handling: the program must enforce its input limit while reading rather than assuming that stdin is always small. For this milestone, the total accepted input is capped at 10 MiB.
+A stream may not have a known total size in advance. This affects resource handling: the program must enforce its input limit while reading rather than assuming that stdin is always small. For this milestone, the total accepted input is capped at 10 MiB. The tool stages no more than that bounded amount, verifies that the stream ends within the limit, and only then writes formatted output. This avoids both unbounded buffering and a partial dump that could be mistaken for a complete result.
 
 The output format is independent of the input source. A file and a pipe containing identical bytes must produce identical output when given the same format and range options.
 
@@ -822,7 +822,7 @@ Provide one command-line interface that accepts either a named file or piped inp
 - The default format is \`hex\`.
 - Unsupported format values are errors; do not silently fall back.
 - Apply range validation consistently to file and stdin input.
-- The input limit is 10 MiB. If the input exceeds the limit, fail with a clear error and do not produce a successful partial dump.
+- The input limit is 10 MiB. Read only up to the limit plus one byte to detect overflow. Do not write formatted output until EOF and the size check have succeeded. If the input exceeds the limit, fail with a clear error and produce no dump on stdout.
 - A stream that ends at or below the limit is valid, including an empty stream.
 - A read error is reported to stderr and produces a non-zero exit status.
 - The program must not wait for additional input after EOF.
@@ -832,8 +832,8 @@ Provide one command-line interface that accepts either a named file or piped inp
 **Constraints**
 
 - Use only the Go standard library.
-- Enforce the 10 MiB cap while reading stdin; do not read an unbounded stream into memory.
-- Do not require the entire stream to be buffered before deciding whether it exceeds the limit.
+- Enforce the 10 MiB cap while reading stdin; never read an unbounded stream into memory.
+- Bounded staging of at most 10 MiB is intentional: validate EOF and the size limit before rendering to stdout, so an oversized stream cannot leave a misleading partial dump.
 - Do not write input data to disk.
 - Do not make network requests.
 - Do not execute or interpret input bytes.
@@ -862,7 +862,7 @@ Provide one command-line interface that accepts either a named file or piped inp
 | One path; file cannot be opened/read | stderr diagnostic; non-zero exit |
 | More than one path | Usage diagnostic; non-zero exit |
 | Unsupported format | stderr diagnostic; non-zero exit |
-| Input exceeds 10 MiB | stderr size-limit diagnostic; non-zero exit; no successful partial output |
+| Input exceeds 10 MiB | stderr size-limit diagnostic; non-zero exit; stdout contains no dump output |
 | Stdin read failure | stderr diagnostic; non-zero exit |
 | Invalid range | Same clear range error as 01.3 |
 | Invalid UTF-8 bytes | Annotate as data; do not treat as an I/O failure |
@@ -871,7 +871,7 @@ The 10 MiB limit applies to the complete input, not merely the selected range.
 
 **Security considerations**
 
-Stdin is untrusted input just like a file. A pipe can produce an arbitrarily long stream, so enforce the size cap during reading. Do not write input to temporary files, execute it, or emit raw control characters. Avoid partial output that could be mistaken for a complete inspection when the input was rejected for exceeding the cap.
+Stdin is untrusted input just like a file. A pipe can produce an arbitrarily long stream, so enforce the size cap during reading and stop after detecting the first byte beyond the limit. Keep the bounded input in memory only; do not write it to temporary files, execute it, or emit raw control characters. Validate the complete bounded input before rendering, so a rejected oversized stream cannot leave partial output that looks like a complete inspection.
 
 **Acceptance criteria**
 
@@ -894,7 +894,7 @@ A single \`byteinspect\` binary can inspect a bounded file or stdin stream in an
 
 ### Verification
 
-Run the same fixture through both input paths and compare stdout byte-for-byte. Then test the size boundary: exactly 10 MiB must be accepted, while 10 MiB plus one byte must fail without presenting a partial result as complete.
+Run the same fixture through both input paths and compare stdout byte-for-byte. Then test the size boundary: exactly 10 MiB must be accepted, while 10 MiB plus one byte must fail with no formatted dump written to stdout. Also verify that no more than 10 MiB plus the single overflow-detection byte is retained.
 
 ### Debrief
 
@@ -962,13 +962,23 @@ Run the complete test suite after every milestone. A later milestone is not comp
 
 ## Red/Blue learning
 
-🔴 **Rayhan — Red Team perspective**
+🔴 **Rayhan — Red Team investigation**
 
-Byte-level inspection is a foundation for understanding binary protocols, file signatures, parser behavior, and malformed input. In this chapter, Rayhan uses the inspector to establish what bytes a file actually contains. The exercise is analysis, not execution: no payload is run and no external target is contacted.
+Rayhan receives this exact synthetic byte fixture:
 
-🔵 **Samia — Blue Team perspective**
+```text
+42 4D 00 41 82 42
+```
 
-The same skill supports forensic review and defensive analysis. Samia can preserve suspicious artifacts, compare raw bytes with their text interpretation, and avoid mistaking a rendering artifact for evidence. Invalid encoding annotations are especially useful when investigating inconsistent parsing behavior between components.
+The first two bytes (`42 4D`, “BM”) resemble the beginning of a BMP file signature, but this six-byte fixture is not a complete BMP file. The remaining bytes include a NUL control byte, printable ASCII, and a lone UTF-8 continuation byte. Rayhan must produce an evidence note containing the byte offset, raw hexadecimal value, and selected interpretation for each relevant region. He must not execute the fixture or infer that a familiar signature proves the file is safe.
+
+**Verifiable outcome:** the note identifies `42 4D` at offsets 0–1 as a signature-like prefix, identifies `00` at offset 2 as a control byte, locates `82` at offset 4 as invalid UTF-8, and includes the matching raw hexdump row. The same result must be reproducible from this exact fixture.
+
+🔵 **Samia — Blue Team forensic check**
+
+Samia reviews the same fixture as evidence. She compares the raw hex view with the UTF-8 view, confirms that control bytes are escaped rather than sent raw to the terminal, and verifies that every selected input byte is represented either by a valid decoded sequence or an explicit invalid-byte annotation.
+
+**Verifiable outcome:** add a deterministic test using the embedded fixture that checks the raw byte values and offsets remain recoverable from the inspection output. Her finding must distinguish the original bytes from the tool's text interpretation; she must not treat a replacement glyph as the original data.
 
 **Shared lesson:** A reliable security conclusion begins with preserving the input and separating observation from interpretation. Chapter 10 returns to this discipline when parsing packet data. Chapter 13 uses byte sequences as fuzzing inputs. Chapter 14 relies on precise reproduction of malformed inputs.
 
@@ -984,7 +994,9 @@ Before considering this chapter complete, verify:
 - [ ] Tests use deterministic local data only.
 - [ ] Invalid UTF-8 is preserved and annotated, not silently repaired.
 - [ ] Earlier milestone tests remain regression coverage.
-- [ ] Tool name, flags, limits, and milestone scope match \`docs/CURRICULUM.md\`.
+- [ ] Tool name, final flags, limits, and milestone scope match \`docs/CURRICULUM.md\`.
+- [ ] The temporary \`--hex\` milestone flag is explicitly replaced by \`--format hex\` in 01.5.
+- [ ] Stdin is bounded to 10 MiB plus one overflow-detection byte and validated before stdout output.
 - [ ] No tests are claimed to have passed unless they were actually run.
 
 ## What's next
