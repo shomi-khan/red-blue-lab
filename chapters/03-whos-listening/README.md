@@ -1,459 +1,216 @@
-# Chapter 03 — Who's Listening?: Build a TCP Port Scanner
+# Chapter 03: Who's Listening?: Build a TCP Port Scanner
 
-**Phase:** 2 — Discover What's Running on a Network  
-**Primary tool:** `portscan`  
-**Maturity target:** L2 — Reliable tool  
-**Prerequisites:** Chapter 00 (local TCP listener and client), Chapter 02 (IP addressing and TCP connectivity)
+> **পর্যায়:** ২, Network-এ কী চলছে তা আবিষ্কার  
+> **স্তর:** L2, reliable tool  
+> **প্রধান deliverable:** portscan, একটি host-এর TCP port bounded concurrency-তে পরীক্ষা করার CLI tool  
+> **পূর্বশর্ত:** Chapter 00 এবং Chapter 02-এর TCP connectivity ধারণা
 
----
+Rayhan একটি অনুমোদিত lab host-এর service inventory তৈরি করছে। একটি port-এ connect করা আর অনেকগুলো port পরীক্ষা করা এক কাজ নয়। Samia চায় scanner যেন resource limit মানে, অনিশ্চিত ফলাফলকে “বন্ধ” বলে চালিয়ে না দেয় এবং মাঝপথে থামালেও partial evidence সৎভাবে দেখায়।
 
-## The investigation
+এই অধ্যায়ে scanner ধাপে ধাপে তৈরি হবে: একটি port, একাধিক port, timeout classification, bounded concurrency, cancellation এবং structured output।
 
-Rayhan has been given access to a small lab network. He knows the host is reachable, but that tells him very little about what is listening behind it. Samia has a different concern: the team has approved only a handful of services, and she wants evidence that the exposed surface matches that expectation.
+## কী তৈরি করবে
 
-They need a tool that asks a narrow question, one TCP port at a time: *can a connection be established here?* The answer must preserve uncertainty. A refused connection is evidence of a closed port; silence is not.
+শেষে portscan পারবে:
+- একটি নির্দিষ্ট TCP port পরীক্ষা করতে।
+- Port selection validate করে sequential scan করতে।
+- Timeout ও অন্য error-কে আলাদা evidence হিসেবে classify করতে।
+- Configurable worker limit-এ concurrent scan করতে।
+- Context cancellation ও Ctrl-C-তে clean shutdown করতে।
+- Human-readable অথবা NDJSON output দিতে।
 
-By the end of this chapter, you will build `portscan`, a TCP port scanner that handles ranges, bounded concurrency, timeouts, cancellation, and structured output.
+**Scope:** TCP only। এই অধ্যায়ের automated test loopback listener এবং injected error ব্যবহার করবে। অন্য target কেবল নিজের বা লিখিতভাবে অনুমোদিত lab environment-এ।
 
-## What you will learn
+## শেখার ফল
 
-By completing this chapter, you can:
+1. TCP three-way handshake ও connection refusal-এর সঙ্গে port state যুক্ত করতে।
+2. Open, closed এবং unknown-এর পার্থক্য করতে।
+3. Timeout-কে closed port হিসেবে ভুল না ধরতে।
+4. Bounded worker pool দিয়ে concurrency নিয়ন্ত্রণ করতে।
+5. Context cancellation-এ worker ও connection পরিষ্কার করতে।
+6. Partial scan-কে complete inventory হিসেবে উপস্থাপন না করতে।
+7. Stable structured schema তৈরি করতে।
 
-1. Explain the TCP three-way handshake and the evidence represented by its outcomes.
-2. Distinguish `open`, `closed`, and `unknown` without turning every failure into “closed”.
-3. Scan a single port, then a list or range of ports.
-4. Apply per-connection timeouts and classify errors independently of network activity.
-5. Use a bounded worker pool rather than creating unbounded concurrent work.
-6. Cancel an in-progress scan and preserve completed results.
-7. Produce human-readable and NDJSON output with a stable schema.
-8. Test the scanner with local listeners and controlled errors.
+## Port scanner কী প্রমাণ করে?
 
-## Before you begin
+TCP connection সফল হলে port-এ connection গ্রহণ করা হয়েছে। Explicit connection refusal সাধারণত RST-এর মাধ্যমে আসে। Timeout হলে নির্ধারিত সময়ের মধ্যে conclusive response পাওয়া যায়নি।
 
-You should already be able to:
-
-- Start and stop a TCP listener bound to `127.0.0.1` using the pattern from Chapter 00.
-- Use `netdiag connect` from Chapter 02 and explain the difference between `refused`, `timeout`, and other errors.
-- Work with Go functions, errors, goroutines, channels, and command-line arguments.
-
-**Important:** Chapter 02's `netdiag connect` uses the labels `connected`, `refused`, `timeout`, `network_unreachable`, and `error`. This chapter deliberately maps those observations into a scanner-specific three-state contract. Do not change Chapter 02's existing command or output contract.
-
-## The mental model: a port is an observation, not a verdict
-
-A TCP connection begins with a handshake. The diagrams below are conceptual views of the outcomes a scanner can observe. They are not packet captures, and the operating system may perform additional work that is not shown.
-
-### A listening port
+### সফল connection
 
 ```mermaid
 sequenceDiagram
-    participant Scanner
-    participant Service
-    Scanner->>Service: SYN
-    Service-->>Scanner: SYN-ACK
-    Scanner->>Service: ACK
-    Note over Scanner,Service: Connection established: open
-    Scanner->>Service: Close connection
+    participant C as Scanner
+    participant S as Listening service
+    C->>S: SYN
+    S->>C: SYN-ACK
+    C->>S: ACK
+    Note over C,S: TCP connection established: open
+    C->>S: FIN
+    S->>C: FIN-ACK
 ```
 
-A successful dial means the TCP connection was established. It does **not** prove that the application is healthy, correctly configured, or safe.
-
-### A closed port
+### Refusal
 
 ```mermaid
 sequenceDiagram
-    participant Scanner
-    participant Host
-    Scanner->>Host: SYN
-    Host-->>Scanner: RST
-    Note over Scanner,Host: Explicit refusal: closed
+    participant C as Scanner
+    participant H as Listener নেই
+    C->>H: SYN
+    H-->>C: RST
+    Note over C,H: Explicit refusal: closed
 ```
 
-A connection-refused result is an explicit rejection. It is different from receiving no useful response.
-
-### A filtered or uncertain port
+### Timeout
 
 ```mermaid
 sequenceDiagram
-    participant Scanner
-    participant Network
-    Scanner->>Network: SYN
-    Network--xScanner: No conclusive response
-    Note over Scanner: Deadline expires: unknown
+    participant C as Scanner
+    participant F as নীরব path / packet drop
+    C->>F: SYN
+    Note over C,F: Deadline-এর আগে response নেই
+    C-->>C: Timeout: unknown
 ```
 
-Silence can have several causes: a firewall may drop traffic, a host may be unreachable, or a response may be delayed or lost. The scanner cannot infer “closed” from silence.
+এই trace-গুলো সাধারণ outcome বোঝায়। প্রতিটি OS/network-এ packet behavior হুবহু একই হবে, এমন নিশ্চয়তা নয়।
 
-### The three states
+| State | Evidence | অর্থ |
+|---|---|---|
+| open | TCP connection সফল | Connection গ্রহণ করা হয়েছে |
+| closed | Explicit connection refused | Connection প্রত্যাখ্যাত |
+| unknown | Timeout বা অন্য ambiguous error | এই attempt থেকে নিশ্চিত সিদ্ধান্ত সম্ভব নয় |
 
-| State | Evidence | What you may conclude | What you may not conclude |
-|---|---|---|---|
-| `open` | TCP connection established | A TCP listener accepted a connection from this vantage point at this time | The application is healthy or exploitable |
-| `closed` | Explicit connection-refused error | The attempted TCP connection was refused | The host is generally unavailable |
-| `unknown` | Timeout or any other inconclusive dial error | The scanner could not establish the port state | The port is closed |
-
-This is the central rule of the chapter: **preserve the strength of the evidence**. Never collapse `unknown` into a boolean “not open”.
+Firewall drop, route failure বা lost response timeout তৈরি করতে পারে। তাই timeout মানেই closed নয়।
 
 ---
 
-# 03.1 — One at a Time: Scan a Single Port
+# 03.1: One at a Time: Scan a Single Port
 
-Rayhan starts with one approved lab endpoint. Before scanning a thousand ports, he wants to know exactly what one connection attempt can tell him.
+### কী তৈরি করবে
 
-### What you will build
-
-The first version of `portscan` accepts a host and one TCP port, makes one connection attempt, and prints one of the three scanner states.
-
-### Just-in-time theory
-
-A TCP connection attempt either establishes a connection or returns an error. The error carries evidence, but not every error identifies the remote port's state.
-
-For this milestone, the classification contract is intentionally small:
-
-- No dial error: `open`.
-- Connection refused: `closed`.
-- Timeout or any other dial error: `unknown`.
-
-A successful connection must be closed immediately. The scanner is checking whether a connection can be established, not interacting with the application protocol.
+একটি host ও একটি TCP port পরীক্ষা করবে।
 
 ### Challenge specification
 
-**Problem**
+**সমস্যা:** portscan-এর প্রথম increment তৈরি করো।
 
-Implement `portscan <host> --ports <port>` for one TCP port. The required `--ports` syntax is used for a single port, range, and list in every milestone; positional port syntax is not supported.
+**CLI:** `portscan <host> --ports <port>`
 
-**Objective**
+**Input**
+- একটি host।
+- একটি port, 1–65535।
+- Default connection timeout: 2 seconds।
 
-Make one bounded TCP connection attempt and report its state without overstating what the result proves.
-
-**Inputs**
-
-- Exactly one host argument: an IP literal or hostname.
-- Required `--ports` selection containing exactly one decimal port in the range 1–65535.
-- No ranges, lists, or concurrency flags in this milestone.
-- Default connection timeout: 2 seconds.
-
-**Output**
-
-Print the host, port, protocol, state, and elapsed duration. A successful example:
-
-```text
-Host:      127.0.0.1
-Port:      8080
-Protocol:  TCP
-State:     open
-Duration:  1.42ms
-```
+**Output:** Host, port, state, duration এবং evidence।
 
 **Behavioral contract**
+- একটি TCP connection attempt করবে।
+- Connection সফল হলে state open।
+- Explicit connection-refused হলে closed।
+- Timeout বা অন্য dial error হলে unknown।
+- Successful connection সঙ্গে সঙ্গে cleanly close করবে।
+- Timeout 2 seconds default; পরের milestone-এ configurable হবে।
+- DNS ও connection error-কে closed হিসেবে দেখাবে না।
 
-- Attempt exactly one TCP connection.
-- Map a successful connection to `open`.
-- Map an explicit connection-refused error to `closed`.
-- Map timeout and all other dial errors to `unknown`.
-- Close a successful connection before returning.
-- Do not send application data, retry, or probe another port.
-- A state result is a completed scan observation. Invalid input is a command error, not a port state.
+**Edge cases:** Valid open port, closed loopback port, invalid port 0/65536, malformed host, DNS failure, timeout, successful connection close failure।
 
-**Constraints and security**
-
-- Use the Go standard library.
-- Enforce the 2-second default timeout.
-- Do not create unbounded goroutines.
-- Automated network tests must bind only to loopback.
-- Only scan systems for which you have explicit authorization.
-
-**Edge cases**
-
-- Port 1 and port 65535.
-- Port 0, negative values, values above 65535, non-numeric input.
-- Empty host and malformed argument count.
-- A local listener that accepts a connection.
-- A loopback port with no listener.
-- A controlled timeout error and an unrelated network error.
-
-**Errors and exit behavior**
-
-- Invalid arguments or invalid port: concise diagnostic to stderr and non-zero exit.
-- A completed attempt prints its state. `open` exits zero; `closed` and `unknown` exit non-zero.
-- Do not print a misleading `closed` result when the attempt timed out.
+**Security:** Automated test কেবল 127.0.0.1 বা ::1। Public target নয়।
 
 **Acceptance criteria**
+- Local listener open।
+- বন্ধ loopback port closed।
+- Injected timeout unknown।
+- Invalid port scan শুরুর আগেই reject।
+- Successful connection close।
+- State তিনটির একটিই।
 
-- A local listener produces `open`.
-- A known unused loopback port produces `closed` where the OS returns connection refused.
-- A controlled timeout produces `unknown`.
-- An unrelated dial error also produces `unknown`.
-- A successful connection is closed.
-- The default timeout is 2 seconds.
+**Tests:** Chapter 00 pattern দিয়ে local TCP listener। Closed port loopback-এ। Timeout ও error classification-এর জন্য controlled dialer। Public service বা arbitrary non-routable address নয়।
 
-**Verification and tests**
-
-Use a loopback listener for the open case and a closed loopback port for the refusal case. Do not use an arbitrary non-routable address to manufacture a timeout: routing and firewall behavior vary by machine. Instead, test timeout classification with a controlled dial dependency or injected error. The classification logic must be testable without making a network call.
-
-**Red Team — Rayhan**
-
-Scan only the local listener you started. Record the target, vantage point, timeout, and result. Explain why `unknown` is not evidence that the port is closed.
-
-**Blue Team — Samia**
-
-Start only the expected local service, then compare the scanner result with the lab's intended exposure. Confirm that the listener is bound to the intended interface, not merely that the process is running.
-
-**Debrief**
-
-A scanner sees a connection attempt from one place at one time. Its result is evidence about that attempt, not a universal statement about the host.
-
-**What's next:** 03.2 expands the same experiment to multiple ports, still one at a time.
+**সম্পন্ন হওয়ার শর্ত:** একটি port attempt সঠিক state দেয় এবং resource leak করে না।
 
 ---
 
-# 03.2 — More Ports: Scan a Range Sequentially
+# 03.2: More Ports: Scan a Range Sequentially
 
-Rayhan now has a list of ports to check. He could launch a goroutine for every port, but first he needs a reliable way to parse the requested range and account for every result.
+একটি port-এর বদলে Rayhan এখন ছোট selection পরীক্ষা করতে চায়। আগে sequential execution রাখলে ফলাফল বোঝা সহজ হবে।
 
-### What you will build
+### কী তৈরি করবে
 
-Extend `portscan` to accept a single port, a range, or a comma-separated list, and scan the selected ports sequentially.
+একটি port, inclusive range অথবা comma-separated list গ্রহণ করবে।
 
-### Just-in-time theory
+**CLI:** `portscan <host> --ports <selection>`
 
-A port number is a 16-bit unsigned value, but not every textual range is valid input. A scanner should validate the entire request before opening connections. Otherwise, it may scan part of a malformed request before discovering the mistake.
+উদাহরণ: `--ports 22`, `--ports 80,443,8080`, `--ports 8000-8010`, `--ports 22,80,8080-8082`।
 
-The familiar port ranges are:
+### Contract
+- Port range inclusive।
+- Valid port 1–65535।
+- Duplicate port বাদ যাবে।
+- Scan শুরুর আগে পুরো selection validate হবে।
+- Malformed, empty বা invalid range হলে কোনো port scan নয়।
+- এই milestone-এ sequential execution; এক সময়ে সর্বোচ্চ একটি dial।
+- Result ascending port order-এ দেখাবে।
+- প্রতিটি completed port-এর state open/closed/unknown।
+- 03.1-এর state classification ও timeout behavior অক্ষত।
 
-| Range | Common designation |
-|---|---|
-| 0–1023 | System / well-known |
-| 1024–49151 | User / registered |
-| 49152–65535 | Dynamic / private |
+**Edge cases:** Single port, single-element range, reversed range, overlapping range, duplicate, empty component, whitespace, port 1/65535, zero, 65536, malformed number।
 
-These labels describe common allocation conventions, not proof of which application owns a port.
-
-### Visualize sequential work
-
-```mermaid
-flowchart LR
-    A["Parse and validate ports"] --> B["Port 80"]
-    B --> C["Port 443"]
-    C --> D["Port 8080"]
-    D --> E["Port 8081"]
-    E --> F["All results collected"]
-```
-
-Only one connection attempt is active at a time. This makes the first multi-port version easy to reason about and gives us a baseline before concurrency is introduced.
-
-### Challenge specification
-
-**Problem**
-
-Add `--ports` to accept a port selection and scan it sequentially.
-
-**Objective**
-
-Parse and validate a complete port selection, then produce exactly one result for each unique requested port.
-
-**Inputs**
-
-- `portscan <host> --ports <selection>`
-- A selection may contain:
-  - One port: `8080`
-  - An inclusive range: `8080-8085`
-  - A comma-separated list: `22,80,443`
-  - A combination: `22,80,8080-8082`
-- Port values must be between 1 and 65535.
-- Maximum number of unique selected ports: 65535.
-
-**Output**
-
-Print one line per port using the format `<port> <state>`. Results must be sorted by ascending port number, regardless of the order in which the user supplied them.
-
-```text
-22 closed
-80 open
-443 unknown
-8080 open
-```
-
-**Behavioral contract**
-
-- Validate the entire selection before starting any network attempt.
-- Support a single port, inclusive range, and comma-separated combination.
-- Reject empty list elements, malformed numbers, reversed ranges, port 0, and values above 65535.
-- Remove duplicates. Each unique port is scanned exactly once.
-- Scan sequentially; concurrency is not introduced until 03.4.
-- Preserve the state classification from 03.1.
-- Print one result for every selected port, including `unknown` results.
-
-**Constraints and security**
-
-- No concurrency in this milestone.
-- Never expand a range beyond the maximum of 65535 unique ports.
-- Continue to enforce the per-connection timeout.
-- Do not begin scanning if any part of the selection is invalid.
-
-**Edge cases**
-
-- A single port; a one-element range such as `80-80`.
-- Full range `1-65535`.
-- Duplicate entries and overlapping ranges.
-- Leading/trailing commas, empty elements, whitespace, non-numeric values.
-- Reversed range `100-50`.
-- Port 0 and port 65536.
-- A range containing both open and closed loopback ports.
-
-**Errors and exit behavior**
-
-Malformed selection: diagnostic to stderr, non-zero exit, and no connection attempts. Once scanning begins, print every result. Exit zero only if every selected port is `open`; if any port is `closed` or `unknown`, exit non-zero. Do not discard successful results because another port failed.
+**Errors:** Invalid selection stderr ও non-zero; কোনো partial scan নয়। Valid scan-এ প্রতিটি port-এর result দেখাবে। Exit behavior: সব port open হলে zero, অন্য state থাকলে non-zero।
 
 **Acceptance criteria**
+- Single/range/list parsing সঠিক।
+- Duplicate বাদ।
+- Invalid selection scan শুরু হওয়ার আগে reject।
+- Sequential execution।
+- Output sorted।
+- আগের test অক্ষত।
 
-- `--ports 8080-8082` produces three sorted results.
-- A mixed comma-separated selection is parsed correctly.
-- Duplicates produce only one result.
-- Invalid selections fail before any dial attempt.
-- The scanner remains sequential and preserves all 03.1 behavior.
-
-**Verification and tests**
-
-Start two loopback listeners on known ports and leave one selected port without a listener. Verify the expected `open` and `closed` states and that all selected ports appear. Unit-test parsing separately, including the full range and malformed inputs. Use an injected dial function in parser/runner tests to verify that invalid input triggers zero network attempts.
-
-**Red Team — Rayhan**
-
-Scan a deliberately small, authorized loopback range. Record which ports were open, closed, and unknown. Do not infer the application behind an open port; that is a later chapter's job.
-
-**Blue Team — Samia**
-
-Create an expected-exposure list for the lab service. Compare it with the observed results and flag unexpected open ports for investigation. A port list is an inventory clue, not a service identity.
-
-**Debrief**
-
-A correct range parser is part of the security boundary. Validate first, then act. A scanner that partially executes malformed input is harder to predict and audit.
-
-**What's next:** 03.3 makes timeout configuration explicit and gives error classification its own tests.
+**Tests:** Table-driven parser test এবং loopback listener দিয়ে ছোট integration scan।
 
 ---
 
-# 03.3 — Not Every Silence Is a No: Handle Timeouts Properly
+# 03.3: Not Every Silence Is a No: Handle Timeouts Properly
 
-Samia sees an `unknown` result and asks whether the scanner waited long enough. Rayhan wants to tune the wait for a slow lab environment without changing what each state means.
+Timeout হলো অপেক্ষার সীমা, remote port-এর verdict নয়। এখন timeout configurable হবে এবং error classification আলাদা করে test করা হবে।
 
-### What you will build
+### কী তৈরি করবে
 
-Add a configurable `--timeout` and isolate error classification so it can be tested without network activity.
+`--timeout duration`, default 2 seconds।
 
-### Just-in-time theory
+### Contract
+- Positive duration আবশ্যক।
+- Timeout প্রতিটি port-এর connection attempt-এ আলাদাভাবে প্রয়োগ হবে।
+- Explicit connection refused => closed।
+- Timeout/deadline এবং অন্য সব dial error => unknown।
+- Error classification string matching দিয়ে নয়; typed/wrapped error semantics দিয়ে।
+- Classification logic dial operation থেকে আলাদা test করা যাবে।
+- Invalid timeout হলে network attempt-এর আগেই reject।
+- 03.2-এর exit rule বজায়: কোনো selected port open না হলে non-zero।
 
-A timeout is a deadline on an operation. When the deadline expires, the scanner has learned that it did not establish a connection in time. It has not learned that the port is closed.
+**Edge cases:** Default, short/long positive timeout, zero/negative/malformed/অত্যন্ত বড় duration, wrapped refusal, deadline error, network unreachable, DNS error, unrelated error, deadline-এর আগে success।
 
-Operating systems and Go expose errors through wrapped error values. Comparing error strings is brittle: wording can vary, and wrappers may add context. Classification should inspect error types and sentinel errors using error-aware operations.
-
-### Classification flow
-
-```mermaid
-flowchart TD
-    A["Dial result"] --> B{"No error?"}
-    B -->|Yes| O["open"]
-    B -->|No| C{"Connection refused?"}
-    C -->|Yes| X["closed"]
-    C -->|No| U["unknown"]
-    U --> N["Keep diagnostic cause"]
-```
-
-Only explicit refusal maps to `closed`. Timeout, network-unreachable, DNS failure, cancellation, and unexpected errors remain `unknown` as scan observations. Command-level cancellation is handled separately in 03.5.
-
-### Challenge specification
-
-**Problem**
-
-Add `--timeout duration` and a separately testable error-classification function.
-
-**Objective**
-
-Make the timeout configurable while preserving the three-state contract for every error category.
-
-**Inputs**
-
-- `portscan <host> --ports <selection> [--timeout duration]`
-- Duration must be positive and parseable by Go's duration syntax, such as `500ms`, `2s`, or `1m`.
-- Default timeout: 2 seconds.
-
-**Output**
-
-Keep the 03.2 output format. For `unknown`, include a concise diagnostic cause in human-readable mode where practical, without changing the state label.
-
-**Behavioral contract**
-
-- Apply the configured timeout independently to each connection attempt.
-- If no timeout is supplied, use 2 seconds.
-- A non-positive or malformed timeout is a command error.
-- Classification is a pure decision over the returned error; it must not perform network operations.
-- No error means `open`.
-- An explicit connection-refused error means `closed`.
-- Every other error means `unknown`.
-- Preserve the underlying cause for diagnostics. Never classify by matching human-readable error strings.
-
-**Constraints and security**
-
-- Do not add retries.
-- A slow or unresponsive target must not hold a worker indefinitely.
-- Timeout configuration must be validated before scanning begins.
-- Keep the classifier independently unit-testable.
-
-**Edge cases**
-
-- Default timeout and custom short/long positive timeouts.
-- Zero, negative, malformed, and extremely large duration values.
-- Wrapped connection-refused error.
-- Timeout/deadline error.
-- Network-unreachable error.
-- DNS resolution error and unrelated error.
-- A successful connection that completes before the deadline.
-
-**Errors and exit behavior**
-
-Invalid timeout: stderr and non-zero exit before any network attempt. A valid scan continues to print all port states. Preserve the 03.2 exit behavior: non-zero if any selected port is not `open`.
+**Security:** Arbitrary non-routable IP বা firewall rule দিয়ে timeout তৈরি করবে না। Controlled error injection ব্যবহার করবে।
 
 **Acceptance criteria**
+- Default 2 seconds।
+- Custom timeout প্রতি port-এ প্রয়োগ।
+- কেবল refusal closed।
+- Timeout ও অন্য error unknown।
+- Classification test network ছাড়াই।
+- আগের milestone test অক্ষত।
 
-- Default timeout remains 2 seconds.
-- Custom timeout is applied per port.
-- Refused maps only to `closed`.
-- Timeout and all other errors map to `unknown`.
-- Classification tests require no live network.
-- All 03.1 and 03.2 tests still pass.
+**Tests:** Injected refusal, deadline exceeded, network unreachable, DNS failure ও unexpected failure। Wrapped error-ও test করো। Success-এর জন্য loopback listener।
 
-**Verification and tests**
-
-Use controlled errors to test refusal, deadline exceeded, network unreachable, DNS failure, and unexpected failure. Include wrapped errors. Use a loopback listener to verify a real successful connection. Do not rely on a firewall rule, external host, or arbitrary non-routable address to create a timeout.
-
-**Red Team — Rayhan**
-
-Repeat a lab scan with two timeout values. Compare the evidence and explain why a longer timeout may change an observation without changing the meaning of `unknown`.
-
-**Blue Team — Samia**
-
-Review the timeout and error cause in the scan record. A large number of unknown results may indicate filtering, routing problems, or a scan configuration issue. Do not report them as confirmed closed ports.
-
-**Debrief**
-
-Timeout is a limit on waiting, not a remote-port verdict. Separating classification from network calls makes that distinction testable.
-
-**What's next:** 03.4 introduces parallel work with a strict resource ceiling.
+**সম্পন্ন হওয়ার শর্ত:** Timeout ও error classification deterministic এবং evidence-এর সঙ্গে সামঞ্জস্যপূর্ণ।
 
 ---
 
-# 03.4 — Speed Up Safely: Bounded Concurrency
+# 03.4: Speed Up Safely: Bounded Concurrency
 
-Sequential scanning is easy to reason about, but it can take a long time when every port consumes part of its timeout. Rayhan wants more throughput. Samia wants to know how many simultaneous connections the tool can create.
+Sequential scan সহজ, কিন্তু অনেক port ও timeout থাকলে ধীর। Unbounded goroutine তৈরি করা সমাধান নয়: file descriptor, memory, ephemeral port এবং target-এর capacity শেষ হতে পারে।
 
-### What you will build
+### কী তৈরি করবে
 
-Replace sequential scanning with a worker pool controlled by `--workers N`.
-
-### Just-in-time theory
-
-Concurrency allows several independent connection attempts to be in progress. Unbounded concurrency is not a free speed boost: it can exhaust file descriptors, memory, ephemeral ports, or the target's connection capacity.
-
-A worker pool puts a ceiling on simultaneous work:
+Worker pool এবং `--workers N`।
 
 ```mermaid
 flowchart LR
@@ -467,323 +224,166 @@ flowchart LR
     R --> C["Collector and sorter"]
 ```
 
-The number of workers bounds the number of concurrent attempts. Results may finish in a different order from the input, so presentation order must be decided separately from execution order.
+Worker count concurrent dial attempt-এর সর্বোচ্চ সংখ্যা নির্ধারণ করে। Execution order এবং presentation order আলাদা।
 
-### Challenge specification
+### Contract
 
-**Problem**
+**Input**
+- আগের host, --ports ও --timeout।
+- Optional --workers N।
+- Default 100; maximum 1000।
+- Positive integer আবশ্যক।
 
-Implement bounded concurrent scanning using a worker pool.
+**Behavior**
+- Scan-এর আগে worker count validate।
+- একসঙ্গে N-এর বেশি dial attempt নয়।
+- Cancellation না হলে প্রতিটি unique selected port-এর ঠিক একটি result।
+- Completed result ascending port order-এ sort।
+- Successful connection close।
+- সব worker ও result collection শেষ হওয়ার আগে return নয়।
+- 03.3-এর timeout/state classification অক্ষত।
 
-**Objective**
+**Constraints:** Zero, negative, non-integer ও 1000-এর বেশি reject। প্রতি port-এ আলাদা goroutine তৈরি নয়। Goroutine, channel বা connection leak নয়। Fixed speedup ratio correctness criterion নয়।
 
-Run multiple connection attempts concurrently while enforcing a configurable upper bound and returning one result per selected port.
-
-**Inputs**
-
-- Existing host, `--ports`, and `--timeout` arguments.
-- Optional `--workers N`.
-- Default workers: 100.
-- Maximum workers: 1000.
-- Worker count must be a positive integer.
-
-**Output**
-
-Keep the same human-readable result fields and ascending port order. Execution order must not affect presentation order.
-
-**Behavioral contract**
-
-- Validate worker count before starting the scan.
-- Never run more than N dial attempts concurrently.
-- Every selected unique port must produce exactly one result unless the scan is later cancelled.
-- Collect all completed results and sort by ascending port before presentation.
-- Close every successful connection.
-- Wait for all workers and result collection to finish before returning.
-- Preserve timeout and state classification from 03.3.
-
-**Constraints and security**
-
-- Default worker count is 100; maximum is 1000.
-- Reject zero, negative, non-integer, and above-maximum worker counts.
-- Do not create one goroutine per port.
-- Do not leak goroutines, channels, or connections.
-- Do not make a fixed speedup ratio part of correctness. Runtime depends on the OS, machine, network, and test environment.
-
-**Edge cases**
-
-- One port with many configured workers.
-- Fewer ports than workers.
-- Full 65535-port selection with the default worker limit.
-- Invalid worker counts.
-- A mix of fast and slow attempts.
-- A dial operation that returns immediately.
-- A dial operation that reaches its timeout.
-
-**Errors and exit behavior**
-
-Invalid worker count: stderr and non-zero exit before any attempt. For a valid scan, retain the existing result and exit contract. A scan with mixed states must not omit any completed result.
+**Edge cases:** একটি port ও অনেক worker, port-এর চেয়ে worker বেশি, full 65535-port selection, invalid count, fast/slow attempt mix, immediate dial return, timeout।
 
 **Acceptance criteria**
+- Active dial count configured worker-এর বেশি নয়।
+- Completed scan-এ প্রতিটি selected port-এর একটি result।
+- Result sorted।
+- Scan return-এর পর worker অবশিষ্ট নয়।
+- আগের test অক্ষত।
 
-- Active dial count never exceeds the configured worker count.
-- Every selected port has exactly one result after a completed scan.
-- Results are sorted by port, regardless of completion order.
-- No worker remains running after the scan returns.
-- All previous milestone tests pass.
+**Tests:** Instrumented test dialer দিয়ে current ও maximum concurrent call track করো। Assert করো maximum কখনো worker limit ছাড়ায় না। Fewer/more ports, error ও completion order test করো। `go test -race ./...` চালাও। Benchmark speedup কেবল informational, pass/fail নয়।
 
-**Verification and tests**
-
-Use an instrumented test dialer that tracks current and maximum concurrent calls. Assert that the observed maximum never exceeds the configured worker count. Test fewer ports than workers, more ports than workers, errors, and completion ordering. Run `go test -race ./...`. A benchmark may compare sequential and concurrent execution, but measured speedup is informational and must not be a pass/fail threshold.
-
-**Red Team — Rayhan**
-
-Run the same small authorized lab scan with different worker limits. Observe the trade-off between completion time and concurrency. Keep the worker limit within the documented cap.
-
-**Blue Team — Samia**
-
-Treat a burst of connection attempts as observable behavior. Consider how connection rate, source, destination, and time window could help distinguish an approved inventory scan from unexpected probing.
-
-**Debrief**
-
-Concurrency is a resource policy, not just an implementation detail. The worker limit is part of the tool's safety contract.
-
-**What's next:** 03.5 adds cancellation so the operator can stop work without abandoning cleanup.
+**সম্পন্ন হওয়ার শর্ত:** Concurrency সীমাবদ্ধ, ফল deterministic এবং cleanup সম্পূর্ণ।
 
 ---
 
-# 03.5 — Cancel Cleanly: Context and Cancellation
+# 03.5: Cancel Cleanly: Context and Cancellation
 
-Rayhan starts a broad scan and realizes the target range was wrong. Stopping the terminal process abruptly could leave work and connections behind. He needs a deliberate stop that preserves what the scanner has already learned.
+Rayhan ভুল target selection দিয়ে scan শুরু করেছে। Terminal process জোর করে বন্ধ করলে cleanup অসম্পূর্ণ হতে পারে। Scanner-কে থামতে হবে, কিন্তু ইতিমধ্যে পাওয়া evidence রাখতে হবে।
 
-### What you will build
+### কী তৈরি করবে
 
-Thread a context through the scan and support Ctrl-C cancellation with a clean shutdown and partial results.
+Context-aware scan এবং Ctrl-C/SIGINT cancellation।
 
-### Just-in-time theory
+### Cancellation flow
 
-A Go context carries cancellation and deadlines across function boundaries. Cancellation is cooperative: the caller signals that work should stop, and each operation must observe the signal.
-
-A clean cancellation sequence has four parts:
-
-1. Stop scheduling new ports.
-2. Let in-flight dial attempts observe cancellation.
-3. Collect results that completed before cancellation.
-4. Wait for workers to exit and close resources.
+1. নতুন port schedule বন্ধ।
+2. In-flight dial cancellation observe করবে।
+3. Cancellation-এর আগে complete হওয়া result সংগ্রহ।
+4. Worker exit ও resource close নিশ্চিত করা।
 
 ```mermaid
 flowchart TD
     S["SIGINT / Ctrl-C"] --> C["Cancel scan context"]
-    C --> Q["Stop scheduling new ports"]
+    C --> Q["Stop scheduling"]
     C --> D["In-flight dials observe cancellation"]
-    Q --> W["Workers finish and exit"]
+    Q --> W["Workers exit"]
     D --> W
     W --> R["Collect completed results"]
     R --> O["Print partial results and summary"]
 ```
 
-Cancellation does not mean every selected port has a result. The output must make that distinction visible.
+Cancellation মানে সব selected port-এর result পাওয়া যায়নি।
 
-### Challenge specification
+### Contract
 
-**Problem**
+**Input:** আগের scan arguments, internal context এবং CLI-তে Ctrl-C/SIGINT।
 
-Add context-aware scanning and handle Ctrl-C without leaking work or losing completed observations.
+**Output:** Cancellation-এর আগে completed result এবং শেষে scan interrupted summary। Never-attempted বা incomplete port-এর fabricated result নয়।
 
-**Objective**
+**Behavior**
+- Scan operation context গ্রহণ করবে।
+- Cancellation observe হওয়ার পর নতুন port schedule নয়।
+- In-flight dial cancellable।
+- কেবল cancellation observe হওয়ার আগে completed attempt-এর result থাকবে।
+- Parent context cancellation/deadline-এ dial থামলে সেটি interrupted, normal unknown observation নয়।
+- Per-port --timeout শেষ হলে সেটি completed attempt এবং unknown result।
+- Interrupted attempt-এর result record নয়।
+- Selected, completed, interrupted in-flight এবং unattempted count দেখাবে; যোগফল total selection-এর সমান।
+- সব worker exit না করা পর্যন্ত return নয়।
+- Successful connection close।
+- Normal completion ও interruption আলাদা।
+- Panic, deadlock বা closed channel-এ send নয়।
 
-Allow an operator or caller to cancel a scan, return completed results, and shut down all workers and connections cleanly.
+**Constraints:** Cooperative cancellation; goroutine জোর করে terminate নয়। Worker/connection leak নয়। Interrupted বা unattempted port-কে closed/unknown বলা যাবে না।
 
-**Inputs**
+**Edge cases:** প্রথম port schedule-এর আগে cancel, সব worker dial-এ blocked, কিছু result collect হওয়ার পরে cancel, final result-এর পর presentation-এর আগে cancel, repeated signal, dial completion ও cancellation একই সময়ে।
 
-- Existing scan arguments.
-- An internal context supplied to the scan operation.
-- CLI cancellation through Ctrl-C / SIGINT.
-
-**Output**
-
-On cancellation, print all results completed before cancellation, followed by a clear `scan interrupted` summary. Do not fabricate results for ports that were never attempted or completed.
-
-**Behavioral contract**
-
-- The scan operation must accept a context.
-- Stop scheduling new ports after cancellation is observed.
-- In-flight connection attempts must be cancellable.
-- Preserve only results whose dial attempts completed before cancellation was observed.
-- If a dial is terminated by scan-context cancellation (`context.Canceled` or the parent context deadline), count it as interrupted, not as a normal `unknown` port observation. A per-port timeout configured by `--timeout` remains a completed attempt and maps to `unknown`.
-- Do not emit a result record for an interrupted attempt or a port that was never started.
-- Report selected, completed, interrupted in-flight, and unattempted counts; these must reconcile with the total selection.
-- Wait for every worker to exit before returning.
-- Close every successfully established connection.
-- Distinguish a completed scan from an interrupted scan in the summary.
-- Do not panic, deadlock, or send to a closed channel during cancellation.
-
-**Constraints and security**
-
-- Use cooperative cancellation; do not terminate goroutines forcibly.
-- Do not leak goroutines or open connections.
-- Do not claim that interrupted or unattempted ports are closed or unknown.
-- Keep the three-state result contract unchanged for completed attempts only.
-
-**Edge cases**
-
-- Cancellation before the first port is scheduled.
-- Cancellation while all workers are blocked in dial attempts.
-- Cancellation while some results are already collected.
-- Cancellation after the final result but before presentation.
-- Repeated cancellation signal.
-- A dial operation that returns at the same time cancellation occurs.
-
-**Errors and exit behavior**
-
-A cancelled CLI scan prints partial results and an interruption summary, then exits non-zero. A normally completed scan retains the prior exit behavior. Invalid input remains a command error and must be rejected before scanning begins.
+**Exit behavior:** Cancelled CLI scan partial result ও summary দেখিয়ে non-zero exit। Normal scan আগের exit behavior রাখবে।
 
 **Acceptance criteria**
+- Cancellation নতুন কাজ থামায়।
+- Completed result অক্ষত।
+- Context cancellation-এ interrupted attempt state result নয়; per-port timeout unknown।
+- Summary count reconcile করে।
+- In-flight work promptly exit।
+- Worker ও connection cleanup।
+- Panic/deadlock নেই।
 
-- Cancelling a scan stops new work from being scheduled.
-- Completed results are preserved and printed.
-- A dial interrupted by scan-context cancellation is omitted from normal state results and counted as interrupted; a per-port timeout remains a completed `unknown` result.
-- The summary reports selected, completed, interrupted, and unattempted counts, which reconcile exactly.
-- In-flight work exits promptly after observing cancellation.
-- All workers exit and all successful connections are closed.
-- The scan reports interruption distinctly from normal completion.
-- No panic or deadlock occurs.
+**Tests:** নির্দিষ্ট result-এর পরে context cancel করো। Blocking/instrumented dialer দিয়ে cancellation observe যাচাই। Completed result, interrupted ও unattempted count এবং worker exit assert করো। Race detector চালাও।
 
-**Verification and tests**
-
-Write a test that cancels the context after a controlled number of results. Use a blocking/instrumented dialer to verify that in-flight operations observe cancellation. Assert that completed results are retained, unscheduled ports have no fabricated result, and all workers have exited before the scan returns. Run the race detector.
-
-**Red Team — Rayhan**
-
-Start a lab scan, cancel it, and retain the partial result set. Explain why a partial scan must never be presented as a complete inventory.
-
-**Blue Team — Samia**
-
-Review the interruption summary and determine which ports remain untested. Make sure an incomplete scan is not used as evidence that the remaining services are absent.
-
-**Debrief**
-
-A reliable scanner must be stoppable. Cleanup and honest partial reporting are part of correctness, not polish.
-
-**What's next:** 03.6 gives scan results a structured format that later tools can consume.
+**সম্পন্ন হওয়ার শর্ত:** Scanner থামে, cleanup করে এবং অসম্পূর্ণ scan-কে সম্পূর্ণ বলে না।
 
 ---
 
-# 03.6 — Trust the Results: Structured Output and Tests
+# 03.6: Trust the Results: Structured Output and Tests
 
-The scan is useful to Rayhan, but Samia wants to compare results over time and pass open ports to a later service-identification tool. Human-readable text is useful for people; structured records are easier for programs to consume.
+মানুষের জন্য readable output ভালো, কিন্তু পরের tool-এ scan result পাঠাতে structured data দরকার। Timestamp ও duration প্রতিবার বদলাবে। Stable output বলতে schema, field meaning এবং ordering স্থিতিশীল হওয়া বোঝায়, byte-for-byte identical output নয়।
 
-### What you will build
+### কী তৈরি করবে
 
-Add JSON output as newline-delimited JSON (NDJSON), preserve human-readable output, and complete the regression test suite.
+`--output human|json`; JSON mode-এ newline-delimited JSON (NDJSON)। Default human।
 
-### Just-in-time theory
+### Record schema
 
-JSON represents structured data. NDJSON writes one complete JSON object per line, making it possible to process a stream incrementally without wrapping the entire scan in one large array.
-
-A timestamp and duration are measurements, so they naturally vary between runs. Stable output means a stable schema, field meanings, and deterministic ordering, not byte-for-byte identical output across separate scans.
-
-### Challenge specification
-
-**Problem**
-
-Add `--output human|json` and define a stable scan-result record.
-
-**Objective**
-
-Make scan results readable by a person and consumable by downstream tools without losing state or partial-scan information.
-
-**Inputs**
-
-- Existing scan arguments.
-- Optional `--output human`.
-- Optional `--output json`.
-- Default output: `human`.
-
-**Output contract**
-
-Each completed port result contains:
-
-| Field | Meaning |
+| Field | অর্থ |
 |---|---|
-| `host` | Host supplied to the scanner |
-| `port` | TCP port number |
-| `state` | Exactly `open`, `closed`, or `unknown` |
-| `duration` | Time spent on this connection attempt |
-| `timestamp` | Time the result was recorded |
+| host | Scanner-এ দেওয়া host |
+| port | TCP port |
+| state | open, closed অথবা unknown |
+| duration | Connection attempt-এর সময় |
+| timestamp | Result record করার সময় |
 
-In JSON mode, emit one JSON object per line:
+উদাহরণ:
 
 ```json
 {"host":"127.0.0.1","port":8080,"state":"open","duration":"1.42ms","timestamp":"2026-10-31T10:00:00Z"}
 {"host":"127.0.0.1","port":8081,"state":"closed","duration":"0.31ms","timestamp":"2026-10-31T10:00:00Z"}
 ```
 
-The values above are illustrative. Actual duration and timestamp depend on the run.
+### Contract
 
-**Behavioral contract**
+- Human mode default।
+- JSON mode-এ প্রতি completed port-এর জন্য এক JSON object per line।
+- State ঠিক open/closed/unknown।
+- প্রতিটি record-এ পাঁচটি field থাকবে।
+- Concurrent execution হলেও result ascending port order-এ।
+- JSON stdout-এ শুধু JSON record। Diagnostic ও interruption summary stderr-এ।
+- Cancellation-এ completed record emit হবে; incomplete port-এর placeholder নয়।
+- Field name/type stable; timestamp/duration naturally vary।
+- আগের সব milestone behavior অক্ষত।
 
-- Human mode remains the default.
-- JSON mode emits valid NDJSON: exactly one JSON object per completed port result.
-- Every state is one of `open`, `closed`, or `unknown`.
-- Include host, port, state, duration, and timestamp in every result.
-- Emit results in ascending port order, including after concurrent execution.
-- In JSON mode, stdout contains only JSON records. Diagnostics and interruption summaries go to stderr.
-- On cancellation, emit all completed result records and clearly report interruption on stderr. Do not emit placeholder records for uncompleted ports.
-- Keep field names and types stable across runs. Timestamps and durations are expected to vary.
-- Preserve all previous milestone behavior and tests.
+**Constraints:** Standard library only। JSON stdout-এ human text নয়। Internal error-কে state হিসেবে serialize নয়। Unknown result বাদ নয়। Timestamp/duration থাকা অবস্থায় byte-identical output দাবি নয়।
 
-**Constraints and security**
+**Edge cases:** Empty selection, one/many result, তিন state-ই, cancellation before/after partial result, hostname/IP, unusual host string-এর JSON escaping, invalid output mode, খুব short duration।
 
-- Use the Go standard library.
-- Do not mix human text into JSON stdout.
-- Do not serialize internal errors as a replacement for the required state.
-- Do not omit `unknown` results.
-- Do not claim byte-identical output across runs when timestamps and durations are present.
-
-**Edge cases**
-
-- Empty selection is rejected during validation.
-- One result and many results.
-- All three states in one scan.
-- Cancellation before any result and cancellation after partial results.
-- Hostnames and IP literals.
-- JSON escaping for unusual but valid host input.
-- Invalid output mode.
-- A result with a very short duration.
-
-**Errors and exit behavior**
-
-Invalid output mode: stderr and non-zero exit before scanning. In JSON mode, stdout remains parseable as NDJSON even when the scan is interrupted; the interruption explanation belongs on stderr. Preserve the established exit status rules for completed scans and non-zero status for cancellation.
+**Error behavior:** Invalid mode stderr ও non-zero, scan শুরুর আগে। Interrupted JSON stream parseable থাকবে; explanation stderr-এ। Completed scan-এর আগের exit rule বজায়, cancellation non-zero।
 
 **Acceptance criteria**
+- Default human।
+- JSON mode প্রতি completed port-এ valid JSON line।
+- পাঁচ field সব record-এ।
+- State তিনটির একটি।
+- প্রতিটি line jq দিয়ে parse হয়।
+- Result sorted।
+- Diagnostic stdout contaminate করে না।
+- Cancellation completed record রাখে এবং interruption আলাদা দেখায়।
+- 03.1–03.5 regression test পাস।
 
-- Default mode remains human-readable.
-- JSON mode produces one valid JSON object per completed port.
-- Every record contains all five required fields.
-- Every state is exactly one of the three documented values.
-- `jq` can parse each line independently.
-- Results remain sorted by port.
-- Diagnostics never contaminate JSON stdout.
-- Cancellation preserves completed JSON records and reports interruption separately.
-- All tests from 03.1–03.5 continue to pass.
-
-**Verification and tests**
-
-Test each state and all required fields. Pipe JSON output through `jq` and verify that every line parses independently. Capture stdout and stderr separately to prove that diagnostics do not contaminate the JSON stream. Test ordering after concurrent completion and partial output after cancellation. Run the complete test suite with `go test ./...` and `go test -race ./...`.
-
-**Red Team — Rayhan**
-
-Export a scan as NDJSON and identify the open-port records that should be passed to Chapter 05. Preserve unknown results in the evidence; do not silently discard them.
-
-**Blue Team — Samia**
-
-Compare the structured scan against an expected exposure inventory. Record unexpected open ports and unknown results separately so that uncertainty does not disappear in a dashboard or report.
-
-**Debrief**
-
-Structured output turns a one-off terminal observation into reusable evidence. Its value depends on a stable schema and honest states.
-
-**What's next:** Chapter 05 — *Identify the Service* — consumes the open-port findings and investigates what is listening.
+**Tests:** প্রতিটি state ও field test। jq দিয়ে প্রতিটি line parse। stdout/stderr আলাদা capture। Concurrent ordering ও cancellation partial output test। `go test ./...` এবং `go test -race ./...`।
 
 ---
 
@@ -791,42 +391,48 @@ Structured output turns a one-off terminal observation into reusable evidence. I
 
 | Property | Contract |
 |---|---|
-| Tool | `portscan` |
+| Tool | portscan |
 | Protocol | TCP only |
-| Target | One explicitly supplied host |
+| Target | একটি explicitly supplied host |
 | Port selection | Single port, inclusive range, comma-separated list |
 | Valid ports | 1–65535 |
-| Default timeout | 2 seconds per connection attempt |
+| Default timeout | প্রতি attempt-এ 2 seconds |
 | Default workers | 100 |
 | Worker limit | 1–1000 |
-| States | `open`, `closed`, `unknown` |
-| Classification | Success → open; explicit refusal → closed; every other dial error → unknown |
-| Cancellation | Stop scheduling, cancel in-flight work, preserve completed results, wait for cleanup |
-| Output | Human-readable or NDJSON |
-| Resource invariant | No more active dial attempts than configured workers; no leaked workers or connections |
-| Maturity | L2 — Reliable tool |
+| States | open, closed, unknown |
+| Classification | Success=open; explicit refusal=closed; অন্য dial error=unknown |
+| Cancellation | নতুন কাজ বন্ধ, in-flight cancel, completed result রাখা, cleanup |
+| Output | Human-readable অথবা NDJSON |
+| Resource invariant | Active dial configured worker-এর বেশি নয়; worker/connection leak নয় |
+| Maturity | L2, Reliable tool |
 
-### Compatibility and downstream use
+### Compatibility ও downstream use
 
-- Chapter 05 (Service Fingerprinter) consumes the open-port findings as candidates for service identification.
-- Chapter 18 (Final Engagement) reuses the scanner in the reconnaissance workflow.
-- Chapter 02's `netdiag connect` contract remains unchanged. The scanner uses a narrower three-state vocabulary for port-level observations.
-- Future changes must preserve the meaning of the three states and the NDJSON fields, or document an intentional compatibility change and update downstream consumers.
+- Chapter 05 Service Fingerprinter open-port finding-কে service identification candidate হিসেবে ব্যবহার করবে।
+- Chapter 18 Final Engagement reconnaissance workflow-এ scanner reuse করবে।
+- Chapter 02-এর netdiag connect contract অপরিবর্তিত। Port scanner-এর port-level vocabulary আলাদা ও সংকীর্ণ।
+- Future change-এ তিন state ও NDJSON field-এর অর্থ অক্ষত রাখতে হবে; বদলালে compatibility change নথিভুক্ত করে downstream consumer update করতে হবে।
 
 ## Safety boundary
 
-Port scanning creates network traffic and can trigger monitoring or service protections. All chapter exercises must use loopback listeners or a lab target for which you have explicit authorization. Do not scan public IP ranges, shared infrastructure, or third-party systems without written permission and a clearly defined scope. Keep the worker count and timeout within the defaults unless a controlled lab experiment justifies changing them.
+Port scanning network traffic তৈরি করে এবং monitoring বা service protection trigger করতে পারে। সব exercise loopback listener অথবা লিখিত অনুমতিসহ lab target-এ সীমাবদ্ধ। অনুমতি ও scope ছাড়া public IP range, shared infrastructure বা third-party system scan করবে না। Controlled lab experiment ছাড়া worker ও timeout default-এর বাইরে নেবে না।
+
+## Red/Blue learning
+
+🔴 **Rayhan:** Authorized local lab scan থেকে NDJSON export করে open-port record চিহ্নিত করবে, যেগুলো Chapter 05-এ পাঠানো যায়। Unknown result evidence হিসেবে রাখবে; নীরবে বাদ নয়।
+
+🔵 **Samia:** Structured scan-কে expected exposure inventory-এর সঙ্গে তুলনা করবে। Unexpected open port এবং unknown result আলাদা করে নথিভুক্ত করবে, যাতে dashboard uncertainty মুছে না ফেলে।
 
 ## Chapter completion checklist
 
-- [ ] 03.1 reports one port as `open`, `closed`, or `unknown`.
-- [ ] 03.2 validates and scans a port selection sequentially.
-- [ ] 03.3 applies a per-connection timeout and tests classification independently.
-- [ ] 03.4 enforces bounded concurrency and deterministic result ordering.
-- [ ] 03.5 cancels cleanly and preserves completed results.
-- [ ] 03.6 emits valid human-readable or NDJSON output.
-- [ ] Tests use local listeners and controlled errors, not public services.
-- [ ] Regression tests cover every earlier milestone.
-- [ ] No goroutine or connection remains after a completed or cancelled scan.
-- [ ] Red Team findings and Blue Team exposure review are both complete.
-- [ ] All testing claims reflect tests actually run.
+- [ ] 03.1 একটি port-কে open/closed/unknown হিসেবে report করে।
+- [ ] 03.2 selection validate করে sequential scan করে।
+- [ ] 03.3 per-connection timeout ও error classification।
+- [ ] 03.4 bounded concurrency ও deterministic ordering।
+- [ ] 03.5 clean cancellation ও completed result সংরক্ষণ।
+- [ ] 03.6 human অথবা valid NDJSON output।
+- [ ] Test local listener ও controlled error ব্যবহার করে, public service নয়।
+- [ ] প্রতিটি milestone-এর regression test আছে।
+- [ ] Completed/cancelled scan-এর পর goroutine বা connection অবশিষ্ট নেই।
+- [ ] Red Team finding ও Blue Team exposure review সম্পন্ন।
+- [ ] Test চালানো না হলে পাস করেছে বলা হয়নি।
