@@ -1,5 +1,8 @@
 # অধ্যায় ০২: নিজের Network দেখো, একটি Network Diagnostic Tool তৈরি
 
+> **গল্পের পটভূমি:** [Chapter 02 Background পড়ো](BACKGROUND.md)। এখানে গল্প, তদন্তের সূত্র ও চরিত্রদের অগ্রগতি রয়েছে; এই README-তে রয়েছে টুল তৈরির সম্পূর্ণ কারিগরি নির্দেশনা।
+
+
 > **পর্যায়:** ১, ভিত্তি বোঝা  
 > **স্তর:** L1, learning tool  
 > **প্রধান deliverable:** netdiag, local interface, IP address ও TCP connectivity পরীক্ষা করার CLI tool  
@@ -32,8 +35,6 @@ Tool read-only। এটি interface configuration বদলাবে না, p
 
 # 02.1: Local Network Interface-এর মানচিত্র তৈরি করো
 
-Samia প্রথমে Rayhan-এর অনুমান থামায়। Destination নিয়ে আলোচনা করার আগে জানতে হবে machine-টি নিজে কোন interface ও address ব্যবহার করছে। তারা local network-এর মানচিত্র তৈরি করবে, তবে interface up দেখেই বাইরের service reachable বলে ধরে নেবে না।
-Samia প্রথমে জানতে চায় machine-এ কোন network interface আছে এবং সেগুলোতে কোন address bind করা।
 
 ### ধারণা
 
@@ -108,7 +109,6 @@ Interface: lo
 # 02.2: IP Address ও CIDR ব্যাখ্যা করো
 
 Interface inventory-তে destination-এর একটি IP address পাওয়া গেছে, পাশে CIDR prefix-ও আছে। Rayhan address-টিকে host-এর পরিচয় হিসেবে পড়ছে; Samia জানতে চায় prefix-টি network-এর কোন অংশ নির্ধারণ করছে। পরের ধাপে address ও subnet-এর অর্থ আলাদা করে ব্যাখ্যা করতে হবে।
-Rayhan destination পেয়েছে, কিন্তু address-এর সঙ্গে prefix থাকলে সেটির অর্থ কী? Samia চায় tool যেন host address, network address ও prefix length গুলিয়ে না ফেলে।
 
 ### ধারণা
 
@@ -274,7 +274,6 @@ Evidence:    TCP connection established
 # 02.4: সব Observation এক Diagnostic Report-এ সাজাও
 
 এখন তাদের কাছে interface, address এবং TCP attempt-এর তথ্য আলাদা আলাদা আছে। Samia চায় একটি report, যেখানে একটি section ব্যর্থ হলেও বাকি evidence হারাবে না। Rayhan-এর কাজ শুধু সব output জোড়া লাগানো নয়; কোন observation সম্পন্ন হয়েছে, কোনটি ব্যর্থ, আর কোন প্রশ্ন এখনো অমীমাংসিত তা স্পষ্ট রাখা।
-Samia তিনটি command-এর output একসঙ্গে দেখতে চায়। একটি section ব্যর্থ হলে অন্য independent observation হারানো চলবে না।
 
 ### কী তৈরি করবে
 

@@ -1,5 +1,8 @@
 # অধ্যায় ০১: Byte-এর ভেতরটা দেখো, একটি Byte Inspector তৈরি
 
+> **গল্পের পটভূমি:** [Chapter 01 Background পড়ো](BACKGROUND.md)। এখানে গল্প, তদন্তের সূত্র ও চরিত্রদের অগ্রগতি রয়েছে; এই README-তে রয়েছে টুল তৈরির সম্পূর্ণ কারিগরি নির্দেশনা।
+
+
 > **পর্যায়:** ১, ভিত্তি বোঝা  
 > **স্তর:** L2, নির্ভরযোগ্য learning tool  
 > **প্রধান deliverable:** `byteinspect`, raw file ও stdin-এর byte পরীক্ষা করার CLI tool  
@@ -74,8 +77,6 @@ Hexadecimal সুবিধাজনক, কারণ একটি hex digit চ
 
 # 01.1: Byte পড়ো ও দেখাও, এগুলো সংখ্যামাত্র
 
-Rayhan editor-এর screenshot নয়, হাতে গোনা যায় এমন evidence চায়। সে fixture-এর প্রতিটি byte-এর অবস্থান ও মান দেখতে চায়, যাতে Samia একই data independently যাচাই করতে পারে। প্রথম ধাপে কোনো byte-কে character ধরে নেওয়া হবে না; শুধু সংখ্যা হিসেবে inventory তৈরি হবে।
-Rayhan প্রথমে অনুমান নয়, inventory চায়। Samia এমন output চায় যা হাতে হিসাব করে যাচাই করা যায়।
 
 ### কী তৈরি করবে
 
@@ -326,8 +327,6 @@ UTF-8 Unicode code point-কে এক থেকে চার byte-এ encode �
 
 # 01.5: Stdin ও একাধিক Format গ্রহণ করো
 
-Samia একই evidence-এর একটি অংশ pipeline দিয়ে পাঠিয়েছে, file হিসেবে নয়। Rayhan বুঝতে পারে, inspector যদি শুধু disk file নেয়, তাহলে investigation-এর পরের ধাপে অন্য tool-এর সঙ্গে এটি ব্যবহার করা কঠিন হবে। Input source বদলালেও একই byte-এর জন্য একই output এবং একই safety limit বজায় রাখতে হবে.
-Samia এবার pipeline থেকে byte পেয়েছে, file হিসেবে নয়। একই tool যেন file এবং stdin দুই উৎস থেকেই পড়তে পারে। Input কোথা থেকে এসেছে, তার ওপর output বদলানো চলবে না।
 
 ### কী তৈরি করবে
 

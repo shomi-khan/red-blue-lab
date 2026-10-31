@@ -1,5 +1,8 @@
 # অধ্যায় ০০: নিজের Security Lab তৈরি করো
 
+> **গল্পের পটভূমি:** [Chapter 00 Background পড়ো](BACKGROUND.md)। এখানে গল্প, তদন্তের সূত্র ও চরিত্রদের অগ্রগতি রয়েছে; এই README-তে রয়েছে টুল তৈরির সম্পূর্ণ কারিগরি নির্দেশনা।
+
+
 > **পর্যায়:** ১, ভিত্তি তৈরি  
 > **স্তর:** L1, Learning  
 > **প্রধান deliverable:** Go দিয়ে লেখা একটি loopback-only TCP server এবং তার সঙ্গে যোগাযোগ করতে পারা একটি TCP client  
@@ -72,7 +75,6 @@ flowchart LR
 # 00.1: Lab-এর নিয়ম জানো, Specification পড়তে শেখো
 
 Ticket-এর প্রথম লাইনেই লেখা: “দ্রুত পরীক্ষা করে দেখুন।” Rayhan বুঝতে পারে, এই নির্দেশনা দিয়ে কাজ শুরু করা যায় না; target, অনুমতি, expected behavior এবং failure condition অনুপস্থিত। Samia তাকে ticket-টিকে একটি নির্দিষ্ট challenge specification হিসেবে পড়তে বলে। তদন্তের প্রথম কাজ তাই code লেখা নয়, অস্পষ্ট অনুরোধকে যাচাইযোগ্য প্রশ্নে ভাঙা।
-Rayhan একটি challenge description পেল। সে সরাসরি editor খুলতে যাচ্ছিল। Samia বলল, “আগে বুঝে নাও, তোমাকে কী বানাতে বলা হয়েছে। ভুল problem solve করলে সুন্দর code-ও ভুল ফল।”
 
 ### কী তৈরি করবে
 
@@ -136,7 +138,6 @@ Rayhan একটি challenge description পেল। সে সরাসরি
 
 ### Debrief
 
-Samia-র নিয়মটি মনে রাখো: **প্রথমে scope, তারপর implementation, শেষে evidence।** পরের প্রতিটি chapter-এ এই অভ্যাস কাজে লাগবে।
 
 ---
 
@@ -230,7 +231,6 @@ Hello from my security lab | time=2026-10-31T08:30:00+06:00
 # 00.3: TCP Server চালাও, Local Connection গ্রহণ করো
 
 Ticket-এ যে demo service-এর কথা বলা হয়েছে, সেটিকে internet থেকে খুঁজে বের করার দরকার নেই। প্রথমে নিজেদের machine-এ একটি ছোট service চালিয়ে connection-এর আচরণ নিয়ন্ত্রণে আনতে হবে। Rayhan server বানাতে প্রস্তুত; Samia শর্ত দেয়, service-টি যেন loopback-এর বাইরে এক মুহূর্তের জন্যও প্রকাশ না পায়।
-Rayhan এবার একটি local service তৈরি করতে চায়। Samia-র শর্ত: service-টি যেন কেবল নিজের machine থেকেই reachable হয়।
 
 ### কী তৈরি করবে
 
@@ -325,7 +325,6 @@ Server greeting পাঠিয়ে connection বন্ধ করবে। এ�
 
 ### Red/Blue debrief
 
-Rayhan এখন local service তৈরি করতে পারে। Samia নিশ্চিত করেছে service-টি public interface-এ expose হয়নি। একই TCP server pattern পরের chapter-গুলোতে controlled test fixture হিসেবে কাজে লাগবে।
 
 ---
 
@@ -430,7 +429,6 @@ sequenceDiagram
 
 ### Red/Blue debrief
 
-Rayhan একটি local service-এর সঙ্গে যোগাযোগ করে observable evidence পেয়েছে। Samia নিশ্চিত করেছে client-এর destination সীমাবদ্ধ এবং failure-কে success হিসেবে দেখানো হয়নি। পরবর্তী chapter-এ এই একই discipline byte-level data inspection-এ কাজে লাগবে।
 
 ---
 

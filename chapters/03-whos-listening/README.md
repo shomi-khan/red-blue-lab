@@ -1,5 +1,8 @@
 # অধ্যায় ০৩: কে শুনছে? একটি TCP Port Scanner তৈরি
 
+> **গল্পের পটভূমি:** [Chapter 03 Background পড়ো](BACKGROUND.md)। এখানে গল্প, তদন্তের সূত্র ও চরিত্রদের অগ্রগতি রয়েছে; এই README-তে রয়েছে টুল তৈরির সম্পূর্ণ কারিগরি নির্দেশনা।
+
+
 > **পর্যায়:** ২, Network-এ কী চলছে তা আবিষ্কার  
 > **স্তর:** L2, reliable tool  
 > **প্রধান deliverable:** portscan, একটি host-এর TCP port bounded concurrency-তে পরীক্ষা করার CLI tool  
@@ -277,7 +280,6 @@ Worker count concurrent dial attempt-এর সর্বোচ্চ সংখ�
 # 03.5: পরিষ্কারভাবে Scan থামাও, Context ও Cancellation
 
 একটি lab run-এ Rayhan বুঝতে পারে target selection ভুল হয়েছে। Ctrl-C চাপলেই যেন সব কাজ হঠাৎ হারিয়ে না যায়; ইতিমধ্যে সম্পন্ন attempt-এর evidence দরকার, কিন্তু নতুন attempt আর শুরু হওয়া চলবে না। Samia চায় scanner থামার সংকেত মানুক, in-flight কাজ পরিষ্কার করুক এবং অসম্পূর্ণ scan-কে অসম্পূর্ণ বলেই দেখাক.
-Rayhan ভুল target selection দিয়ে scan শুরু করেছে। Terminal process জোর করে বন্ধ করলে cleanup অসম্পূর্ণ হতে পারে। Scanner-কে থামতে হবে, কিন্তু ইতিমধ্যে পাওয়া evidence রাখতে হবে।
 
 ### কী তৈরি করবে
 
@@ -346,7 +348,6 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 
 # 03.6: ফলাফলের ওপর আস্থা রাখো, Structured Output ও Test
 
-Rayhan-এর human-readable report তদন্তের জন্য যথেষ্ট, কিন্তু Samia একই ফলাফল পরের tool-এ দিতে চায়। Timestamp ও duration বদলালেও record-এর অর্থ ও schema বদলানো চলবে না। এখন scanner-কে শুধু মানুষের পড়ার উপযোগী নয়, machine-এর সঙ্গে নির্ভরযোগ্যভাবে কথা বলার উপযোগীও করতে হবে.
 মানুষের জন্য readable output ভালো, কিন্তু পরের tool-এ scan result পাঠাতে structured data দরকার। Timestamp ও duration প্রতিবার বদলাবে। Stable output বলতে schema, field meaning এবং ordering স্থিতিশীল হওয়া বোঝায়, byte-for-byte identical output নয়।
 
 ### কী তৈরি করবে
