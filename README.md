@@ -47,8 +47,9 @@ Foundation কোনো পূর্ণ character bible, plot, villain motivatio
 2. docs/CREATIVE-DIRECTION.md
 3. docs/AUTHORING-GUIDELINES.md
 4. docs/LEARNING-ARCHITECTURE.md
-5. docs/VISUAL-DESIGN-GUIDELINES.md
-6. AI content তৈরির আগে AGENTS.md ও docs/AI-WORKFLOW.md
+5. docs/ASSESSMENT-ARCHITECTURE.md
+6. docs/VISUAL-DESIGN-GUIDELINES.md
+7. AI content তৈরির আগে AGENTS.md ও docs/AI-WORKFLOW.md
 
 ## 🌐 ভাষানীতি
 
