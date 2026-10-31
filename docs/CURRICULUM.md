@@ -244,7 +244,7 @@ By completing Chapter 01, the learner can:
 - *Capability gained:* Display bytes in the familiar hex dump layout: offset | hex columns | ASCII column.
 - *New theory:* Hexadecimal notation and its convenience. Why security tools use hex. Printable vs. non-printable ASCII characters. The `%02x` format verb.
 - *Visualizations:* Annotated hex dump showing each column's meaning. Table of ASCII characters 0x20–0x7E.
-- *Tool evolution:* Add `--hex` flag; output groups bytes in rows of 16 with offset, two-digit hex values, and a printable-ASCII sidebar.
+- *Tool evolution:* Add a temporary `--hex` flag; output groups bytes in rows of 16 with offset, two-digit hex values, and a printable-ASCII sidebar. In 01.5, this milestone-specific flag is consolidated into the final `--format hex` interface and is no longer accepted.
 - *Challenge:* Format the output so rows align correctly regardless of file size. Represent non-printable bytes as `.` in the ASCII column.
 - *Constraints:* 16 bytes per row. Offset column is 8 hex digits wide, zero-padded. Output must be readable in a fixed-width terminal.
 - *Acceptance criteria:* Output matches the format of `xxd` or `hexdump -C` for a known file (verified manually).
@@ -278,11 +278,11 @@ By completing Chapter 01, the learner can:
 **01.5 — Compose: Accept Stdin and Multiple Formats**
 
 - *Capability gained:* The Byte Inspector accepts input from a file path argument or from stdin (via pipe), and supports multiple output formats selectable by flag.
-- *New theory:* `os.Stdin` as an `io.Reader`. `io.ReadAll`. Flag parsing with `flag` package. Output format selection.
-- *Tool evolution:* Unify input: if no filename argument, read stdin. Add `--format` flag accepting `hex`, `decimal`, `binary`, `utf8`, `ascii`.
+- *New theory:* `os.Stdin` as an `io.Reader`. Bounded stream reading, flag parsing with the `flag` package, and output format selection. The input limit makes bounded staging possible without unbounded buffering.
+- *Tool evolution:* Unify input: if no filename argument, read stdin. Add `--format` accepting `hex`, `decimal`, `binary`, `utf8`, and `ascii`. This is the final interface and replaces the temporary `--hex` flag from 01.2; `--hex` is not a supported alias.
 - *Challenge:* Support all input sources and all output formats in a single binary. Print usage if called incorrectly.
-- *Constraints:* When reading stdin, size is unknown in advance; do not require full buffer before starting output for large inputs. Cap at 10 MiB before producing an error.
-- *Acceptance criteria:* `echo "hello" | byteinspect --format hex` produces the correct hex dump. `byteinspect --format binary myfile.bin` works identically to direct invocation.
+- *Constraints:* Stdin size is unknown in advance. Enforce the 10 MiB limit while reading and never buffer an unbounded stream. Because input larger than the limit must not produce a misleading partial dump, validate and stage at most 10 MiB before writing formatted output to stdout. This bounded staging is the deliberate trade-off; do not stream unvalidated input directly to stdout.
+- *Acceptance criteria:* `echo "hello" | byteinspect --format hex` produces the correct hex dump. `byteinspect --format binary myfile.bin` works identically to direct invocation. The final CLI uses `--format`; the earlier `--hex` flag has been retired.
 - *Verification:* Go test that forks the binary (or calls the core logic as a function) with both input modes.
 - *Enables:* The complete Byte Inspector. Later chapters use byte inspection concepts; the binary itself is useful as a debugging aid throughout.
 
@@ -373,15 +373,15 @@ By completing Chapter 02, the learner can:
 - *Tool evolution:* Add `netdiag explain <address>` subcommand.
 - *Challenge:* Given an IP address (with or without prefix), print: version (IPv4/IPv6), classification, network address (if CIDR given), and number of host addresses in the range (if CIDR given, IPv4 only).
 - *Constraints:* Invalid addresses must produce a clear error. Do not assume `/32` if no prefix is given — report that no network range was specified.
-- *Acceptance criteria:* `netdiag explain 10.0.1.5/24` outputs IPv4, private, network `10.0.1.0`, 254 usable host addresses.
+- *Acceptance criteria:* `netdiag explain 10.0.1.5/24` outputs IPv4, private, network `10.0.1.0`, and 254 conventional usable host addresses. For `/31`, report both addresses as usable endpoints on a point-to-point link (2); for `/32`, report the single address (1). Do not apply the ordinary network/broadcast subtraction rule to these prefixes.
 - *Verification:* Go test with a set of known inputs and expected outputs.
 - *Enables:* 02.3.
 
 **02.3 — Connect or Not?: Test TCP Connectivity**
 
 - *Capability gained:* Attempt a TCP connection to a given host:port and report the outcome: connected, refused, or timed out.
-- *New theory:* `net.DialTimeout`. TCP three-way handshake (conceptual). `RST` as a refused signal. The difference between a timeout and a refusal as evidence. Operating system connection queues.
-- *Visualizations:* Sequence diagram: successful connect (SYN → SYN-ACK → ACK). Refused connect (SYN → RST). Timed-out connect (SYN → silence → timeout). Table: outcome → what it likely means about the port/host state.
+- *New theory:* `net.DialTimeout`. TCP three-way handshake (conceptual). `RST` as a refused signal. The difference between a timeout and a refusal as evidence. Operating system connection queues. Contrast TCP's connection-oriented byte stream and handshake with UDP's connectionless datagrams, which have no TCP-style handshake and do not guarantee delivery or ordering. This tool tests TCP only.
+- *Visualizations:* Three sequence diagrams: successful connect (SYN → SYN-ACK → ACK), refused connect (SYN → RST), and timed-out connect (SYN → silence → timeout). Add a concise TCP-vs-UDP comparison table and an outcome/evidence table.
 - *Tool evolution:* Add `netdiag connect <host:port>` subcommand with a configurable `--timeout` flag (default 3s).
 - *Challenge:* Report `connected`, `refused`, or `timeout` as distinct outcomes. If the operating system explicitly reports that the network or route is unreachable, report that separately rather than mislabeling it as a timeout. Print the round-trip time for a successful connection. On success, close the connection cleanly.
 - *Constraints:* Must close the connection after reporting. Do not leave connections open. Timeout must be enforced — a 3-second timeout must not block for 30 seconds.
@@ -394,9 +394,9 @@ By completing Chapter 02, the learner can:
 - *Capability gained:* The tool produces a structured human-readable diagnostic report combining interface info, address analysis, and connectivity test results.
 - *New theory:* Organizing multi-section CLI output. Exit codes and their conventions. When to write to stderr vs. stdout.
 - *Tool evolution:* Add `netdiag report <host:port>` subcommand. Run 02.1 (interfaces), 02.2 (classify the target address), and 02.3 (connectivity test) and format results as a coherent report.
-- *Challenge:* The report must be structured in clearly labeled sections. Connectivity failure must not prevent the report from completing — report what succeeded, explain what failed, exit non-zero only if a fatal error occurred.
+- *Challenge:* The report must be structured in clearly labeled sections. Section-level failures must not prevent the report from completing: report what succeeded, explain what failed, and return exit code 0 whenever a report is successfully produced. Exit non-zero only for fatal request or report-generation/output errors, such as invalid arguments or timeout configuration.
 - *Constraints:* No interactive prompts. Accept all options as flags. Timeout configurable.
-- *Acceptance criteria:* `netdiag report 127.0.0.1:8080` produces a report with at least three sections: local interfaces, target address classification, and connectivity result.
+- *Acceptance criteria:* `netdiag report 127.0.0.1:8080` produces a report with at least three sections: local interfaces, target address classification, and connectivity result. Refused, timeout, DNS-resolution, and interface-enumeration section failures remain visible in a partial report and do not by themselves cause a non-zero exit. Invalid arguments/configuration or inability to produce the report do cause a non-zero exit.
 - *Verification:* Integration test that runs the binary with a local server and verifies the report structure.
 - *Enables:* The diagnostic report pattern recurs in Chapter 05 (Service Fingerprinter), Chapter 08 (Web Security Header Scanner), and Chapter 11 (TLS Certificate Checker).
 
@@ -430,6 +430,7 @@ By completing Chapter 02, the learner can:
 | IPv4 address anatomy figure | Octets, network vs. host portion | 02.2 |
 | RFC 1918 address table | Private/loopback/public ranges | 02.1 |
 | TCP connection outcome sequence diagrams (×3) | Connected, refused, timed out | 02.3 |
+| TCP vs. UDP comparison table | Connection-oriented stream vs. connectionless datagrams | 02.3 |
 | Interface and addressing topology diagram | Local machine networking model | 02.1 |
 
 ---
