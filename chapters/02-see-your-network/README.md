@@ -162,7 +162,7 @@ IPv6-এ broadcast address হিসাব করবে না।
 
 ```mermaid
 sequenceDiagram
-    participant C as Client
+    participant C as Client (সংযোগকারী)
     participant S as সংযোগের অপেক্ষায় থাকা Service
     C->>S: SYN
     S->>C: SYN-ACK
@@ -176,7 +176,7 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant C as Client
+    participant C as Client (সংযোগকারী)
     participant H as কোনো Listener নেই
     C->>H: SYN
     H-->>C: RST
@@ -187,7 +187,7 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant C as Client
+    participant C as Client (সংযোগকারী)
     participant F as নীরব পথ / packet drop
     C->>F: SYN
     Note over C,F: Deadline-এর আগে response নেই
