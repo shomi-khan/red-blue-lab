@@ -215,7 +215,7 @@ Network:  192.168.1.0/24
 Broadcast:192.168.1.255
 ```
 
-For ordinary IPv4 subnets from `/1` through `/30`, conventional usable hosts are `2^(32-prefix)-2`, excluding network and broadcast addresses. Handle the two boundary prefixes explicitly: `/31` is used for point-to-point links, where both addresses are usable endpoints (2); `/32` identifies one address (1). Do not subtract network and broadcast addresses for `/31` or `/32`. Avoid overflow for very large ranges.
+For ordinary IPv4 subnets from `/1` through `/30`, conventional usable hosts are `2^(32-prefix)-2`, excluding network and broadcast addresses. Define `/0` explicitly: network `0.0.0.0/0`, broadcast `255.255.255.255`, and `4,294,967,294` conventional usable addresses. `/31` is used for point-to-point links, where both addresses are usable endpoints (2); `/32` identifies one address (1). Do not subtract network and broadcast addresses for `/31` or `/32`. Use an integer representation that holds the `/0` result without overflow.
 
 IPv6 has no broadcast address. Do not apply the IPv4 host-count formula to IPv6.
 
@@ -258,6 +258,7 @@ Without a prefix, explicitly say no network range was specified.
 **Behavioral contract**
 
 - Accept IPv4 and IPv6; reject malformed addresses and invalid prefix lengths.
+- Normalize IPv4-mapped IPv6 literals (for example, `::ffff:192.0.2.1`) to IPv4 before classification and display; report family `IPv4` and apply IPv4 rules. For mapped CIDR input, accept only `/96` through `/128` and translate to IPv4 `/0` through `/32` by subtracting 96; reject shorter prefixes.
 - Do not invent a prefix when none is supplied.
 - Normalize the network address from the prefix bits.
 - Calculate IPv4 broadcast only for IPv4.
@@ -274,7 +275,7 @@ Without a prefix, explicitly say no network range was specified.
 
 **Edge cases**
 
-IPv4 and IPv6 with/without prefix; IPv4 `/0`, `/24`, `/30`, `/31`, `/32`; verify `/31` reports 2 usable point-to-point endpoints and `/32` reports 1 address; IPv6 `/0`, `/64`, `/128`; host bits set in input; invalid syntax; invalid prefix; IPv4-mapped IPv6.
+IPv4 and IPv6 with/without prefix; IPv4 `/0` (network `0.0.0.0/0`, broadcast `255.255.255.255`, 4,294,967,294 conventional usable addresses), `/24`, `/30`, `/31`, `/32`; IPv6 `/0`, `/64`, `/128`; host bits set; invalid syntax/prefix; IPv4-mapped IPv6 without prefix and with `/96`, `/120`, `/128`, plus rejected `/95`.
 
 **Errors**
 
@@ -285,7 +286,9 @@ Missing/extra arguments, malformed address, and invalid prefix must produce conc
 - `netdiag explain 10.0.1.5/24` reports IPv4, private, network `10.0.1.0/24`, broadcast `10.0.1.255`, and 254 conventional usable hosts.
 - An address without prefix does not get an invented network.
 - IPv6 is normalized and never shown with a broadcast address.
+- IPv4 `/0` reports network `0.0.0.0/0`, broadcast `255.255.255.255`, and 4,294,967,294 conventional usable addresses without overflow.
 - IPv4 `/31` reports both addresses as usable point-to-point endpoints (2); `/32` reports its single address (1).
+- `::ffff:192.0.2.1` normalizes to IPv4 `192.0.2.1`; mapped `/96`, `/120`, `/128` become IPv4 `/0`, `/24`, `/32`; `/95` is rejected.
 - Invalid input fails clearly; no prefix receives a misleading host count.
 
 **Test expectations**
@@ -554,7 +557,8 @@ Network Diagnostic Report
 - Reuse the behavior and classification rules from 02.1–02.3. Do not create inconsistent duplicate logic.
 - Attempt independent sections even if another section fails.
 - A connection failure must not prevent interface and destination sections.
-- If hostname resolution succeeds, show the exact resolved address used for the attempt.
+- Resolve a hostname once and select one concrete address using a documented deterministic rule (the first resolver result is sufficient).
+- Pass that selected IP literal, not the hostname, to the TCP dial operation; show the same literal as the exact address attempted in the report. This prevents a second DNS lookup from selecting a different address.
 - If resolution fails, show the error and mark connectivity unavailable; do not invent an address.
 - If interface enumeration fails, show the error in section 1 and continue where possible.
 - Do not imply every resolved address was tested if only one was attempted.

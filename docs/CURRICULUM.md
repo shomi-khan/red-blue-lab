@@ -270,7 +270,7 @@ By completing Chapter 01, the learner can:
 - *Visualizations:* Figure showing a multi-byte UTF-8 sequence with bit-level annotation. Table: byte value range → UTF-8 role (leading byte, continuation byte, invalid).
 - *Tool evolution:* Add `--decode ascii` and `--decode utf8` flags. For each byte or sequence, label it as valid, non-printable, or invalid under the chosen encoding.
 - *Challenge:* For `--decode utf8`, identify and mark each invalid byte with a `[invalid]` annotation. For `--decode ascii`, mark bytes > 0x7F as `[non-ASCII]`.
-- *Constraints:* Do not attempt to "fix" or skip invalid bytes — display them alongside the annotation. The learner must not use any third-party encoding library.
+- *Constraints:* Do not attempt to "fix" or skip invalid bytes — display them alongside the annotation. Escape Unicode control characters (General_Category `Cc`, including C0/C1) in UTF-8 output using visible notation such as `\\u{001B}`; never emit terminal controls literally. Preserve raw bytes and offsets. No third-party encoding library.
 - *Acceptance criteria:* A file containing a valid UTF-8 emoji followed by a lone continuation byte produces correct annotations for each sequence.
 - *Verification:* Write a Go test that embeds the test byte sequence and checks annotations.
 - *Enables:* 01.5. Also informs Chapter 13 (Fuzz Testing) where malformed byte sequences are intentionally generated.
@@ -301,7 +301,7 @@ By completing Chapter 01, the learner can:
 #### 8.6 Testing and Acceptance
 
 - Each milestone introduces at least one Go test using deterministic input.
-- Tests must cover: empty input, single byte, exactly 16 bytes (one hex row), 17 bytes (two rows, second incomplete), invalid UTF-8, non-printable ASCII, valid multi-byte UTF-8.
+- Tests must cover: empty input, single byte, exactly 16 bytes (one hex row), 17 bytes (two rows, second incomplete), invalid UTF-8, non-printable ASCII, valid multi-byte UTF-8, and UTF-8 control characters (ESC, LF, TAB, and a C1 control) rendered as visible escapes.
 - Regression tests from earlier milestones must remain green as new flags are added.
 - No network access required. All tests use in-process byte slices or temporary files.
 
@@ -372,8 +372,8 @@ By completing Chapter 02, the learner can:
 - *Visualizations:* Figure annotating an IPv4 address: four octets, CIDR prefix, network portion vs. host portion. Table comparing IPv4 and IPv6 address lengths.
 - *Tool evolution:* Add `netdiag explain <address>` subcommand.
 - *Challenge:* Given an IP address (with or without prefix), print: version (IPv4/IPv6), classification, network address (if CIDR given), and number of host addresses in the range (if CIDR given, IPv4 only).
-- *Constraints:* Invalid addresses must produce a clear error. Do not assume `/32` if no prefix is given — report that no network range was specified.
-- *Acceptance criteria:* `netdiag explain 10.0.1.5/24` outputs IPv4, private, network `10.0.1.0`, and 254 conventional usable host addresses. For `/31`, report both addresses as usable endpoints on a point-to-point link (2); for `/32`, report the single address (1). Do not apply the ordinary network/broadcast subtraction rule to these prefixes.
+- *Constraints:* Invalid addresses must produce a clear error. Normalize IPv4-mapped IPv6 literals such as `::ffff:192.0.2.1` to IPv4 before classification/display. For mapped CIDR input, accept `/96`–`/128` and translate by subtracting 96 to IPv4 `/0`–`/32`; reject shorter prefixes. Do not assume `/32` if no prefix is given — report that no network range was specified.
+- *Acceptance criteria:* `netdiag explain 10.0.1.5/24` outputs IPv4, private, network `10.0.1.0`, and 254 conventional usable host addresses. `/0` reports network `0.0.0.0/0`, broadcast `255.255.255.255`, and 4,294,967,294 conventional usable addresses without overflow. For `/31`, report both addresses as usable endpoints on a point-to-point link (2); for `/32`, report the single address (1). Do not apply the ordinary network/broadcast subtraction rule to these prefixes.
 - *Verification:* Go test with a set of known inputs and expected outputs.
 - *Enables:* 02.3.
 
@@ -394,7 +394,7 @@ By completing Chapter 02, the learner can:
 - *Capability gained:* The tool produces a structured human-readable diagnostic report combining interface info, address analysis, and connectivity test results.
 - *New theory:* Organizing multi-section CLI output. Exit codes and their conventions. When to write to stderr vs. stdout.
 - *Tool evolution:* Add `netdiag report <host:port>` subcommand. Run 02.1 (interfaces), 02.2 (classify the target address), and 02.3 (connectivity test) and format results as a coherent report.
-- *Challenge:* The report must be structured in clearly labeled sections. Section-level failures must not prevent the report from completing: report what succeeded, explain what failed, and return exit code 0 whenever a report is successfully produced. Exit non-zero only for fatal request or report-generation/output errors, such as invalid arguments or timeout configuration.
+- *Challenge:* The report must be structured in clearly labeled sections. Resolve a hostname once, select one address using a documented deterministic rule (the first resolver result is sufficient), and pass that IP literal to the dial operation. Report the exact same literal as the address attempted. Section-level failures must not prevent the report from completing: report what succeeded, explain what failed, and return exit code 0 whenever a report is successfully produced. Exit non-zero only for fatal request or report-generation/output errors, such as invalid arguments or timeout configuration.
 - *Constraints:* No interactive prompts. Accept all options as flags. Timeout configurable.
 - *Acceptance criteria:* `netdiag report 127.0.0.1:8080` produces a report with at least three sections: local interfaces, target address classification, and connectivity result. Refused, timeout, DNS-resolution, and interface-enumeration section failures remain visible in a partial report and do not by themselves cause a non-zero exit. Invalid arguments/configuration or inability to produce the report do cause a non-zero exit.
 - *Verification:* Integration test that runs the binary with a local server and verifies the report structure.
@@ -475,20 +475,20 @@ By completing Chapter 03, the learner can:
 - *Capability gained:* Scan a single TCP port on a given host, report `open`, `closed`, or `unknown`.
 - *New theory:* TCP handshake steps. RST as an explicit refusal. Timeout as ambiguous (firewall drop, host unreachable, or slow). Why "not open" is not the same as "closed."
 - *Visualizations:* Three sequence diagrams: open port (SYN→SYN-ACK→ACK→close), closed port (SYN→RST), filtered port (SYN→silence). Table: observed outcome → classification → what it means.
-- *Tool evolution:* `portscan <host> <port>` prints the classification and exits.
-- *Challenge:* Classify based on error type: nil error = open; connection refused = closed; deadline exceeded or other network error = unknown.
+- *Tool evolution:* `portscan <host> --ports <port>` prints the classification and exits. The required `--ports` form is used for one port, ranges, and lists throughout; positional port syntax is unsupported.
+- *Challenge:* Use `portscan <host> --ports <port>` and classify: nil error = open; connection refused = closed; per-port timeout or other dial error = unknown.
 - *Constraints:* Default timeout: 2 seconds. Must close open connections after classification.
-- *Acceptance criteria:* Against a local listener: port reports `open`. After listener closes: port reports `closed`. Against a non-routable address with short timeout: reports `unknown`.
-- *Verification:* Go test using local TCP listener for all three cases.
+- *Acceptance criteria:* A local listener reports `open`; a refused loopback port reports `closed`; an injected timeout reports `unknown`.
+- *Verification:* Loopback integration tests plus controlled dial/error injection. Do not rely on non-routable addresses, firewall behavior, or network timing to manufacture a timeout.
 - *Enables:* 03.2.
 
 **03.2 — More Ports: Scan a Range Sequentially**
 
-- *Capability gained:* Accept a port range (e.g., `1-1024`) and scan all ports sequentially, printing results as they complete.
+- *Capability gained:* Accept a single port, range (e.g., `1-1024`), or comma-separated selection and scan sequentially; present results sorted by ascending port.
 - *New theory:* Iterating over port ranges. How port numbers are assigned (well-known ports 0–1023, registered 1024–49151, dynamic/ephemeral).
 - *Visualizations:* Table: well-known port ranges and their purpose. Diagram showing sequential scan timeline.
 - *Tool evolution:* Add `--ports 1-1024` flag. Iterate and print each result.
-- *Challenge:* Print results in a consistent format: `<port> <state>`. Support single port, range, and comma-separated list.
+- *Challenge:* Print results in a consistent format: `<port> <state>`. Support single port, range, and comma-separated list. Results are sorted by ascending port, independent of input or completion order.
 - *Constraints:* No concurrency yet. Maximum range: 65535 ports. Invalid ranges (e.g., `70000`, `100-50`) must produce a clear error.
 - *Acceptance criteria:* Scanning ports 8080-8082 with two local listeners on 8080 and 8082 produces correct classifications for all three ports.
 - *Verification:* Go test spinning up two listeners on known ports.
@@ -514,8 +514,8 @@ By completing Chapter 03, the learner can:
 - *Tool evolution:* Replace sequential loop with a worker pool. Default to 100 concurrent workers.
 - *Challenge:* Implement a worker pool that: fans out ports to workers, collects results in order, shuts down cleanly when all ports are scanned.
 - *Constraints:* Workers: default 100, max 1000. Resource cleanup: all goroutines must exit before the program returns. No goroutine leaks.
-- *Acceptance criteria:* Scanning 1000 ports with 100 workers is significantly faster than sequential. All results are present and no goroutines remain active after scan completes (verifiable with `-race`).
-- *Verification:* Benchmark test. `-race` flag during test run.
+- *Acceptance criteria:* Active attempts never exceed the worker limit; all completed-scan results are present and sorted; no goroutines remain after completion.
+- *Verification:* Use an instrumented dialer to assert the concurrency ceiling and ordering. Run `go test -race ./...`. Benchmarks may be informative, but no fixed speedup is a correctness threshold.
 - *Enables:* 03.5.
 
 **03.5 — Cancel Cleanly: Context and Cancellation**
@@ -524,10 +524,10 @@ By completing Chapter 03, the learner can:
 - *New theory:* `context.Context`. `signal.NotifyContext`. Passing context to `net.DialContext`. Cooperative cancellation.
 - *Visualizations:* Diagram: signal → cancel context → workers observe Done → workers exit → channel closes → collector exits.
 - *Tool evolution:* Thread context through the worker pool. Handle `SIGINT` for clean shutdown.
-- *Challenge:* When Ctrl-C is received mid-scan, the tool prints a "scan interrupted" message, reports partial results, and exits cleanly without panicking or leaving connections open.
-- *Constraints:* Must not panic on cancellation. Must print partial results.
-- *Acceptance criteria:* In a test, cancelling the context mid-scan results in partial results and no goroutine leaks.
-- *Verification:* Go test that cancels the context after a fixed number of results.
+- *Challenge:* On Ctrl-C, print completed results and a `scan interrupted` summary. Cancellation-interrupted dials are not ordinary `unknown` results; report selected, completed, interrupted in-flight, and unattempted counts. A per-port timeout remains a completed `unknown` result.
+- *Constraints:* Stop scheduling, cancel in-flight work, preserve completed results, wait for workers, and close connections. Do not fabricate states for interrupted or unattempted ports.
+- *Acceptance criteria:* Controlled cancellation retains only completed results; interrupted and unattempted counts reconcile with the selected total; no goroutine leaks.
+- *Verification:* Use a blocking/instrumented dialer to cancel at controlled points and distinguish parent cancellation from per-port timeout.
 - *Enables:* 03.6.
 
 **03.6 — Trust the Results: Structured Output and Tests**
@@ -535,9 +535,9 @@ By completing Chapter 03, the learner can:
 - *Capability gained:* The scanner produces structured output (JSON and human-readable) and has a comprehensive test suite including regression tests.
 - *New theory:* `encoding/json`. Output design: what information belongs in a scan result. Regression testing as a discipline.
 - *Tool evolution:* Add `--output json` flag. Define a `ScanResult` struct with host, port, state, duration, and timestamp.
-- *Challenge:* Print one JSON object per line (NDJSON) when `--output json` is selected. Human-readable mode groups results by state.
-- *Constraints:* Output format must not change between calls given the same input. JSON must be valid (verifiable with `jq`).
-- *Acceptance criteria:* `--output json | jq .state` produces only `"open"`, `"closed"`, or `"unknown"` values.
+- *Challenge:* Print one JSON object per line (NDJSON) when `--output json` is selected. Human-readable and NDJSON result records are sorted by ascending port.
+- *Constraints:* Schema, field names/types, and ordering are stable; duration and timestamp naturally vary between runs. In JSON mode stdout contains only records and diagnostics go to stderr.
+- *Acceptance criteria:* `--output json | jq .state` produces only `"open"`, `"closed"`, or `"unknown"` values for completed attempts; timestamps/durations are not expected to be byte-identical across runs.
 - *Verification:* Full regression test suite. All previously passing tests must still pass.
 - *Enables:* Chapter 05 (Service Fingerprinter) takes `portscan` output as input to identify services on open ports.
 
@@ -549,17 +549,17 @@ By completing Chapter 03, the learner can:
 - **Core behavior:** Attempt TCP connections; classify results honestly; close all connections; exit cleanly.
 - **Important error states:** Invalid host; DNS resolution failure; all ports timeout (possible network issue or firewall); port range validation errors.
 - **Security invariants:** Default timeout enforced. Default worker count safe for loopback. Users must explicitly set high worker counts. Tool must not be used against hosts without authorization (documented in the chapter).
-- **Output contract:** Each result has exactly one of three states: `open`, `closed`, `unknown`. The `unknown` state is never omitted in favor of a boolean.
+- **Output contract:** Each completed attempt has exactly one of three states: `open`, `closed`, `unknown`. The `unknown` state is never omitted in favor of a boolean. Cancellation-interrupted and unattempted ports have no result record and are represented in interruption summary counts.
 - **Testing expectations:** Unit test for error classification. Integration test with local listeners. Goroutine leak test with `-race`. Partial cancellation test.
 - **Downstream consumers:** Chapter 05 (Service Fingerprinter) takes open port list as input. Chapter 18 (Final Engagement) reuses as reconnaissance step.
 - **Maturity target:** L2.
 
 #### 8.6 Testing and Acceptance
 
-- Unit: `classify(err)` for all error types.
-- Integration: three listener scenarios (open/closed/timeout).
-- Concurrency: goroutine leak check using `-race` and a test that waits for all goroutines.
-- Cancellation: mid-scan context cancel.
+- Unit: `classify(err)` for refusal, per-port timeout, and other errors.
+- Integration: loopback listener/refusal plus injected timeout and network errors.
+- Concurrency: instrumented active-dial counter, goroutine cleanup, and `-race`.
+- Cancellation: controlled context cancellation distinguishes interrupted dials from completed per-port timeouts and verifies reconciled summary counts.
 - Regression: all tests from 03.1–03.5 must still pass after 03.6.
 
 #### 8.7 Red/Blue Learning
