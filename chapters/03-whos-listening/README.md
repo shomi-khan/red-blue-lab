@@ -3,7 +3,7 @@
 > **পর্যায়:** ২, Network-এ কী চলছে তা আবিষ্কার  
 > **স্তর:** L2, reliable tool  
 > **প্রধান deliverable:** portscan, একটি host-এর TCP port bounded concurrency-তে পরীক্ষা করার CLI tool  
-> **পূর্বশর্ত:** Chapter 00 এবং Chapter 02-এর TCP connectivity ধারণা
+> **পূর্বশর্ত:** [Chapter 00](../00-your-first-security-lab/README.md) এবং [Chapter 02](../02-see-your-network/README.md)-এর TCP connectivity ধারণা
 
 Rayhan একটি অনুমোদিত lab host-এর service inventory তৈরি করছে। একটি port-এ connect করা আর অনেকগুলো port পরীক্ষা করা এক কাজ নয়। Samia চায় scanner যেন resource limit মানে, অনিশ্চিত ফলাফলকে “বন্ধ” বলে চালিয়ে না দেয় এবং মাঝপথে থামালেও partial evidence সৎভাবে দেখায়।
 
