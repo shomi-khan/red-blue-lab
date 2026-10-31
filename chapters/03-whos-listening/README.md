@@ -9,7 +9,7 @@ Rayhan একটি অনুমোদিত lab host-এর service inventory �
 
 এই অধ্যায়ে scanner ধাপে ধাপে তৈরি হবে: একটি port, একাধিক port, timeout classification, bounded concurrency, cancellation এবং structured output।
 
-### কয়েকটি প্রয়োজনীয় শব্দ
+### কয়েকটি প্রয়োজনীয় Technical term
 
 - **Worker pool:** নির্দিষ্ট সংখ্যক worker-এর দল, যারা queue থেকে কাজ নিয়ে সীমিত সংখ্যায় একসঙ্গে সম্পন্ন করে।
 - **Concurrency:** একই সময়ে একাধিক কাজের অগ্রগতি চলা। এটি parallel execution-এর সমার্থক নয়; কাজগুলো একই সময়ে progress করতে পারে, কিন্তু একই মুহূর্তে CPU-তে চলতেই হবে এমন নয়।
@@ -38,11 +38,11 @@ Rayhan একটি অনুমোদিত lab host-এর service inventory �
 6. Partial scan-কে complete inventory হিসেবে উপস্থাপন না করতে।
 7. Stable structured schema তৈরি করতে।
 
-## Port scanner কী প্রমাণ করে?
+## Port scanner আসলে কী প্রমাণ করে?
 
 TCP connection সফল হলে port-এ connection গ্রহণ করা হয়েছে। Explicit connection refusal সাধারণত RST-এর মাধ্যমে আসে। Timeout হলে নির্ধারিত সময়ের মধ্যে conclusive response পাওয়া যায়নি।
 
-### সফল connection
+### সফল Connection
 
 ```mermaid
 sequenceDiagram
@@ -98,7 +98,7 @@ Firewall drop, route failure বা lost response timeout তৈরি করত
 
 একটি host ও একটি TCP port পরীক্ষা করবে।
 
-### Challenge specification
+### Challenge-এর শর্ত
 
 **সমস্যা:** portscan-এর প্রথম increment তৈরি করো।
 
@@ -150,7 +150,7 @@ Firewall drop, route failure বা lost response timeout তৈরি করত
 
 উদাহরণ: `--ports 22`, `--ports 80,443,8080`, `--ports 8000-8010`, `--ports 22,80,8080-8082`।
 
-### Contract
+### আচরণগত Contract
 - Port range inclusive।
 - Valid port 1–65535।
 - Duplicate port বাদ যাবে।
@@ -398,7 +398,7 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 
 ## চূড়ান্ত Tool contract
 
-| Property | Contract |
+| বৈশিষ্ট্য | Contract |
 |---|---|
 | Tool | portscan |
 | Protocol | TCP only |
