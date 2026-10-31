@@ -348,13 +348,14 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 
 ### Record-এর Schema
 
-| Field | অর্থ |
-|---|---|
-| host | Scanner-এ দেওয়া host |
-| port | TCP port |
-| state | open, closed অথবা unknown |
-| duration | Connection attempt-এর সময় |
-| timestamp | Result record করার সময় |
+| Field | Type | অর্থ |
+|---|---|---|
+| host | string | Scanner-এ দেওয়া host |
+| port | integer | TCP port |
+| state | string enum | `open`, `closed` অথবা `unknown` |
+| duration | string | Go duration format-এ connection attempt-এর সময়, যেমন `1.42ms` |
+| timestamp | string | RFC3339 timestamp, result record করার সময় |
+
 
 উদাহরণ:
 
