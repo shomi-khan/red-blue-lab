@@ -193,7 +193,7 @@ Timeout হলো অপেক্ষার সীমা, remote port-এর verd
 - Error classification string matching দিয়ে নয়; typed/wrapped error semantics দিয়ে।
 - Classification logic dial operation থেকে আলাদা test করা যাবে।
 - Invalid timeout হলে network attempt-এর আগেই reject।
-- সব selected port attempt সম্পন্ন হলে exit code `0`, কোনো port open না হলেও। `open`, `closed` ও `unknown` হলো finding, execution failure নয়।।
+- সব selected port attempt সম্পন্ন হলে exit code `0`, কোনো port open না হলেও। `open`, `closed` ও `unknown` হলো finding, execution failure নয়।
 
 **Edge cases:** Default, short/long positive timeout, zero/negative/malformed/অত্যন্ত বড় duration, wrapped refusal, deadline error, network unreachable, DNS error, unrelated error, deadline-এর আগে success।
 
@@ -277,7 +277,7 @@ Rayhan ভুল target selection দিয়ে scan শুরু করেছে
 
 Context-aware scan এবং Ctrl-C/SIGINT cancellation।
 
-### Cancellation flow
+### Cancellation-এর ধাপ
 
 1. নতুন port schedule বন্ধ।
 2. In-flight dial cancellation observe করবে।
@@ -346,7 +346,7 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 
 `--output human|json`; JSON mode-এ newline-delimited JSON (NDJSON)। Default human।
 
-### Record schema
+### Record-এর Schema
 
 | Field | অর্থ |
 |---|---|
@@ -423,7 +423,7 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 - Chapter 02-এর netdiag connect contract অপরিবর্তিত। Port scanner-এর port-level vocabulary আলাদা ও সংকীর্ণ।
 - Future change-এ তিন state ও NDJSON field-এর অর্থ অক্ষত রাখতে হবে; বদলালে compatibility change নথিভুক্ত করে downstream consumer update করতে হবে।
 
-## Safety boundary
+## নিরাপত্তার সীমা
 
 Port scanning network traffic তৈরি করে এবং monitoring বা service protection trigger করতে পারে। সব exercise loopback listener অথবা লিখিত অনুমতিসহ lab target-এ সীমাবদ্ধ। অনুমতি ও scope ছাড়া public IP range, shared infrastructure বা third-party system scan করবে না। Controlled lab experiment ছাড়া worker ও timeout default-এর বাইরে নেবে না।
 
@@ -433,7 +433,7 @@ Port scanning network traffic তৈরি করে এবং monitoring বা
 
 🔵 **Samia:** Structured scan-কে expected exposure inventory-এর সঙ্গে তুলনা করবে। Unexpected open port এবং unknown result আলাদা করে নথিভুক্ত করবে, যাতে dashboard uncertainty মুছে না ফেলে।
 
-## Chapter completion checklist
+## অধ্যায় সম্পন্ন করার Checklist
 
 - [ ] 03.1 একটি port-কে open/closed/unknown হিসেবে report করে।
 - [ ] 03.2 selection validate করে sequential scan করে।
