@@ -95,7 +95,7 @@ Spider হলো Peter-এর cyber identity। Peter-এর বাস্তব 
 
 **Story → Curiosity → Knowledge → Exploration → Discovery → Engineering Judgment**
 
-গল্পের ভেতরে character-এর study, investigation, design decision বা experiment দেখা যেতে পারে। গভীর ব্যাখ্যা আলাদা learning artifact-এ থাকবে।
+গল্পের ভেতরে character-এর study, investigation, design decision, experiment বা tool-building দেখা যেতে পারে। সংশ্লিষ্ট detailed learning material reader-facing narrative sequence-এর মধ্যেই আসবে, যাতে learning গল্পের অভিজ্ঞতার অংশ থাকে। Material-এর নিজস্ব structure থাকতে পারে এবং Novel ও learning material independently readable থাকবে।
 
 ### 4.2 Learning from every relevant perspective
 
@@ -113,9 +113,9 @@ Learning শুধু Peter-এর মাধ্যমে হবে না। Her
 
 ### 4.3 Character-linked study materials
 
-কোনো character প্রয়োজন অনুযায়ী কোনো বিষয় পড়তে শুরু করলে পাঠক সেই learning journey-এর সঙ্গে যুক্ত study material পেতে পারে।
+কোনো character প্রয়োজন অনুযায়ী কোনো বিষয় পড়তে, research করতে, investigate করতে বা experiment করতে শুরু করলে সেই journey-এর সঙ্গে যুক্ত detailed learning material narrative sequence-এ উপস্থাপিত হবে।
 
-Peter-এর উদাহরণে, network incident বোঝার জন্য তার প্রয়োজন হতে পারে:
+যে character-এর POV অনুসরণ করা হচ্ছে, তার প্রয়োজন ও knowledge gap অনুযায়ী learning material তৈরি হবে। Peter-এর উদাহরণে, network incident বোঝার জন্য তার প্রয়োজন হতে পারে:
 
 - Networking fundamentals
 - OSI Model
@@ -126,7 +126,7 @@ Peter-এর উদাহরণে, network incident বোঝার জন্�
 
 Study material হবে character-এর learning journey-এর narrative framing, কিন্তু content হবে পাঠকের জন্য যথেষ্ট বিস্তারিত ও technically accurate। Peter-এর personal note একা technical explanation-এর বিকল্প নয়।
 
-Novel-এ classroom language ব্যবহার করা যাবে না। Deep explanation আলাদা Concept Note, Visual Walkthrough, Experiment বা অন্য উপযুক্ত artifact-এ থাকবে।
+Novel-এ classroom language ব্যবহার করা যাবে না। Deep explanation Concept Note, Visual Walkthrough, Experiment বা অন্য উপযুক্ত artifact-এর রূপ নিতে পারে, তবে reader-facing sequence-এ তা সংশ্লিষ্ট story moment-এর সঙ্গে integrated থাকবে।
 
 
 ### 4.5 Broad Cyber Security and Systems Engineering foundation
@@ -333,3 +333,10 @@ Practical activity local lab, synthetic fixture, intentionally vulnerable enviro
 - Public release, fan-fiction scope, original adaptation ও licensing strategy।
 
 কোনো Open decision-কে অনুমোদিত canon হিসেবে ব্যবহার করা যাবে না। User-এর সর্বশেষ স্পষ্ট নির্দেশনা সর্বোচ্চ authority।
+
+
+### 4.7 Integrated narrative learning across POVs
+
+Learning source কোনো নির্দিষ্ট character-এ সীমাবদ্ধ নয়। বর্তমান POV character-এর কাজ, knowledge, objective ও context learning material-এর framing নির্ধারণ করবে। Peter-এর study notes, investigator-এর evidence analysis, engineer-এর design review, অথবা antagonist-এর system reasoning থেকে পাঠক শিখতে পারে। Character যা জানে না, সেটি তার POV-তে জানা সত্য হিসেবে উপস্থাপন করা যাবে না।
+
+Reader-facing sequence-এ story moment-এর পর সংশ্লিষ্ট learning material আসতে পারে, তারপর character-এর application, experiment বা consequence-এ গল্প এগোবে। Learning material আলাদাভাবে পড়ার উপযোগী থাকবে।
