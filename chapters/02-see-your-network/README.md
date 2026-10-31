@@ -158,7 +158,7 @@ IPv6-এ broadcast address হিসাব করবে না।
 
 একটি address ও port জানা থাকলেই service reachable প্রমাণ হয় না। TCP attempt-এর ফলাফল কী evidence দেয়, সেটি আলাদা করে বুঝতে হবে।
 
-### TCP handshake
+### TCP Handshake বা সংযোগ স্থাপনের ধাপ
 
 ```mermaid
 sequenceDiagram
@@ -172,7 +172,7 @@ sequenceDiagram
 
 সফল handshake প্রমাণ করে TCP connection তৈরি হয়েছে। Application সুস্থ বা সঠিক response দেবে, তা প্রমাণ হয় না।
 
-### Refusal
+### Connection প্রত্যাখ্যান (Refusal)
 
 ```mermaid
 sequenceDiagram
@@ -183,7 +183,7 @@ sequenceDiagram
     Note over C,H: Connection refused
 ```
 
-### Timeout
+### Timeout বা নির্ধারিত সময়সীমা
 
 ```mermaid
 sequenceDiagram
