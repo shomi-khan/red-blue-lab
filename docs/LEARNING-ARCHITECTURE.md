@@ -161,3 +161,15 @@ Concept ও LO আলাদা node। Concept-এর canonical identity এক�
 - Graph structure ও learning path generation আলাদা দায়িত্ব।
 
 **Open:** Concrete node/edge schema, metadata fields, graph storage/format, validation tooling ও maintenance workflow।
+
+
+## 13. Content storage format
+
+Project-এর মূল narrative ও learning content **Markdown file**-এ canonicalভাবে সংরক্ষিত হবে।
+
+- **Markdown:** Novel, Concept Note, Lab, evidence pack, reference ও explanatory content-এর মূল format।
+- **YAML Frontmatter:** Content-এর structured metadata রাখার format। নির্দিষ্ট field schema ও validation rules পরবর্তী design phase-এ স্থির হবে।
+- **Mermaid:** Markdown-এর মধ্যে text-based diagram লেখার preferred option; diagram প্রয়োজন অনুযায়ী ব্যবহার হবে।
+- **Knowledge Graph:** ভবিষ্যতে Markdown content-এর structured metadata ও explicit references থেকে generate করা যেতে পারে। Graph আলাদা করে content-এর duplicate source of truth হবে না।
+
+JSON বা database-কে মূল content storage হিসেবে ব্যবহার করা হবে না। ভবিষ্যতে derived graph, index বা tooling-এর জন্য সেগুলো ব্যবহার করা যেতে পারে, যদি প্রয়োজন ও design অনুমোদিত হয়।
