@@ -81,6 +81,17 @@
 **Decision:** পাঠকের পূর্বে শেখা concept, notes, reference, experiment ও reusable knowledge পরবর্তী learning activity-তে কাজে লাগবে। প্রতিটি chapter-এ learning শূন্য থেকে শুরু হবে না।  
 **Rationale:** Reader progression-কে ধারাবাহিক রাখা এবং আগের learning-এর বাস্তব মূল্য তৈরি করা।
 
+
+### D-020 — Broad Cyber Security + Systems Engineering Education
+**Decision:** Project-এর learning scope শুধু Cyber Security-তে সীমাবদ্ধ থাকবে না। Computing Foundations, Systems & Networking, Software & Application Engineering, Cyber Security Core, Advanced Security & Investigation এবং Emerging & Specialized Systems-সহ বিস্তৃত, interconnected knowledge ecosystem গড়ে তোলা হবে। Systems Thinking, Psychology & Human Factors এবং Engineering Judgment cross-cutting capability হিসেবে থাকবে।  
+**Rationale:** পাঠককে শুধু security tool ব্যবহারকারী নয়, system-level reasoning করতে সক্ষম Systems-minded Security Engineer হিসেবে গড়ে তোলার foundation দেওয়া।  
+**Consequences:** Domain layer rigid syllabus order নয়। Broad foundation-এর পর T-shaped specialization, prerequisite mapping, cumulative learning এবং cross-domain knowledge integration অগ্রাধিকার পাবে। বিস্তারিত `docs/LEARNING-DOMAINS.md`-এ।
+
+### D-021 — Fictional Threat, Real-world Engineering
+**Decision:** গল্পে প্রয়োজন অনুযায়ী fictional বা futuristic technology ও threat আনা যাবে; তবে সেগুলো বোঝা, investigate, disable, contain বা defend করার engineering reasoning বাস্তব জগতের যাচাইযোগ্য principle-এর ওপর দাঁড়াবে। Fictional mechanism ও বাস্তব technology স্পষ্টভাবে আলাদা রাখতে হবে।  
+**Rationale:** গল্পের সম্ভাবনা বাড়িয়েও পাঠকের বাস্তব engineering knowledge ও technical trust অক্ষুণ্ণ রাখা।  
+**Consequences:** Fictional system-এর architecture, dependency, trust boundary, failure mode ও limitation internally consistent হবে। বাস্তব engineering principle নাটকীয়তার জন্য বিকৃত করা যাবে না। ক্ষতিকর operational construction বা compromise guide নয়, safe analysis ও defensive engineering-এ focus থাকবে।
+
 ## Open decisions
 
 পরবর্তী planning phase-এ স্থির হবে:
@@ -90,7 +101,7 @@
 - Character roster-এর পূর্ণতা, personality, backstory, relationship ও capability।
 - Central mystery, antagonist motive এবং long-term story arc।
 - Volume, season ও episode structure।
-- Learning domain-এর sequence, prerequisite ও specialization।
+- Learning roadmap-এর chapter-level sequence, prerequisite detail ও specialization depth।
 - Knowledge Dependency Graph-এর schema ও maintenance process।
 - Learning activity-এর difficulty, hints, validation, assessment ও reference-solution format।
 - Tool inventory এবং কোন tool implementation পাঠক explore করবে।

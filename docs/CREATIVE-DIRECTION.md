@@ -128,6 +128,32 @@ Study material হবে character-এর learning journey-এর narrative fram
 
 Novel-এ classroom language ব্যবহার করা যাবে না। Deep explanation আলাদা Concept Note, Visual Walkthrough, Experiment বা অন্য উপযুক্ত artifact-এ থাকবে।
 
+
+### 4.5 Broad Cyber Security and Systems Engineering foundation
+
+**Approved direction:** Project-এর learning scope শুধু Cyber Security নয়; এটি Broad Cyber Security + Systems Engineering Education। পাঠককে Computing, Networking, Operating Systems, Programming, Distributed Systems, Hardware ও Control Systems-এর প্রয়োজনীয় foundation-সহ একজন Systems-minded Security Engineer-এর মতো চিন্তা করতে সাহায্য করা হবে।
+
+Learning domain-গুলো ছয়টি interconnected layer-এ সংগঠিত হবে: Computing Foundations; Systems & Networking; Software & Application Engineering; Cyber Security Core; Advanced Security & Investigation; Emerging & Specialized Systems। Systems Thinking, Psychology & Human Factors এবং Engineering Judgment cross-cutting capability হিসেবে সব layer-এ প্রয়োগ হবে।
+
+এই layer-গুলো rigid syllabus order নয়। Story-driven just-in-time learning, prerequisite bridge এবং Knowledge Dependency Graph-এর মাধ্যমে domain-গুলোর সম্পর্ক দেখানো হবে। পাঠকের broad foundation থাকবে, কিন্তু specialization হবে character journey, incident ও reader interest অনুযায়ী T-shaped।
+
+বিস্তারিত taxonomy ও competency strategy: [Learning Domains](LEARNING-DOMAINS.md)।
+
+### 4.6 Fictional threats, real-world engineering
+
+**Approved direction:** গল্পে প্রয়োজন অনুযায়ী fictional বা futuristic technology, weapon, autonomous system কিংবা threat আনা যাবে। তবে সেগুলো disable, investigate, contain বা defend করার engineering reasoning বাস্তব জগতের যাচাইযোগ্য principle-এর ওপর দাঁড়াবে।
+
+মূল নীতি: **Fictional Threat, Real-world Engineering.**
+
+- Fictional technology গল্পের সম্ভাবনার সীমানা বাড়াতে পারে; বাস্তব প্রযুক্তির সঙ্গে গুলিয়ে ফেলা যাবে না।
+- তার architecture, component, dependency, trust boundary, failure mode ও observable behavior গল্পের প্রয়োজনে যতটা সম্ভব internally consistent হবে।
+- সমাধানে বাস্তব Computing, Networking, OS, Distributed Systems, Cryptography, Embedded Systems, Hardware, AI Security বা Control Systems-এর knowledge প্রয়োগ করা হবে।
+- Fictional mechanism-কে বাস্তব technology-এর প্রমাণ হিসেবে উপস্থাপন করা যাবে না। কোন অংশ বাস্তব, extrapolated বা সম্পূর্ণ fictional তা প্রয়োজনে স্পষ্ট করতে হবে।
+- নাটকীয় সমাধানের জন্য বাস্তব engineering principle ভাঙা যাবে না; fictional assumption থাকলে সেটি আগে স্থাপন করতে হবে।
+- বাস্তব ক্ষতিকর অস্ত্র, exploit বা compromise-এর operational construction guide তৈরি করা হবে না। Focus থাকবে safe analysis, system reasoning, containment, failure analysis ও defensive engineering-এ।
+
+এটি কোনো নির্দিষ্ট fictional technology বা story canon অনুমোদন করে না। প্রতিটি বড় technology concept, capability ও limitation story planning-এ আলাদাভাবে review হবে।
+
 ### 4.4 Just-in-time learning
 
 Peter বা অন্য character আগে থেকে সব জেনে থাকবে না। কোনো incident তাদের knowledge gap প্রকাশ করলে প্রয়োজনীয় concept শেখা বা research শুরু হবে। Learning progression story chronology-র সঙ্গে সম্পর্কিত হবে, তবে narrative-কে rigid syllabus-এ পরিণত করা যাবে না।
