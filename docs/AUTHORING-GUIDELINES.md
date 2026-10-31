@@ -123,3 +123,11 @@ Image scene-কে উন্নত করলে placeholder ও English generati
 - [ ] Learning artifact optional ও আলাদা?
 - [ ] Visual বোঝাপড়া বা atmosphere উন্নত করছে?
 - [ ] Safety boundary অক্ষুণ্ণ?
+
+
+## 11. Content storage format
+
+- Canonical narrative ও learning content Markdown file-এ লিখবে।
+- Structured metadata-এর জন্য YAML Frontmatter ব্যবহার করবে; approved metadata contract না আসা পর্যন্ত নিজে থেকে বাধ্যতামূলক field/schema invent করবে না।
+- Diagram-এর ক্ষেত্রে Markdown-এর মধ্যে Mermaid ব্যবহার করতে পারো, যদি সেটি বিষয়টি স্পষ্ট করে।
+- একই content-এর duplicate JSON/database copy-কে canonical source হিসেবে তৈরি করবে না। ভবিষ্যৎ graph/index data derived output হতে পারে।
