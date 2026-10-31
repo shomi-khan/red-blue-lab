@@ -374,6 +374,8 @@ sequenceDiagram
 **Behavioral contract**
 - Port hard-code করা যাবে না; command line থেকে নিতে হবে।
 - Connect target সবসময় 127.0.0.1:<port>।
+- Connection establish করতে সর্বোচ্চ 3 seconds অপেক্ষা করবে।
+- Connection সফল হলে response পড়ার জন্য আলাদা 3-second read deadline থাকবে; deadline-এর আগে EOF না এলে timeout error দেখাবে।
 - Connection সফল হলে server stream-এর সব data EOF পর্যন্ত পড়বে।
 - একবার Read করেই সম্পূর্ণ message পাওয়া গেছে ধরে নেওয়া যাবে না।
 - EOF স্বাভাবিক completion; EOF-কে error হিসেবে দেখাবে না।
@@ -386,11 +388,12 @@ sequenceDiagram
 - Server ও client একই machine-এ চলবে।
 - এই milestone-এ fixed greeting server-ই response-এর একমাত্র উৎস।
 
-**Edge cases:** Missing/invalid port, server বন্ধ, connection refused, empty response, response একাধিক read-এ আসা, unexpected read error।
+**Edge cases:** Missing/invalid port, server বন্ধ, connection refused, connect timeout, server response না দিয়ে connection খোলা রাখা, empty response, response একাধিক read-এ আসা, unexpected read error।
 
 **Error behavior**
 - Invalid port হলে connection attempt-এর আগে error এবং non-zero exit।
 - Server বন্ধ থাকলে connection error stderr-এ দেখাবে।
+- Connection বা response deadline শেষ হলে timeout error দেখাবে এবং non-zero exit করবে; client অনির্দিষ্টকাল অপেক্ষা করবে না.
 - Connection সফল হলেও EOF-এর আগে কোনো byte না এলে server-এর greeting contract ভঙ্গ হয়েছে বলে stderr-এ error দেখাবে এবং non-zero exit করবে।
 - EOF-এর আগে unexpected read error হলে error দেখাবে এবং success output হিসেবে অসম্পূর্ণ response উপস্থাপন করবে না।
 - EOF-এ পৌঁছানোর আগে কোনো data না পেলে empty greeting-কে protocol failure হিসেবে দেখাবে।
@@ -415,8 +418,9 @@ sequenceDiagram
 2. Client-কে server-এর port দিয়ে চালাও।
 3. Server-এর greeting এবং elapsed time মিলিয়ে দেখো।
 4. Server বন্ধ করো এবং client আবার চালাও।
-5. Invalid port দিয়ে চালিয়ে input validation যাচাই করো।
-6. চাইলে server-এর response একাধিক write-এ পাঠিয়ে client সব data পড়ছে কি না যাচাই করতে পারো; তবে server-এর observable greeting contract অপরিবর্তিত থাকবে।
+5. এমন একটি controlled local test server দিয়ে যাচাই করো, যা connection গ্রহণ করে কিন্তু response/EOF দেয় না; client read deadline-এ থামতে হবে।
+6. Invalid port দিয়ে চালিয়ে input validation যাচাই করো।
+7. চাইলে server-এর response একাধিক write-এ পাঠিয়ে client সব data পড়ছে কি না যাচাই করতে পারো; তবে server-এর observable greeting contract অপরিবর্তিত থাকবে।
 
 **সম্পন্ন হওয়ার শর্ত:** Client কেবল loopback-এ connect করে server-এর সম্পূর্ণ response পড়ে এবং সফল ও ব্যর্থ দুই অবস্থাই সঠিকভাবে প্রকাশ করে।
 
