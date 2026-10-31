@@ -515,3 +515,44 @@ Use this checklist before marking a chapter or subchapter as ready for publicati
 | **L1 / L2 / L3** | Tool maturity levels: Learning / Reliable / Hardened (see `CURRICULUM.md`) |
 | **Just-in-time theory** | Theory introduced immediately before the milestone that requires it |
 | **Authorization** | Explicit permission to test a target system — required for all network-capable exercises |
+
+
+---
+
+## Language Policy
+
+### Bengali-first instructional content
+
+The primary language of this curriculum is **Bengali (বাংলা)**. Write all learner-facing instructional prose in Bengali, including explanations, story hooks, challenge descriptions, verification guidance, debriefs, and safety instructions.
+
+This policy applies to every chapter and subchapter. Do not default to English merely because a technical subject or source material is commonly documented in English.
+
+### Technical vocabulary
+
+- Keep code, identifiers, filenames, CLI commands, flags, API names, package names, protocol names, standards, and literal program output in English.
+- When introducing a technical concept for the first time, write its established English term alongside a clear Bengali explanation. Example: **বাইট (byte)**, **সাবনেট মাস্ক (subnet mask)**, **টাইমআউট (timeout)**.
+- After introduction, use the English technical term where it is clearer and more precise. Do not invent awkward Bengali translations for established terms.
+- Preserve exact spelling and casing for identifiers and standards, such as `TCP`, `IPv6`, `UTF-8`, `SYN-ACK`, `context.Context`, and `--timeout`.
+
+### Diagrams, tables, and examples
+
+- Explanatory labels and notes in Mermaid diagrams should be Bengali where practical.
+- Keep protocol tokens, packet fields, code identifiers, command output, and literal wire data unchanged.
+- Table headings and explanatory prose should be Bengali; schema field names and enumerated machine-readable values remain unchanged.
+- Code blocks must remain executable and must not be translated.
+
+### Consistency and quality
+
+- Keep the language consistent within a chapter. Do not alternate between Bengali and English prose without a clear technical reason.
+- Bengali must be natural, readable, and technically precise. Prefer a short Bengali explanation over a literal word-for-word translation.
+- Preserve every behavioral contract, numeric boundary, example value, safety constraint, acceptance criterion, and test expectation when translating or revising content.
+- A translation must not silently change the scope or difficulty of a milestone.
+- Review the rendered Markdown and Mermaid diagrams after translation. Ensure Bengali text does not make diagrams unreadable.
+
+### Language review checklist
+
+- [ ] Instructional prose is Bengali-first.
+- [ ] New technical terms are introduced with their English forms and Bengali explanations.
+- [ ] Code, commands, identifiers, protocol tokens, and machine-readable values are unchanged.
+- [ ] All contracts, limits, edge cases, and acceptance criteria are preserved.
+- [ ] Mermaid diagrams remain technically accurate and readable.
