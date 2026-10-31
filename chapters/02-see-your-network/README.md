@@ -34,7 +34,7 @@ Samia প্রথমে জানতে চায় machine-এ কোন network
 
 ### ধারণা
 
-Network interface হলো host-এর network communication endpoint। যেমন Ethernet, Wi-Fi বা loopback। Interface-এর নাম, flags এবং address আলাদা তথ্য।
+Network interface হলো host-এর network communication endpoint। যেমন Ethernet, Wi-Fi বা loopback। Interface-এর নাম, flags এবং address আলাদা তথ্য। এখানে **interface flags** বলতে OS-এর দেওয়া interface-state বৈশিষ্ট্য বোঝায়, যেমন `up`, `loopback` বা `broadcast`; এগুলো IP address নয়।
 
 | শ্রেণি | IPv4-এর নিয়ম | IPv6-এর নিয়ম |
 |---|---|---|
@@ -48,7 +48,7 @@ Network interface হলো host-এর network communication endpoint। যে
 
 “Private/ULA নয়” মানেই “Public” নয়। Documentation, multicast, unspecified, reserved, benchmarking, transition এবং অন্যান্য special-use range-কে public বলা যাবে না। Public শ্রেণিতে ফেলবে কেবল এমন global-unicast address-কে, যা কোনো special-use range-এর অংশ নয়।
 
-### Challenge specification
+### Challenge-এর শর্ত
 
 **সমস্যা:** netdiag interfaces command তৈরি করো।
 
@@ -117,7 +117,7 @@ IPv4 subnet convention:
 
 IPv6-এ broadcast address হিসাব করবে না।
 
-### Challenge specification
+### Challenge-এর শর্ত
 
 **সমস্যা:** netdiag explain <ip-or-cidr> তৈরি করো।
 
@@ -163,7 +163,7 @@ IPv6-এ broadcast address হিসাব করবে না।
 ```mermaid
 sequenceDiagram
     participant C as Client
-    participant S as Listening service
+    participant S as সংযোগের অপেক্ষায় থাকা Service
     C->>S: SYN
     S->>C: SYN-ACK
     C->>S: ACK
@@ -177,7 +177,7 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant C as Client
-    participant H as Listener নেই
+    participant H as কোনো Listener নেই
     C->>H: SYN
     H-->>C: RST
     Note over C,H: Connection refused
@@ -213,7 +213,7 @@ Timeout মানে এই vantage point থেকে deadline-এর মধ্
 
 Default timeout 3 seconds। Arbitrary non-routable IP-তে dial করে timeout test করবে না। Routing/firewall behavior machine-ভেদে আলাদা। Injected dial operation দিয়ে controlled timeout test করবে।
 
-### Challenge specification
+### Challenge-এর শর্ত
 
 **সমস্যা:** netdiag connect <host:port> [--timeout duration] তৈরি করো।
 
@@ -285,16 +285,16 @@ Section-level failure মানে একটি diagnostic ধাপ ব্য�
 
 ```mermaid
 flowchart TD
-    A["netdiag report host:port"] --> B["Local interfaces"]
-    A --> C["Destination analysis"]
-    A --> D["TCP connectivity"]
-    B --> E["Assemble report"]
+    A["netdiag report host:port"] --> B["Local Interface-গুলো"]
+    A --> C["গন্তব্যের বিশ্লেষণ"]
+    A --> D["TCP সংযোগ পরীক্ষা"]
+    B --> E["Report তৈরি"]
     C --> E
     D --> E
-    E --> F["Findings and failures"]
+    E --> F["পর্যবেক্ষণ ও ব্যর্থতা"]
 ```
 
-### Challenge specification
+### Challenge-এর শর্ত
 
 **Input:** একটি host:port, optional positive timeout; default 3s।
 
