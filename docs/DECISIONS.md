@@ -145,3 +145,18 @@ Superseded decision মুছবে না; নতুন decision দিয়ে r
 **Decision:** LO-to-LO prerequisite strict হবে। কোনো LO-এর prerequisite LO থাকলে learner-কে পরবর্তী LO-তে অগ্রসর হওয়ার আগে সেগুলো সম্পন্ন করতে হবে। Story chronology প্রয়োজন অনুযায়ী এমনভাবে সাজানো হবে, যাতে এই dependency বজায় থাকে।
 **Rationale:** Advanced learning-এর আগে প্রয়োজনীয় foundation নিশ্চিত করা।
 **Consequences:** Mandatory prerequisite subgraph acyclic হতে হবে। Technical Concept-to-Concept relationship prerequisite হিসেবে গণ্য হবে না; prerequisite কেবল LO-to-LO dependency-তে প্রকাশিত হবে।
+
+
+### D-027 — Deterministic assessment architecture
+**Decision:** Red Blue Lab-এর assessment system automated ও deterministic হবে। কোনো AI-based evaluation, human reviewer/manual grading অথবা free-form text answer থাকবে না। Assessment definition Markdown-এ থাকবে; Assessment Engine generic orchestration ও scoring করবে; Code Challenge-এর code আলাদা Sandboxed Code Runner-এ execute হবে। Assessment type অনুযায়ী পৃথক deterministic evaluator ব্যবহার করা যাবে।
+**Rationale:** Evaluation reproducible, predictable, testable ও maintainable রাখা; subjective grading ও answer interpretation-এর অনিশ্চয়তা বাদ দেওয়া।
+**Consequences:**
+- Assessment এক বা একাধিক Learning Objective-এর সঙ্গে যুক্ত থাকবে।
+- প্রথম সংস্করণে Fixed Assessment: fixed question set ও order; unlimited attempts; question pool/randomization/adaptive assessment নয়।
+- Supported response type হবে structured selection/matching/ordering/configuration অথবা code submission; free-form text নয়।
+- Scoring configurable হবে; overall passing score-এর পাশাপাশি critical competency-এর mandatory pass criteria থাকতে পারে।
+- Assessment-এর question, order ও evaluation criteria পরিবর্তন করলে নতুন version তৈরি হবে।
+- Detailed feedback predefined content ও deterministic evaluator output থেকে তৈরি হবে।
+- Assessment Authoring Validator, Linter, Test Harness ও Preview tooling থাকবে।
+- Sandboxed Code Runner আলাদা security boundary হবে।
+- Exact metadata schema, evaluator contract, persistence model ও runner implementation পরবর্তী technical design-এ স্থির হবে।

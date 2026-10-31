@@ -131,3 +131,18 @@ Image scene-কে উন্নত করলে placeholder ও English generati
 - Structured metadata-এর জন্য YAML Frontmatter ব্যবহার করবে; approved metadata contract না আসা পর্যন্ত নিজে থেকে বাধ্যতামূলক field/schema invent করবে না।
 - Diagram-এর ক্ষেত্রে Markdown-এর মধ্যে Mermaid ব্যবহার করতে পারো, যদি সেটি বিষয়টি স্পষ্ট করে।
 - একই content-এর duplicate JSON/database copy-কে canonical source হিসেবে তৈরি করবে না। ভবিষ্যৎ graph/index data derived output হতে পারে।
+
+
+## 12. Assessment authoring
+
+Assessment তৈরি বা পরিবর্তনের সময় [Assessment Architecture](ASSESSMENT-ARCHITECTURE.md) অনুসরণ করো।
+
+- প্রতিটি assessment এক বা একাধিক Learning Objective-এর সঙ্গে যুক্ত করো।
+- Free-form text answer বা subjective evaluation প্রয়োজন হয় এমন প্রশ্ন তৈরি কোরো না।
+- Question wording ও instruction পরিষ্কার রাখো; rigor আসবে competency ও evaluation criteria থেকে, trick question থেকে নয়।
+- প্রথম সংস্করণে question set ও order fixed রাখো।
+- Overall passing score-এর পাশাপাশি critical competency-এর mandatory pass criteria নির্ধারণ করো, যদি LO-এর জন্য তা প্রয়োজনীয় হয়।
+- প্রতিটি question-এর answer key, scoring rule, feedback ও hint deterministicভাবে সংজ্ঞায়িত করো।
+- Published assessment পরিবর্তন করলে নতুন version তৈরি করো।
+- Publish করার আগে Assessment Authoring Validator, Linter ও Test Harness দিয়ে definition যাচাই করো।
+- Code Challenge হলে visible/hidden test case আলাদা করো এবং untrusted code execution-এর জন্য Sandboxed Code Runner ব্যবহার করো।

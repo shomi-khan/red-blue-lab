@@ -173,3 +173,20 @@ Project-এর মূল narrative ও learning content **Markdown file**-এ ca
 - **Knowledge Graph:** ভবিষ্যতে Markdown content-এর structured metadata ও explicit references থেকে generate করা যেতে পারে। Graph আলাদা করে content-এর duplicate source of truth হবে না।
 
 JSON বা database-কে মূল content storage হিসেবে ব্যবহার করা হবে না। ভবিষ্যতে derived graph, index বা tooling-এর জন্য সেগুলো ব্যবহার করা যেতে পারে, যদি প্রয়োজন ও design অনুমোদিত হয়।
+
+
+## 14. Assessment architecture
+
+Assessment-এর উদ্দেশ্য memorized information নয়, demonstrated understanding যাচাই করা। Guiding principle:
+
+**Easy to understand, difficult to pass without genuine understanding.**
+
+- প্রতিটি assessment এক বা একাধিক Learning Objective (LO)-এর সঙ্গে যুক্ত থাকবে।
+- Assessment automated ও deterministic হবে; AI evaluator, human reviewer/manual grading এবং free-form text answer থাকবে না।
+- প্রথম সংস্করণে Fixed Assessment থাকবে: fixed question set ও question order; unlimited attempts; question pool, randomization বা adaptive assessment নয়।
+- Structured question formats এবং Code Challenge ব্যবহার করা হবে। Free-form paragraph/essay answer গ্রহণ করা হবে না।
+- Scoring configurable হবে। Overall passing score-এর পাশাপাশি critical competency-এর mandatory pass criteria থাকতে পারে।
+- Question difficulty নয়, LO-এর competency requirement passing standard নির্ধারণ করবে।
+- Assessment version, evaluator version এবং প্রয়োজনে code runner environment traceable হতে হবে।
+
+Assessment definition, generic Assessment Engine, deterministic Evaluators, Authoring Validator এবং Sandboxed Code Runner-এর দায়িত্ব ও বিস্তারিত নীতি [Assessment Architecture](ASSESSMENT-ARCHITECTURE.md)-এ।
