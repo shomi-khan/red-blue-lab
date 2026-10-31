@@ -5,8 +5,9 @@
 > **প্রধান deliverable:** netdiag, local interface, IP address ও TCP connectivity পরীক্ষা করার CLI tool  
 > **পূর্বশর্ত:** [Chapter 00](../00-your-first-security-lab/README.md) এবং [Chapter 01](../01-decode-the-bytes/README.md)-এর byte-level ভিত্তি
 
-Rayhan একটি lab service-এ connect করতে পারছে না। Samia জানতে চায় সমস্যাটি local interface-এ, destination address-এ, নাকি TCP connection-এ। একটি মাত্র “ব্যর্থ” ফলাফল দিয়ে এর উত্তর হয় না। netdiag আলাদা observation সংগ্রহ করবে এবং সেগুলো এক report-এ সাজাবে।
+Byte inspection-এ পাওয়া একটি readable fragment-এ local service-এর port number আছে, কিন্তু সেটি এখনো কেবল একটি clue। Rayhan ধরে নিতে চায় service-টি বন্ধ। Samia তার terminal-এ connection error দেখিয়ে প্রশ্ন করে, “তুমি কি জানো service বন্ধ, নাকি তোমার machine-ই ঠিকমতো network-এ পৌঁছাতে পারছে না?”
 
+দুজন Chapter 00-এর loopback lab-এ ফিরে আসে। তাদের সামনে কয়েকটি আলাদা সম্ভাবনা: interface down, address ভুল, route অনুপস্থিত, listener বন্ধ, অথবা response নির্ধারিত সময়ের মধ্যে না আসা। একটি failed connection এসবের মধ্যে পার্থক্য করতে পারে না। এই অধ্যায়ে তুমি `netdiag` তৈরি করবে, যাতে প্রতিটি observation আলাদা করে দেখা যায় এবং evidence যতটুকু বলে, conclusion-ও ততটুকুই হয়।
 ## কী তৈরি করবে
 
 চারটি milestone শেষে tool পারবে:
@@ -30,6 +31,7 @@ Tool read-only। এটি interface configuration বদলাবে না, p
 
 # 02.1: Local Network Interface-এর মানচিত্র তৈরি করো
 
+Samia প্রথমে Rayhan-এর অনুমান থামায়। Destination নিয়ে আলোচনা করার আগে জানতে হবে machine-টি নিজে কোন interface ও address ব্যবহার করছে। তারা local network-এর মানচিত্র তৈরি করবে, তবে interface up দেখেই বাইরের service reachable বলে ধরে নেবে না।
 Samia প্রথমে জানতে চায় machine-এ কোন network interface আছে এবং সেগুলোতে কোন address bind করা।
 
 ### ধারণা
@@ -104,6 +106,7 @@ Interface: lo
 
 # 02.2: IP Address ও CIDR ব্যাখ্যা করো
 
+Interface inventory-তে destination-এর একটি IP address পাওয়া গেছে, পাশে CIDR prefix-ও আছে। Rayhan address-টিকে host-এর পরিচয় হিসেবে পড়ছে; Samia জানতে চায় prefix-টি network-এর কোন অংশ নির্ধারণ করছে। পরের ধাপে address ও subnet-এর অর্থ আলাদা করে ব্যাখ্যা করতে হবে।
 Rayhan destination পেয়েছে, কিন্তু address-এর সঙ্গে prefix থাকলে সেটির অর্থ কী? Samia চায় tool যেন host address, network address ও prefix length গুলিয়ে না ফেলে।
 
 ### ধারণা
@@ -156,6 +159,7 @@ IPv6-এ broadcast address হিসাব করবে না।
 
 # 02.3: TCP Connection পরীক্ষা করো
 
+Address-এর গঠন বোঝা গেছে, কিন্তু service এখনো সাড়া দিচ্ছে কি না জানা যায়নি। Rayhan একটি TCP connection attempt করতে চায়। Samia বলে, “সফল handshake, refusal আর নীরব timeout তিনটি আলাদা observation। একটিকে আরেকটির নামে লিখবে না।”
 একটি address ও port জানা থাকলেই service reachable প্রমাণ হয় না। TCP attempt-এর ফলাফল কী evidence দেয়, সেটি আলাদা করে বুঝতে হবে।
 
 ### TCP Handshake বা সংযোগ স্থাপনের ধাপ
@@ -268,6 +272,7 @@ Evidence:    TCP connection established
 
 # 02.4: সব Observation এক Diagnostic Report-এ সাজাও
 
+এখন তাদের কাছে interface, address এবং TCP attempt-এর তথ্য আলাদা আলাদা আছে। Samia চায় একটি report, যেখানে একটি section ব্যর্থ হলেও বাকি evidence হারাবে না। Rayhan-এর কাজ শুধু সব output জোড়া লাগানো নয়; কোন observation সম্পন্ন হয়েছে, কোনটি ব্যর্থ, আর কোন প্রশ্ন এখনো অমীমাংসিত তা স্পষ্ট রাখা।
 Samia তিনটি command-এর output একসঙ্গে দেখতে চায়। একটি section ব্যর্থ হলে অন্য independent observation হারানো চলবে না।
 
 ### কী তৈরি করবে
