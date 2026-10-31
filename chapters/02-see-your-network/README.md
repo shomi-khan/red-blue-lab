@@ -215,7 +215,7 @@ Network:  192.168.1.0/24
 Broadcast:192.168.1.255
 ```
 
-For ordinary IPv4 subnets, conventional usable hosts are `2^(32-prefix)-2`, excluding network and broadcast addresses. This convention has exceptions: `/31` is commonly used for point-to-point links where both addresses can be endpoints, and `/32` identifies one address. Avoid overflow for very large ranges.
+For ordinary IPv4 subnets from `/1` through `/30`, conventional usable hosts are `2^(32-prefix)-2`, excluding network and broadcast addresses. Handle the two boundary prefixes explicitly: `/31` is used for point-to-point links, where both addresses are usable endpoints (2); `/32` identifies one address (1). Do not subtract network and broadcast addresses for `/31` or `/32`. Avoid overflow for very large ranges.
 
 IPv6 has no broadcast address. Do not apply the IPv4 host-count formula to IPv6.
 
@@ -274,7 +274,7 @@ Without a prefix, explicitly say no network range was specified.
 
 **Edge cases**
 
-IPv4 and IPv6 with/without prefix; IPv4 `/0`, `/24`, `/30`, `/31`, `/32`; IPv6 `/0`, `/64`, `/128`; host bits set in input; invalid syntax; invalid prefix; IPv4-mapped IPv6.
+IPv4 and IPv6 with/without prefix; IPv4 `/0`, `/24`, `/30`, `/31`, `/32`; verify `/31` reports 2 usable point-to-point endpoints and `/32` reports 1 address; IPv6 `/0`, `/64`, `/128`; host bits set in input; invalid syntax; invalid prefix; IPv4-mapped IPv6.
 
 **Errors**
 
@@ -285,7 +285,8 @@ Missing/extra arguments, malformed address, and invalid prefix must produce conc
 - `netdiag explain 10.0.1.5/24` reports IPv4, private, network `10.0.1.0/24`, broadcast `10.0.1.255`, and 254 conventional usable hosts.
 - An address without prefix does not get an invented network.
 - IPv6 is normalized and never shown with a broadcast address.
-- Invalid input fails clearly; `/31` and `/32` are not given misleading counts.
+- IPv4 `/31` reports both addresses as usable point-to-point endpoints (2); `/32` reports its single address (1).
+- Invalid input fails clearly; no prefix receives a misleading host count.
 
 **Test expectations**
 
@@ -328,6 +329,39 @@ sequenceDiagram
 ```
 
 A successful handshake proves that a TCP connection was established, not that the application is healthy.
+
+**Connection refused: an explicit reset**
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant H as Host with no listener
+    C->>H: SYN
+    H-->>C: RST
+    Note over C,H: Connection refused
+```
+
+**Timeout: no conclusive response**
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant F as Silent path / packet drop
+    C->>F: SYN
+    Note over C,F: No response before deadline
+    C-->>C: Timeout
+```
+
+These diagrams describe common observations, not a guarantee that every operating system or network produces the same packet trace. A timeout is silence from this vantage point, not proof that a port is closed.
+
+| Property | TCP | UDP |
+|---|---|---|
+| Communication model | Connection-oriented byte stream | Connectionless datagrams |
+| Handshake | TCP three-way handshake | No TCP-style handshake |
+| Delivery/order | Reliable, ordered stream semantics | No delivery or ordering guarantee from UDP itself |
+| This milestone | Tested by `netdiag connect` | Conceptual comparison only |
+
+TCP is connection-oriented: it establishes a reliable, ordered byte stream using a handshake before application data is exchanged. UDP is connectionless: it sends independent datagrams without a TCP-style handshake and does not guarantee delivery, ordering, or duplicate protection. UDP can be useful for low-overhead or application-managed transport, but this milestone deliberately tests TCP only.
 
 A refused connection commonly means an explicit rejection, often a TCP reset. A timeout means no conclusive response arrived before the deadline. A firewall drop, path failure, or lost response can all lead to a timeout.
 
@@ -397,6 +431,8 @@ Invalid arguments, port, or timeout: stderr and non-zero exit. Connected: `conne
 
 **Acceptance criteria**
 
+- Learner can explain that TCP establishes a connection and provides an ordered byte stream, while UDP sends connectionless datagrams without UDP-level delivery/order guarantees.
+- Learner can trace the successful SYN/SYN-ACK/ACK, refused SYN/RST, and timeout SYN/silence cases from the diagrams.
 - Local listener yields `connected`.
 - Closed loopback port yields `refused`.
 - Injected timeout yields `timeout`.
@@ -523,7 +559,7 @@ Network Diagnostic Report
 - If interface enumeration fails, show the error in section 1 and continue where possible.
 - Do not imply every resolved address was tested if only one was attempted.
 - Include a summary of completed and failed sections.
-- A partial report remains visible and returns non-zero status.
+- A partial report remains visible and returns exit code 0 when the report is successfully produced. Section-level failures are findings, not command-level fatal errors.
 
 **Constraints and security**
 
@@ -540,7 +576,7 @@ All sections succeed; refused/timeout/unreachable; DNS failure; interface enumer
 
 **Errors**
 
-Malformed arguments or timeout: stderr and non-zero exit. Interface failure: visible in section 1, continue. Resolution failure: visible in section 2, connectivity unavailable. Connection failure: precise state in section 3, retain other sections. Any non-fatal section failure produces a partial report and non-zero exit. All sections successful: exit zero.
+Malformed arguments or invalid timeout: stderr and non-zero exit. Interface failure: visible in section 1, continue. Resolution failure: visible in section 2, connectivity unavailable. Connection failure: precise state in section 3, retain other sections. Any section-level failure produces a partial report and exit zero if the report is written successfully. Exit non-zero only for fatal request/configuration errors or when the report cannot be generated or written. All sections successful: exit zero.
 
 **Acceptance criteria**
 
@@ -556,7 +592,8 @@ Malformed arguments or timeout: stderr and non-zero exit. Interface failure: vis
 - Loopback listener integration test: all sections and `connected`.
 - Closed loopback port integration test: other sections remain with `refused`.
 - Inject section results to test interface and resolution failures deterministically.
-- Verify partial report output and non-zero exit.
+- Verify partial report output and exit zero for interface, resolution, refused, timeout, and network-unreachable section outcomes.
+- Verify non-zero exit for malformed arguments, invalid timeout, and report-output failure.
 - Run all previous milestone tests as regression tests.
 
 **Definition of completion**
@@ -615,13 +652,17 @@ Use table-driven unit tests, injected dependencies, and loopback integration tes
 
 ## Red/Blue learning
 
-🔴 **Rayhan — Red Team**
+🔴 **Rayhan — Red Team investigation**
 
-Network diagnostics are the foundation of reconnaissance. Rayhan uses interface and address information to understand network context, then tests one authorized endpoint. He records the vantage point, timeout, and exact result. He does not treat timeout as proof that a port is closed.
+Rayhan performs a single connectivity check against a local listener created for the lab. He records the source vantage point (`127.0.0.1`), destination and port, configured timeout, elapsed time, and exact state. He then stops the listener and repeats the check to compare `connected` with `refused`. He does not scan adjacent ports or contact public hosts.
 
-🔵 **Samia — Blue Team**
+**Verifiable outcome:** a short investigation note contains both observations and explains why the second result is evidence of refusal rather than a timeout. A deterministic injected test covers timeout and network-unreachable without relying on the host's routing table.
 
-Samia verifies expected service exposure. She checks local addresses and compares the intended access path with observed connectivity. A service reachable through loopback may not be reachable through another interface; one failed vantage point does not prove all paths are blocked.
+🔵 **Samia — Blue Team exposure verification**
+
+Samia starts from an explicit expected-exposure statement for the same local lab service, for example: “This test service should accept connections on loopback while the test is running; after shutdown it should not accept new connections.” She runs the diagnostic from the same documented vantage point and compares the observed state with that expectation. She records any mismatch as a finding instead of silently treating every failure as proof of protection.
+
+**Verifiable outcome:** a small exposure matrix records expected state, observed state, vantage point, and evidence for both the running-listener and stopped-listener cases. The matrix must show `connected` while the listener is active and `refused` after it is closed. Automated checks use loopback only.
 
 **Shared lesson:** An address classification is not a reachability test, an interface flag is not proof of internet access, and a timeout is not proof of a closed port. Preserve the evidence and state exactly what it does and does not establish.
 
@@ -634,6 +675,11 @@ Samia verifies expected service exposure. She checks local addresses and compare
 - [ ] Non-private addresses are not automatically labeled public.
 - [ ] IPv4 and IPv6 behavior is distinguished.
 - [ ] Timeout and network-unreachable remain distinct.
+- [ ] TCP and UDP are conceptually distinguished, with TCP-only scope explicit.
+- [ ] Successful, refused, and timeout sequence diagrams are all present.
+- [ ] `/31` and `/32` usable-address semantics are explicit.
+- [ ] Section-level report failures preserve a partial report and exit zero; fatal request/output errors exit non-zero.
+- [ ] Red and Blue exercises produce verifiable local evidence artifacts.
 - [ ] Automated network tests use loopback or injected dependencies.
 - [ ] Successful connections are closed.
 - [ ] Diagrams are embedded and explained.
