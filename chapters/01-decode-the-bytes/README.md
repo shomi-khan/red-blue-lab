@@ -93,7 +93,7 @@ Go-তে `byte` হলো `uint8`-এর alias। এর মান 0–255। `
 
 Index বলে byte কোথায় আছে; value বলে সেখানে কোন সংখ্যা আছে।
 
-### Challenge specification
+### Challenge-এর শর্ত
 
 **সমস্যা:** একটি file path নিয়ে প্রতিটি byte-এর index, decimal ও binary মান stdout-এ দেখাও।
 
@@ -338,7 +338,7 @@ File path অথবা stdin input এবং unified `--format` option:
 
 Default format: `hex`।
 
-### Just-in-time theory
+### প্রয়োজনমতো Theory
 
 File argument একটি named file চিহ্নিত করে। Standard input (stdin) shell, pipe বা অন্য process থেকে stream পায়।
 
