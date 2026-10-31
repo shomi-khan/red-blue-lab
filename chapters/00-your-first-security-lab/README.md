@@ -101,7 +101,7 @@ Rayhan একটি challenge description পেল। সে সরাসরি
 >
 > **Edge cases:** Invalid port, server বন্ধ থাকা, connection refused, server-এর empty response।  
 >
-> **Error behavior:** Invalid input হলে connection attempt করবে না এবং error stderr-এ দেখাবে। Server বন্ধ থাকলে connection error দেখাবে।  
+> **Error behavior:** Invalid input হলে connection attempt করবে না এবং error stderr-এ দেখাবে। Server বন্ধ থাকলে connection error দেখাবে। Empty response হলে protocol failure দেখাবে।  
 >
 > **Security:** Public বা অন্য host-এ connect করার option থাকবে না।  
 >
@@ -163,11 +163,11 @@ Command-টি Go version দেখালে installation যাচাই হয়
 
 ### প্রয়োজনীয় ধারণা
 
-- go run source file compile করে program চালায়।
-- go build executable তৈরি করে, যা পরে আলাদাভাবে চালানো যায়।
-- fmt.Println terminal-এ text output দেয়।
-- time.Now() বর্তমান সময়ের একটি value দেয়।
-- time.RFC3339 timestamp-এর একটি standard textual format।
+- `go run` source file compile করে program চালায়।
+- `go build` executable তৈরি করে, যা পরে আলাদাভাবে চালানো যায়।
+- `fmt.Println` terminal-এ text output দেয়।
+- `time.Now()` বর্তমান সময়ের একটি value দেয়।
+- `time.RFC3339` timestamp-এর একটি standard textual format।
 
 এই milestone-এ শুধু Go standard library ব্যবহার করবে। আলাদা third-party package প্রয়োজন নেই।
 
@@ -237,7 +237,7 @@ Rayhan এবার একটি local service তৈরি করতে চা�
 
 **TCP (Transmission Control Protocol)** হলো connection-oriented transport protocol। Client ও server-এর মধ্যে connection স্থাপনের পর দুই দিকেই byte stream আদান-প্রদান করা যায়।
 
-**Listener** হলো এমন endpoint, যা incoming connection-এর অপেক্ষা করে। Go-তে net.Listen দিয়ে TCP listener তৈরি করা যায় এবং Accept দিয়ে connection গ্রহণ করা যায়। একটি accepted connection হলো net.Conn।
+**Listener** হলো এমন endpoint, যা incoming connection-এর অপেক্ষা করে। Go-তে `net.Listen` দিয়ে TCP listener তৈরি করা যায় এবং `Accept` দিয়ে connection গ্রহণ করা যায়। একটি accepted connection হলো `net.Conn`।
 
 এই milestone-এ এক সময়ে একটি connection process করবে। একাধিক connection সামলাতে goroutine বা concurrent worker লাগবে না; sequential loop-ই যথেষ্ট।
 
@@ -336,7 +336,7 @@ Server তৈরি হয়েছে। কিন্তু server চালু �
 
 ### প্রয়োজনীয় ধারণা
 
-**TCP client** হলো connection শুরু করা program। Go-তে net.Dial TCP connection তৈরি করতে পারে। Connection থেকে data পড়ার সময় Read এবং server-এর দিক থেকে stream শেষ হলে **EOF (End of File)** পাওয়া যায়।
+**TCP client** হলো connection শুরু করা program। Go-তে `net.Dial` TCP connection তৈরি করতে পারে। Connection থেকে data পড়ার সময় `Read` এবং server-এর দিক থেকে stream শেষ হলে **EOF (End of File)** পাওয়া যায়।
 
 TCP একটি byte stream। একটি Read call-এ server-এর সম্পূর্ণ message একবারে আসবে, এমন নিশ্চয়তা নেই। তাই client-কে stream শেষ হওয়া পর্যন্ত পড়তে হবে।
 
@@ -393,7 +393,7 @@ sequenceDiagram
 **Error behavior**
 - Invalid port হলে connection attempt-এর আগে error এবং non-zero exit।
 - Server বন্ধ থাকলে connection error stderr-এ দেখাবে।
-- Connection বা response deadline শেষ হলে timeout error দেখাবে এবং non-zero exit করবে; client অনির্দিষ্টকাল অপেক্ষা করবে না.
+- Connection বা response deadline শেষ হলে timeout error দেখাবে এবং non-zero exit করবে; client অনির্দিষ্টকাল অপেক্ষা করবে না।
 - Connection সফল হলেও EOF-এর আগে কোনো byte না এলে server-এর greeting contract ভঙ্গ হয়েছে বলে stderr-এ error দেখাবে এবং non-zero exit করবে।
 - EOF-এর আগে unexpected read error হলে error দেখাবে এবং success output হিসেবে অসম্পূর্ণ response উপস্থাপন করবে না।
 - EOF-এ পৌঁছানোর আগে কোনো data না পেলে empty greeting-কে protocol failure হিসেবে দেখাবে।
