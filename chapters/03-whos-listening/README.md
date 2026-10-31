@@ -8,6 +8,7 @@
 Chapter 02-এর report-এ একটি authorized lab host-এর address ও TCP connectivity evidence পাওয়া গেছে। একটি নির্দিষ্ট port-এ connection সফল হওয়া মানে host-এর সব service জানা হয়ে গেছে, এমন নয়। Rayhan জানতে চায় আর কোন TCP port connection গ্রহণ করছে; Samia চায় প্রতিটি attempt-এর scope, resource use এবং uncertainty নিয়ন্ত্রণে থাকুক।
 
 তাদের সামনে এখন একটি নতুন সমস্যা: অনেক port পরীক্ষা করতে গিয়ে যেন scanner নিজেই lab-কে অস্থিতিশীল না করে, আর timeout-কে ভুল করে “closed” না বলে। এই অধ্যায়ে তুমি `portscan` তৈরি করবে। একটি port দিয়ে শুরু করে ধাপে ধাপে selection, timeout classification, bounded concurrency, cancellation এবং structured output যোগ হবে.
+
 ### কয়েকটি প্রয়োজনীয় Technical term
 
 - **Worker pool:** নির্দিষ্ট সংখ্যক worker-এর দল, যারা queue থেকে কাজ নিয়ে সীমিত সংখ্যায় একসঙ্গে সম্পন্ন করে।
