@@ -82,7 +82,7 @@ sequenceDiagram
 
 এই trace-গুলো সাধারণ outcome বোঝায়। প্রতিটি OS/network-এ packet behavior হুবহু একই হবে, এমন নিশ্চয়তা নয়।
 
-| State | প্রমাণ | অর্থ |
+| অবস্থা | প্রমাণ | অর্থ |
 |---|---|---|
 | open | TCP connection সফল | Connection গ্রহণ করা হয়েছে |
 | closed | Explicit connection refused | Connection প্রত্যাখ্যাত |
@@ -348,7 +348,7 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 
 ### Record-এর Schema
 
-| Field | Type | অর্থ |
+| ডেটা Field | ধরন | অর্থ |
 |---|---|---|
 | host | string | Scanner-এ দেওয়া host |
 | port | integer | TCP port |
@@ -399,7 +399,7 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 
 ## চূড়ান্ত Tool contract
 
-| বৈশিষ্ট্য | Contract |
+| বৈশিষ্ট্য | নিয়ম |
 |---|---|
 | Tool | portscan |
 | Protocol | TCP only |
