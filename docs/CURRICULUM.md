@@ -6,6 +6,8 @@ This document is the canonical source of truth for the `red-blue-lab` curriculum
 **Total chapters:** 19 (Chapter 00 through Chapter 18)  
 **Language:** Go (standard library preferred; external dependencies introduced only when they provide clear educational or practical benefit)
 
+**Instructional language:** Bengali-first. Learner-facing explanations and prose are written in Bengali; code, commands, identifiers, protocol names, and established technical vocabulary remain in English. See [CONTENT-GUIDELINES.md](CONTENT-GUIDELINES.md#language-policy).
+
 ---
 
 ## Table of Contents
