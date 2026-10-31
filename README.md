@@ -18,12 +18,15 @@
 
 Novel পড়তে Cyber Lab করা বাধ্যতামূলক নয়। Lab করতে Novel পড়াও বাধ্যতামূলক নয়। গল্পের কোনো অস্বাভাবিক network event পাঠকের কৌতূহল তৈরি করতে পারে; চাইলে সে আলাদা Concept Note বা Lab খুলে গভীরে যেতে পারবে।
 
+পাঠকের learning হবে cumulative: আগে শেখা concept পরবর্তী incident-এ নতুন context ও complexity-তে আবার কাজে লাগবে। Character-দের investigation, attack, defense ও engineering progress থেকে learning opportunity তৈরি হবে। পাঠককে complete solution spoon-feed না করে প্রয়োজনীয় knowledge, evidence ও resource দিয়ে independent problem-solving-এর সুযোগ দেওয়া হবে।
+
 ## 🗺️ Repository map
 
 | Path | দায়িত্ব |
 |---|---|
 | AGENTS.md | AI agent-এর বাধ্যতামূলক operating rules |
 | docs/PROJECT-CHARTER.md | Project identity, goals ও non-goals |
+| docs/CREATIVE-DIRECTION.md | User-approved narrative ও learning direction |
 | docs/AUTHORING-GUIDELINES.md | Narrative ও explanatory content rules |
 | docs/LEARNING-ARCHITECTURE.md | Competency-first learning model |
 | docs/VISUAL-DESIGN-GUIDELINES.md | Diagram, flowchart ও image rules |
@@ -35,15 +38,16 @@ Novel পড়তে Cyber Lab করা বাধ্যতামূলক নয়�
 
 ## 🧱 Foundation-এর সীমা
 
-এই PR কোনো character, plot, villain motivation, setting, AI system বা world rule স্থির করছে না। এগুলো পরবর্তী world-building phase-এ human review-এর মাধ্যমে স্থির হবে।
+Foundation কোনো পূর্ণ character bible, plot, villain motivation, setting, AI system বা world rule স্থির করে না। Approved creative direction-এ প্রাথমিক character references ও narrative/learning principles আছে; পূর্ণ canon ও world-building পরবর্তী phase-এ human review-এর মাধ্যমে স্থির হবে।
 
 ## 🚦কোথা থেকে শুরু করবে?
 
 1. docs/PROJECT-CHARTER.md
-2. docs/AUTHORING-GUIDELINES.md
-3. docs/LEARNING-ARCHITECTURE.md
-4. docs/VISUAL-DESIGN-GUIDELINES.md
-5. AI content তৈরির আগে AGENTS.md ও docs/AI-WORKFLOW.md
+2. docs/CREATIVE-DIRECTION.md
+3. docs/AUTHORING-GUIDELINES.md
+4. docs/LEARNING-ARCHITECTURE.md
+5. docs/VISUAL-DESIGN-GUIDELINES.md
+6. AI content তৈরির আগে AGENTS.md ও docs/AI-WORKFLOW.md
 
 ## 🌐 ভাষানীতি
 
@@ -51,6 +55,6 @@ Novel পড়তে Cyber Lab করা বাধ্যতামূলক নয়�
 
 ## ⚖️ Intellectual Property
 
-DC Comics-এর character নিয়ে fan-fiction বা alternate-universe concept copyrighted character ও trademark-এর সীমাবদ্ধতার আওতায় পড়তে পারে। Repository কোনো ownership বা license দাবি করে না। Public distribution বা commercial release-এর আগে permission/licensing অথবা original-character adaptation বিবেচনা করতে হবে। বিস্তারিত docs/DECISIONS.md-এ।
+DC Comics ও Marvel-এর character নিয়ে fan-fiction বা alternate-universe concept copyrighted character ও trademark-এর সীমাবদ্ধতার আওতায় পড়তে পারে। Repository কোনো ownership বা license দাবি করে না। Public distribution বা commercial release-এর আগে permission/licensing অথবা original-character adaptation বিবেচনা করতে হবে। বিস্তারিত docs/DECISIONS.md-এ।
 
 ✨ **মানদণ্ড:** পাঠক যেন পরের episode পড়তে চায়; পরে বুঝতে পারে গল্পের সঙ্গে সঙ্গে তার system বোঝার ক্ষমতাও বদলে গেছে।
