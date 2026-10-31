@@ -5,12 +5,9 @@
 > **প্রধান deliverable:** `byteinspect`, raw file ও stdin-এর byte পরীক্ষা করার CLI tool  
 > **পূর্বশর্ত:** [Chapter 00: Your First Security Lab](../00-your-first-security-lab/README.md)
 
-Rayhan স্থানীয় lab থেকে একটি সন্দেহজনক attachment পেয়েছে। ফাইলটির extension `.txt`, কিন্তু text editor-এ খুললে অদ্ভুত চিহ্ন দেখা যায়। Editor আসলে byte-গুলোকে text হিসেবে ব্যাখ্যা করছে। সেই ব্যাখ্যা কাজে লাগতে পারে, কিন্তু সেটি ফাইলের প্রকৃত byte sequence নয়।
+Chapter 00-তে তৈরি করা loopback lab-এ Samia evidence bundle-এর একটি sanitized copy খুলেছে। ফাইলটির নাম `service-note.txt`, কিন্তু text editor-এ কিছু অক্ষর ভাঙা, কিছু জায়গায় ফাঁকা, আর কয়েকটি চিহ্ন অস্বাভাবিক। Rayhan বলে, “এটা নিশ্চয়ই encoded command।” Samia সঙ্গে সঙ্গে আপত্তি তোলে: “দেখতে অদ্ভুত হলেই command হয় না। আগে raw evidence দেখি।”
 
-Samia চায়, কোনো interpretation-এর কারণে যেন মূল evidence হারিয়ে না যায়। তাই প্রথম প্রশ্নটি খুব সাধারণ: **ফাইলটিতে আসলে কোন byte-গুলো আছে?**
-
-এই অধ্যায়ে ধাপে ধাপে এমন একটি inspector তৈরি করবে, যা raw byte দেখাবে, সেগুলোকে বিভিন্ন representation-এ উপস্থাপন করবে, নির্দিষ্ট range নির্বাচন করবে, ASCII ও UTF-8 ব্যাখ্যা করবে এবং শেষে file অথবা stdin থেকে input নেবে।
-
+ফাইলের extension, editor-এর rendering কিংবা একটি readable fragment কোনোটিই byte sequence-এর বিকল্প নয়। তারা এখনো জানে না data-টি text, binary structure, নাকি কেবল malformed input। তাই প্রথমে interpretation সরিয়ে রেখে দেখতে হবে ফাইলে সত্যিই কোন byte আছে। এই অধ্যায়ে তুমি সেই কাজের জন্য `byteinspect` তৈরি করবে।
 ## কী তৈরি করবে
 
 শেষে `byteinspect` পারবে:
@@ -76,6 +73,7 @@ Hexadecimal সুবিধাজনক, কারণ একটি hex digit চ
 
 # 01.1: Byte পড়ো ও দেখাও, এগুলো সংখ্যামাত্র
 
+Rayhan editor-এর screenshot নয়, হাতে গোনা যায় এমন evidence চায়। সে fixture-এর প্রতিটি byte-এর অবস্থান ও মান দেখতে চায়, যাতে Samia একই data independently যাচাই করতে পারে। প্রথম ধাপে কোনো byte-কে character ধরে নেওয়া হবে না; শুধু সংখ্যা হিসেবে inventory তৈরি হবে।
 Rayhan প্রথমে অনুমান নয়, inventory চায়। Samia এমন output চায় যা হাতে হিসাব করে যাচাই করা যায়।
 
 ### কী তৈরি করবে
@@ -158,6 +156,7 @@ Spacing তোমার পছন্দমতো হতে পারে, তব�
 
 # 01.2: Hexdump-এ Byte দেখো
 
+Decimal তালিকায় সব byte আছে, কিন্তু কয়েকশ row-এর মধ্যে pattern খুঁজে পাওয়া কঠিন। Samia একই evidence-কে আরও compactভাবে দেখতে চায়, যেখানে offset, hexadecimal value এবং printable অংশ পাশাপাশি থাকবে। Rayhan-এর পরের প্রশ্ন: কোনো byte বাদ না দিয়ে কীভাবে পুরো sequence এক নজরে দেখা যায়?
 প্রতি byte-এর জন্য আলাদা line সঠিক হলেও বড় file পড়া কঠিন। Hexdump একই সঙ্গে offset, hexadecimal value এবং printable ASCII-এর সংক্ষিপ্ত দৃশ্য দেয়।
 
 ### কী তৈরি করবে
@@ -209,6 +208,7 @@ offset    hex bytes                                        ASCII view
 
 # 01.3: Offset ও Length দিয়ে নির্দিষ্ট অংশ পরীক্ষা করো
 
+Hexdump-এ একটি ছোট sequence চোখে পড়েছে, কিন্তু পুরো file বারবার পড়লে তদন্ত ধীর হবে। Rayhan একটি নির্দিষ্ট offset-এর আশপাশ পরীক্ষা করতে চায়। Samia মনে করিয়ে দেয়, range-এর শুরু ও শেষের হিসাব ভুল হলে investigator ভুল byte-কে clue ভেবে বসতে পারে।
 বড় binary file-এর নির্দিষ্ট অংশ পরীক্ষা করতে পুরো file dump করার দরকার নেই। Offset বলে কোথা থেকে শুরু হবে, length বলে কত byte নেওয়া হবে।
 
 ### কী তৈরি করবে
@@ -257,6 +257,7 @@ Range হলো `[offset, offset+length)`: শুরু অন্তর্ভু
 
 # 01.4: Text Encoding অনুযায়ী Byte ব্যাখ্যা করো
 
+Raw byte inventory-তে কয়েকটি sequence text-এর মতো দেখায়। Rayhan সেগুলো decode করতে চায়, কিন্তু Samia সতর্ক করে: invalid UTF-8-কে নীরবে replacement character দিয়ে ঢেকে দিলে আসল evidence হারিয়ে যেতে পারে। এবার readable text দেখাতে হবে, তবে প্রতিটি ব্যাখ্যার পেছনে raw byte অক্ষত রাখতে হবে।
 একটি byte sequence প্রায় readable message-এর মতো দেখাতে পারে, কিন্তু মাঝখানে invalid byte থাকতে পারে। সেটিকে প্রশ্নবোধক চিহ্ন দিয়ে বদলে দিলে evidence হারিয়ে যায়।
 
 ### কী তৈরি করবে
@@ -324,6 +325,7 @@ UTF-8 Unicode code point-কে এক থেকে চার byte-এ encode �
 
 # 01.5: Stdin ও একাধিক Format গ্রহণ করো
 
+Samia একই evidence-এর একটি অংশ pipeline দিয়ে পাঠিয়েছে, file হিসেবে নয়। Rayhan বুঝতে পারে, inspector যদি শুধু disk file নেয়, তাহলে investigation-এর পরের ধাপে অন্য tool-এর সঙ্গে এটি ব্যবহার করা কঠিন হবে। Input source বদলালেও একই byte-এর জন্য একই output এবং একই safety limit বজায় রাখতে হবে.
 Samia এবার pipeline থেকে byte পেয়েছে, file হিসেবে নয়। একই tool যেন file এবং stdin দুই উৎস থেকেই পড়তে পারে। Input কোথা থেকে এসেছে, তার ওপর output বদলানো চলবে না।
 
 ### কী তৈরি করবে
