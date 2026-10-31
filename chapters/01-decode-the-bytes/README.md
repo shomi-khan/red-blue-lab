@@ -964,9 +964,15 @@ Run the complete test suite after every milestone. A later milestone is not comp
 
 🔴 **Rayhan — Red Team investigation**
 
-Rayhan receives a synthetic local fixture containing a recognizable file signature, printable bytes, a control byte, and a malformed UTF-8 byte. He must produce an evidence note containing the byte offset, raw hexadecimal value, and selected interpretation for each relevant region. He must not execute the fixture or infer that a familiar signature proves the file is safe.
+Rayhan receives this exact synthetic byte fixture:
 
-**Verifiable outcome:** the note identifies the signature bytes at offset 0, locates the malformed byte by its absolute offset, and includes the matching raw hexdump row. The same result must be reproducible from the embedded test fixture.
+```text
+42 4D 00 41 82 42
+```
+
+The first two bytes (`42 4D`, “BM”) resemble the beginning of a BMP file signature, but this six-byte fixture is not a complete BMP file. The remaining bytes include a NUL control byte, printable ASCII, and a lone UTF-8 continuation byte. Rayhan must produce an evidence note containing the byte offset, raw hexadecimal value, and selected interpretation for each relevant region. He must not execute the fixture or infer that a familiar signature proves the file is safe.
+
+**Verifiable outcome:** the note identifies `42 4D` at offsets 0–1 as a signature-like prefix, identifies `00` at offset 2 as a control byte, locates `82` at offset 4 as invalid UTF-8, and includes the matching raw hexdump row. The same result must be reproducible from this exact fixture.
 
 🔵 **Samia — Blue Team forensic check**
 
