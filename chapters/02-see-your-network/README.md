@@ -8,6 +8,7 @@
 Byte inspection-এ পাওয়া একটি readable fragment-এ local service-এর port number আছে, কিন্তু সেটি এখনো কেবল একটি clue। Rayhan ধরে নিতে চায় service-টি বন্ধ। Samia তার terminal-এ connection error দেখিয়ে প্রশ্ন করে, “তুমি কি জানো service বন্ধ, নাকি তোমার machine-ই ঠিকমতো network-এ পৌঁছাতে পারছে না?”
 
 দুজন Chapter 00-এর loopback lab-এ ফিরে আসে। তাদের সামনে কয়েকটি আলাদা সম্ভাবনা: interface down, address ভুল, route অনুপস্থিত, listener বন্ধ, অথবা response নির্ধারিত সময়ের মধ্যে না আসা। একটি failed connection এসবের মধ্যে পার্থক্য করতে পারে না। এই অধ্যায়ে তুমি `netdiag` তৈরি করবে, যাতে প্রতিটি observation আলাদা করে দেখা যায় এবং evidence যতটুকু বলে, conclusion-ও ততটুকুই হয়।
+
 ## কী তৈরি করবে
 
 চারটি milestone শেষে tool পারবে:
