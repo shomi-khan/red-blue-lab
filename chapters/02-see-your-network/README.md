@@ -1,4 +1,4 @@
-# Chapter 02: See Your Network: Build a Network Diagnostic Tool
+# অধ্যায় ০২: নিজের Network দেখো, একটি Network Diagnostic Tool তৈরি
 
 > **পর্যায়:** ১, ভিত্তি বোঝা  
 > **স্তর:** L1, learning tool  
@@ -28,7 +28,7 @@ Tool read-only। এটি interface configuration বদলাবে না, p
 
 ---
 
-# 02.1: Local Map: List Network Interfaces
+# 02.1: Local Network Interface-এর মানচিত্র তৈরি করো
 
 Samia প্রথমে জানতে চায় machine-এ কোন network interface আছে এবং সেগুলোতে কোন address bind করা।
 
@@ -96,13 +96,13 @@ Interface: lo
 - Output deterministic।
 - Failure হলেও অন্য interface-এর তথ্য অক্ষত।
 
-**Tests:** Classification-এর table-driven unit test। Formatting test-এ synthetic data inject করো। Host-এর বাস্তব interface count-এর ওপর নির্ভর করবে না।
+**Tests:** Classification-এর table-driven unit test। IPv4 RFC1918, IPv6 ULA (fc00::/7), দুই family-এর loopback/link-local এবং IANA special-purpose address test করো; special-use address যেন public না হয়। Formatting test-এ synthetic data inject করো। Host-এর বাস্তব interface count-এর ওপর নির্ভর করবে না।
 
 **সম্পন্ন হওয়ার শর্ত:** Local interface inventory এবং প্রতিটি address-এর সংযত, সঠিক classification।
 
 ---
 
-# 02.2: Address Decoded: Explain IP and CIDR
+# 02.2: IP Address ও CIDR ব্যাখ্যা করো
 
 Rayhan destination পেয়েছে, কিন্তু address-এর সঙ্গে prefix থাকলে সেটির অর্থ কী? Samia চায় tool যেন host address, network address ও prefix length গুলিয়ে না ফেলে।
 
@@ -154,7 +154,7 @@ IPv6-এ broadcast address হিসাব করবে না।
 
 ---
 
-# 02.3: Connect or Not?: Test TCP Connectivity
+# 02.3: TCP Connection পরীক্ষা করো
 
 একটি address ও port জানা থাকলেই service reachable প্রমাণ হয় না। TCP attempt-এর ফলাফল কী evidence দেয়, সেটি আলাদা করে বুঝতে হবে।
 
@@ -266,7 +266,7 @@ Evidence:    TCP connection established
 
 ---
 
-# 02.4: The Diagnostic Report: Assemble All Findings
+# 02.4: সব Observation এক Diagnostic Report-এ সাজাও
 
 Samia তিনটি command-এর output একসঙ্গে দেখতে চায়। একটি section ব্যর্থ হলে অন্য independent observation হারানো চলবে না।
 
@@ -327,6 +327,8 @@ flowchart TD
 
 **Acceptance criteria**
 - তিনটি section-ই report-এ থাকে।
+- একাধিক DNS answer থাকলে IPv4-কে অগ্রাধিকার এবং একই family-তে parsed address byte order অনুযায়ী প্রথম address নির্বাচন হয়; IPv4 না থাকলে IPv6 থেকে নির্বাচন হয়।
+- DNS answer-এর order বদলালেও একই address নির্বাচিত হয়।
 - Connection failure অন্য section মুছে দেয় না।
 - DNS failure fabricated address তৈরি করে না।
 - Exact attempted address report-এ থাকে।
@@ -334,13 +336,13 @@ flowchart TD
 - Invalid input/configuration এবং report-write failure non-zero।
 - আগের command behavior অক্ষত।
 
-**Tests:** Loopback listener ও closed port integration test। Interface/resolution failure injected। Partial report এবং exit behavior যাচাই। সব আগের milestone regression test চালাও।
+**Tests:** Loopback listener ও closed port integration test। Interface/resolution failure injected। Mixed IPv4/IPv6, multiple IPv4, IPv4 অনুপস্থিত, duplicate এবং DNS answer order বদলে deterministic selection যাচাই করো। Partial report এবং exit behavior যাচাই। সব আগের milestone regression test চালাও।
 
 **সম্পন্ন হওয়ার শর্ত:** Report তিন capability একত্র করে, partial evidence ধরে রাখে এবং observation-এর চেয়ে শক্তিশালী দাবি করে না।
 
 ---
 
-## Tool lifecycle ও final contract
+## Tool-এর ধাপ ও চূড়ান্ত Contract
 
 | Milestone | Capability | আগের behavior |
 |---|---|---|
@@ -359,7 +361,7 @@ flowchart TD
 - Port range, packet capture বা configuration change নেই।
 - Maturity: L1, learning tool; hardened production network manager নয়।
 
-## Testing strategy
+## Testing কৌশল
 
 | ক্ষেত্র | আবশ্যিক case | কী যাচাই করে |
 |---|---|---|
@@ -377,7 +379,7 @@ flowchart TD
 
 Table-driven unit test, injected dependency ও loopback integration test ব্যবহার করো। Public internet, external DNS, arbitrary non-routable address বা machine routing table-এর ওপর test নির্ভর করবে না।
 
-## Red/Blue learning
+## Red Team ও Blue Team-এর শেখা
 
 🔴 **Rayhan:** Lab-এর local listener-এ একটি TCP connectivity check চালাবে। Source vantage point, destination/port, timeout, elapsed time ও state লিখবে। Listener বন্ধ করে আবার চালিয়ে connected ও refused তুলনা করবে। Public host বা adjacent port পরীক্ষা করবে না।
 
@@ -389,7 +391,7 @@ Table-driven unit test, injected dependency ও loopback integration test ব্
 
 **যৌথ শিক্ষা:** Address classification reachability test নয়। Interface up থাকা internet access-এর প্রমাণ নয়। Timeout closed port-এর প্রমাণ নয়। Evidence সংরক্ষণ করো এবং observation আসলে কী প্রমাণ করে তা-ই বলো।
 
-## Publication checklist
+## প্রকাশের আগের Checklist
 
 - [ ] চারটি milestone curriculum order মেনে চলে।
 - [ ] প্রতিটি milestone একটি focused capability যোগ করে।
