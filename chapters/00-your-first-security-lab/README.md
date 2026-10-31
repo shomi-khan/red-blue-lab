@@ -105,7 +105,7 @@ Rayhan একটি challenge description পেল। সে সরাসরি
 >
 > **Security:** Public বা অন্য host-এ connect করার option থাকবে না।  
 >
-> **Acceptance criteria:** Valid local server চালু থাকলে client greeting ও duration দেখাবে; server বন্ধ থাকলে পরিষ্কার error দেখাবে।  
+> **Acceptance criteria:** Valid local server চালু থাকলে client greeting ও duration দেখাবে; server বন্ধ থাকলে পরিষ্কার error দেখাবে; empty response হলে protocol failure দেখিয়ে non-zero exit করবে।  
 >
 > **Verification:** একই machine-এ server ও client চালিয়ে success এবং server বন্ধ রেখে failure, দুই অবস্থাই পরীক্ষা করো।
 
