@@ -28,7 +28,7 @@ Novel পড়তে Cyber Lab করা বাধ্যতামূলক নয়�
 | docs/PROJECT-CHARTER.md | Project identity, goals ও non-goals |
 | docs/CREATIVE-DIRECTION.md | User-approved narrative ও learning direction |
 | docs/AUTHORING-GUIDELINES.md | Narrative ও explanatory content rules |
-| docs/LEARNING-ARCHITECTURE.md | Competency-first learning model |
+| docs/LEARNING-ARCHITECTURE.md | Competency-first learning model ও knowledge structure |\n| docs/ASSESSMENT-ARCHITECTURE.md | Fixed, deterministic assessment ও authoring validation architecture |
 | docs/LEARNING-DOMAINS.md | Approved learning domain taxonomy ও competency strategy |
 | docs/VISUAL-DESIGN-GUIDELINES.md | Diagram, flowchart ও image rules |
 | docs/SECURITY-AND-SAFETY.md | Offensive/defensive learning safety |
