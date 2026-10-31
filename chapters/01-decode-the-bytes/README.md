@@ -2,10 +2,10 @@
 
 > **Phase:** 1 — Understand the Building Blocks  
 > **Level:** L2 — Reliable tool  
-> **Primary deliverable:** `byteinspect`, a command-line tool for examining raw file and stdin bytes  
+> **Primary deliverable:** \`byteinspect\`, a command-line tool for examining raw file and stdin bytes  
 > **Prerequisite:** [Chapter 00 — Your First Security Lab](../00-your-first-security-lab/README.md)
 
-Rayhan has received a suspicious attachment from the local lab. Its filename ends in `.txt`, but opening it in a text editor produces strange symbols and a few empty squares. The editor is trying to interpret bytes as text. That interpretation may be useful, but it is not the data itself.
+Rayhan has received a suspicious attachment from the local lab. Its filename ends in \`.txt\`, but opening it in a text editor produces strange symbols and a few empty squares. The editor is trying to interpret bytes as text. That interpretation may be useful, but it is not the data itself.
 
 Samia wants a reliable way to inspect the evidence without changing it. Before either engineer can reason about a file format, a network packet, or an encoded payload, they need to answer a simpler question:
 
@@ -17,7 +17,7 @@ This chapter builds that answer, one capability at a time. You will create a sma
 
 ## What you will build
 
-By the end of this chapter, `byteinspect` will:
+By the end of this chapter, \`byteinspect\` will:
 
 - Read a file or standard input without treating its contents as text by default.
 - Display bytes as decimal, binary, hexadecimal, or a classic hexdump.
@@ -32,7 +32,7 @@ The tool is an inspector, not a decoder for arbitrary file formats. It does not 
 After completing all five milestones, you should be able to:
 
 1. Convert a byte value between binary, decimal, and hexadecimal.
-2. Explain how a Go `[]byte` represents an ordered sequence of byte values.
+2. Explain how a Go \`[]byte\` represents an ordered sequence of byte values.
 3. Distinguish raw bytes from a text interpretation of those bytes.
 4. Explain why one byte sequence can produce different text under different encodings.
 5. Read a file as bytes and inspect an exact range using zero-based indexing.
@@ -43,7 +43,7 @@ After completing all five milestones, you should be able to:
 ## Prerequisites
 
 - Complete Chapter 00: Go toolchain, basic Go syntax, terminal use, and basic file I/O.
-- Be comfortable running `go run`, `go build`, and `go test`.
+- Be comfortable running \`go run\`, \`go build\`, and \`go test\`.
 - Know how to create and inspect a small file from the terminal.
 
 No networking or prior security knowledge is required. This chapter uses only Go's standard library. The first implementation milestone is where the project initializes its Go module, as specified in the curriculum.
@@ -58,45 +58,45 @@ Consider the byte value 65:
 
 | Representation | Value |
 |---|---|
-| Binary | `01000001` |
-| Decimal | `65` |
-| Hexadecimal | `0x41` |
-| ASCII interpretation | `A` |
+| Binary | \`01000001\` |
+| Decimal | \`65\` |
+| Hexadecimal | \`0x41\` |
+| ASCII interpretation | \`A\` |
 
-These are four views of the same eight bits. The ASCII interpretation is meaningful only because ASCII assigns the value 65 to the capital letter `A`.
+These are four views of the same eight bits. The ASCII interpretation is meaningful only because ASCII assigns the value 65 to the capital letter \`A\`.
 
 ### A file is an ordered sequence of bytes
 
-For a tiny file containing the bytes `41 42 00 7F`, its contents can be pictured as:
+For a tiny file containing the bytes \`41 42 00 7F\`, its contents can be pictured as:
 
-```text
+\`\`\`text
 Index:       0       1       2       3
          +-------+-------+-------+-------+
 Byte:    | 0x41  | 0x42  | 0x00  | 0x7F  |
          +-------+-------+-------+-------+
 Decimal:    65      66       0      127
 Binary: 01000001 01000010 00000000 01111111
-```
+\`\`\`
 
 The index is the byte's position, starting at zero. Index 2 is the third byte, not the second. This convention matters when inspecting file headers and protocol fields: an offset is a position measured from the beginning of the byte sequence.
 
-In Go, a `[]byte` is a slice of byte values. It has a length, can be indexed, and can be iterated. It does not promise that the values form valid text.
+In Go, a \`[]byte\` is a slice of byte values. It has a length, can be indexed, and can be iterated. It does not promise that the values form valid text.
 
 ### Binary, decimal, and hexadecimal
 
 | Hex | Decimal | Binary | ASCII |
 |---|---:|---|---|
-| `00` | 0 | `00000000` | non-printable |
-| `01` | 1 | `00000001` | non-printable |
-| `09` | 9 | `00001001` | non-printable |
-| `0A` | 10 | `00001010` | line feed |
-| `20` | 32 | `00100000` | space |
-| `30` | 48 | `00110000` | `0` |
-| `41` | 65 | `01000001` | `A` |
-| `7E` | 126 | `01111110` | `~` |
-| `7F` | 127 | `01111111` | delete control |
+| \`00\` | 0 | \`00000000\` | non-printable |
+| \`01\` | 1 | \`00000001\` | non-printable |
+| \`09\` | 9 | \`00001001\` | non-printable |
+| \`0A\` | 10 | \`00001010\` | line feed |
+| \`20\` | 32 | \`00100000\` | space |
+| \`30\` | 48 | \`00110000\` | \`0\` |
+| \`41\` | 65 | \`01000001\` | \`A\` |
+| \`7E\` | 126 | \`01111110\` | \`~\` |
+| \`7F\` | 127 | \`01111111\` | delete control |
 
-Hexadecimal is convenient because one hex digit represents four bits. Two hex digits represent exactly one byte. A byte written as `01000001` is easier to scan as `41` when reading a long dump.
+Hexadecimal is convenient because one hex digit represents four bits. Two hex digits represent exactly one byte. A byte written as \`01000001\` is easier to scan as \`41\` when reading a long dump.
 
 ### Raw bytes are not the same thing as text
 
@@ -120,25 +120,25 @@ Rayhan first needs a factual inventory. Before looking for strings or file signa
 
 ### What you will build
 
-A first version of `byteinspect` that reads one file and prints each byte's zero-based index, decimal value, and eight-bit binary representation.
+A first version of \`byteinspect\` that reads one file and prints each byte's zero-based index, decimal value, and eight-bit binary representation.
 
 ### Prerequisites
 
 - Chapter 00.
-- Basic use of `os.ReadFile`, `fmt.Printf`, and command-line arguments.
+- Basic use of \`os.ReadFile\`, \`fmt.Printf\`, and command-line arguments.
 
 ### Just-in-time theory
 
-A byte has an unsigned value from 0 to 255. In Go, `byte` is an alias for `uint8`. A byte slice (`[]byte`) stores an ordered sequence of these values.
+A byte has an unsigned value from 0 to 255. In Go, \`byte\` is an alias for \`uint8\`. A byte slice (\`[]byte\`) stores an ordered sequence of these values.
 
 The format verbs used in this milestone are:
 
 | Verb | Meaning | Example for value 10 |
 |---|---|---|
-| `%d` | Decimal integer | `10` |
-| `%08b` | Binary, padded to 8 digits | `00001010` |
+| \`%d\` | Decimal integer | \`10\` |
+| \`%08b\` | Binary, padded to 8 digits | \`00001010\` |
 
-The width in `%08b` is important. Without it, the value 10 could be printed as `1010`, which is mathematically correct but visually less useful when every byte should occupy eight bit positions.
+The width in \`%08b\` is important. Without it, the value 10 could be printed as \`1010\`, which is mathematically correct but visually less useful when every byte should occupy eight bit positions.
 
 The index and value answer different questions. The index tells you *where* a byte is. The value tells you *what number* is stored there.
 
@@ -148,28 +148,28 @@ The table below maps the first sixteen byte values. It is a compact conversion r
 
 | Hex | Decimal | Binary |
 |---|---:|---|
-| `00` | 0 | `00000000` |
-| `01` | 1 | `00000001` |
-| `02` | 2 | `00000010` |
-| `03` | 3 | `00000011` |
-| `04` | 4 | `00000100` |
-| `05` | 5 | `00000101` |
-| `06` | 6 | `00000110` |
-| `07` | 7 | `00000111` |
-| `08` | 8 | `00001000` |
-| `09` | 9 | `00001001` |
-| `0A` | 10 | `00001010` |
-| `0B` | 11 | `00001011` |
-| `0C` | 12 | `00001100` |
-| `0D` | 13 | `00001101` |
-| `0E` | 14 | `00001110` |
-| `0F` | 15 | `00001111` |
+| \`00\` | 0 | \`00000000\` |
+| \`01\` | 1 | \`00000001\` |
+| \`02\` | 2 | \`00000010\` |
+| \`03\` | 3 | \`00000011\` |
+| \`04\` | 4 | \`00000100\` |
+| \`05\` | 5 | \`00000101\` |
+| \`06\` | 6 | \`00000110\` |
+| \`07\` | 7 | \`00000111\` |
+| \`08\` | 8 | \`00001000\` |
+| \`09\` | 9 | \`00001001\` |
+| \`0A\` | 10 | \`00001010\` |
+| \`0B\` | 11 | \`00001011\` |
+| \`0C\` | 12 | \`00001100\` |
+| \`0D\` | 13 | \`00001101\` |
+| \`0E\` | 14 | \`00001110\` |
+| \`0F\` | 15 | \`00001111\` |
 
 ### Challenge specification
 
 🎯 **Problem statement**
 
-Build the first increment of `byteinspect`. It accepts a path to one file and reports every byte with its index, decimal value, and eight-bit binary representation.
+Build the first increment of \`byteinspect\`. It accepts a path to one file and reports every byte with its index, decimal value, and eight-bit binary representation.
 
 **Objective**
 
@@ -185,13 +185,13 @@ Produce a deterministic, human-readable inventory of the file's raw bytes.
 
 For each byte, print one line to stdout in this logical form:
 
-```text
+\`\`\`text
 INDEX  DECIMAL  BINARY
 0      65       01000001
 1      66       01000010
 2      0        00000000
 3      127      01111111
-```
+\`\`\`
 
 The exact spacing may be chosen by you, but columns must be unambiguous and stable. Empty input produces no data lines. Diagnostics go to stderr.
 
@@ -216,9 +216,9 @@ The exact spacing may be chosen by you, but columns must be unambiguous and stab
 **Edge cases**
 
 - Empty file.
-- One-byte file containing `0x00`.
-- One-byte file containing `0xFF`.
-- File containing all values from `0x00` through `0xFF`.
+- One-byte file containing \`0x00\`.
+- One-byte file containing \`0xFF\`.
+- File containing all values from \`0x00\` through \`0xFF\`.
 - File containing invalid UTF-8. It must still be read as bytes.
 - File exactly 1 MiB and file one byte larger than 1 MiB.
 
@@ -240,7 +240,7 @@ The file is untrusted input. Treat it as data only. Avoid logging file contents 
 
 **Acceptance criteria**
 
-- A known fixture containing `41 42 00 7F` produces four rows with indexes 0–3 and decimal values 65, 66, 0, and 127.
+- A known fixture containing \`41 42 00 7F\` produces four rows with indexes 0–3 and decimal values 65, 66, 0, and 127.
 - Every binary field is exactly eight characters wide.
 - Empty input produces no rows and exits successfully.
 - A missing file and an oversized file produce stderr diagnostics and non-zero exit status.
@@ -260,7 +260,7 @@ Create the four-byte fixture from explicit byte values, not by typing characters
 
 ### Debrief
 
-The first important discovery is that a file extension does not determine its contents. A file named `.txt` can contain arbitrary bytes. The inspector now reports what is present rather than what a text editor guesses is present.
+The first important discovery is that a file extension does not determine its contents. A file named \`.txt\` can contain arbitrary bytes. The inspector now reports what is present rather than what a text editor guesses is present.
 
 ### What's next
 
@@ -274,7 +274,7 @@ Rayhan's first output is accurate but cumbersome. A file with thousands of bytes
 
 ### What you will build
 
-Extend `byteinspect` with a temporary `--hex` mode that prints sixteen bytes per row, including an offset, hexadecimal values, and a printable-ASCII sidebar. In 01.5, this milestone-specific flag is replaced by the unified `--format hex` interface; the final tool does not accept `--hex`.
+Extend \`byteinspect\` with a temporary \`--hex\` mode that prints sixteen bytes per row, including an offset, hexadecimal values, and a printable-ASCII sidebar. In 01.5, this milestone-specific flag is replaced by the unified \`--format hex\` interface; the final tool does not accept \`--hex\`.
 
 ### Prerequisites
 
@@ -283,7 +283,7 @@ Extend `byteinspect` with a temporary `--hex` mode that prints sixteen bytes per
 
 ### Just-in-time theory
 
-A hexadecimal digit represents four bits. One byte therefore needs exactly two hexadecimal digits, from `00` through `ff`. The `%02x` formatting verb gives a lower-case hexadecimal value padded to at least two digits.
+A hexadecimal digit represents four bits. One byte therefore needs exactly two hexadecimal digits, from \`00\` through \`ff\`. The \`%02x\` formatting verb gives a lower-case hexadecimal value padded to at least two digits.
 
 A hexdump usually shows three aligned regions:
 
@@ -291,17 +291,17 @@ A hexdump usually shows three aligned regions:
 2. **Hex columns:** the byte values, two hex digits each.
 3. **ASCII column:** a cautious text view of the same bytes.
 
-For this chapter, a byte is shown literally in the ASCII column only when its value is in the printable ASCII range `0x20` through `0x7E`. All other values are represented by a period (`.`). This avoids control characters changing the terminal display.
+For this chapter, a byte is shown literally in the ASCII column only when its value is in the printable ASCII range \`0x20\` through \`0x7E\`. All other values are represented by a period (\`.\`). This avoids control characters changing the terminal display.
 
 ### Visual explanation
 
-A sample row for the bytes `48 65 6c 6c 6f 00 57 6f 72 6c 64 0a`:
+A sample row for the bytes \`48 65 6c 6c 6f 00 57 6f 72 6c 64 0a\`:
 
-```text
+\`\`\`text
 00000000  48 65 6c 6c 6f 00 57 6f 72 6c 64 0a              |Hello.World.|
 ^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^
 offset    hex bytes (16 slots per row)                     ASCII view
-```
+\`\`\`
 
 The final row may contain fewer than sixteen bytes. Missing slots are padding for alignment, not additional bytes. The ASCII column must represent only bytes that actually exist.
 
@@ -318,7 +318,7 @@ Display input in stable rows of sixteen bytes with an eight-digit offset, two-di
 **Inputs**
 
 - The file path accepted by 01.1.
-- A `--hex` flag selecting hexdump output.
+- A \`--hex\` flag selecting hexdump output.
 - File size remains limited to 1 MiB for this milestone.
 
 **Outputs**
@@ -328,14 +328,14 @@ A row contains:
 - An eight-character, zero-padded, lower-case hexadecimal offset.
 - Up to sixteen two-digit hexadecimal byte values separated by one space.
 - An ASCII sidebar between vertical delimiters.
-- A period for every byte outside `0x20`–`0x7E`.
+- A period for every byte outside \`0x20\`–\`0x7E\`.
 
 Illustrative output:
 
-```text
+\`\`\`text
 00000000  48 65 6c 6c 6f 00 57 6f 72 6c 64 0a              |Hello.World.|
 00000010  41                                               |A|
-```
+\`\`\`
 
 **Behavioral contract**
 
@@ -344,7 +344,7 @@ Illustrative output:
 - Hex values are lower-case and exactly two digits.
 - The ASCII sidebar is derived from the same bytes as the hex columns.
 - Printable ASCII bytes are shown as their corresponding characters.
-- Bytes below `0x20` or above `0x7E` are shown as `.`.
+- Bytes below \`0x20\` or above \`0x7E\` are shown as \`.\`.
 - A short final row is padded visually in the hex area so the sidebar remains aligned. Padding must never appear as actual bytes in the sidebar.
 - Empty input produces no rows.
 - The original 01.1 output remains available and unchanged.
@@ -363,8 +363,8 @@ Illustrative output:
 - Exactly fifteen bytes.
 - Exactly sixteen bytes.
 - Exactly seventeen bytes (one full row and one one-byte row).
-- Non-printable values such as `00`, `09`, `0A`, and `7F`.
-- Printable boundary values `20` and `7E`.
+- Non-printable values such as \`00\`, \`09\`, \`0A\`, and \`7F\`.
+- Printable boundary values \`20\` and \`7E\`.
 
 **Error behavior**
 
@@ -376,8 +376,8 @@ The ASCII sidebar is a display aid, not a decoding step. Never emit raw control 
 
 **Acceptance criteria**
 
-- A 16-byte fixture produces exactly one row at offset `00000000`.
-- A 17-byte fixture produces a second row at offset `00000010`.
+- A 16-byte fixture produces exactly one row at offset \`00000000\`.
+- A 17-byte fixture produces a second row at offset \`00000010\`.
 - Every hex byte has two digits.
 - The ASCII sidebar shows printable ASCII and periods for all other values.
 - Short-row padding affects alignment only; it does not create phantom bytes.
@@ -393,7 +393,7 @@ The hexdump mode renders any accepted input in correctly aligned sixteen-byte ro
 
 ### Verification
 
-Compare a small fixture against `xxd` or `hexdump -C` when either utility is available. The external utility is an optional manual cross-check, not a test dependency. Your deterministic Go tests remain the source of truth.
+Compare a small fixture against \`xxd\` or \`hexdump -C\` when either utility is available. The external utility is an optional manual cross-check, not a test dependency. Your deterministic Go tests remain the source of truth.
 
 ### Debrief
 
@@ -411,7 +411,7 @@ A large binary file may contain a header near the beginning and a payload much l
 
 ### What you will build
 
-Add `--offset N` and `--length N` options that select a precise byte range before formatting.
+Add \`--offset N\` and \`--length N\` options that select a precise byte range before formatting.
 
 ### Prerequisites
 
@@ -422,7 +422,7 @@ Add `--offset N` and `--length N` options that select a precise byte range befor
 
 A range is described by a starting offset and a number of bytes:
 
-```text
+\`\`\`text
 Input:   10 11 12 13 14 15 16 17 18 19
 Index:    0  1  2  3  4  5  6  7  8  9
 
@@ -430,17 +430,17 @@ offset = 3, length = 4
 
 Selected:          13 14 15 16
 Index:               3  4  5  6
-```
+\`\`\`
 
-The range includes the byte at `offset` and contains exactly `length` bytes. In interval notation, it covers `[offset, offset+length)`: the start is included and the end is excluded.
+The range includes the byte at \`offset\` and contains exactly \`length\` bytes. In interval notation, it covers \`[offset, offset+length)\`: the start is included and the end is excluded.
 
 This is the same convention used by Go slice expressions. It also explains why a length of zero is meaningful: it selects no bytes.
 
-Care is needed when validating `offset + length`. Integer addition can overflow. A robust contract checks that the offset is within the input and that the requested length does not exceed the remaining bytes, rather than trusting an unchecked sum.
+Care is needed when validating \`offset + length\`. Integer addition can overflow. A robust contract checks that the offset is within the input and that the requested length does not exceed the remaining bytes, rather than trusting an unchecked sum.
 
 ### Visual explanation
 
-```text
+\`\`\`text
 Byte indexes:  0   1   2   3   4   5   6   7   8   9
                +---+---+---+---+---+---+---+---+---+---+
 Input:         | A | B | C | D | E | F | G | H | I | J |
@@ -449,7 +449,7 @@ Input:         | A | B | C | D | E | F | G | H | I | J |
                          offset=3       end=7 (exclusive)
                          <---- length=4 ---->
 Selected:                  D   E   F   G
-```
+\`\`\`
 
 The key detail is that the end position is exclusive. A range beginning at 3 with length 4 selects indexes 3, 4, 5, and 6.
 
@@ -457,7 +457,7 @@ The key detail is that the end position is exclusive. A range beginning at 3 wit
 
 🎯 **Problem statement**
 
-Extend `byteinspect` so a user can select a range of bytes and render only that range in the chosen output mode.
+Extend \`byteinspect\` so a user can select a range of bytes and render only that range in the chosen output mode.
 
 **Objective**
 
@@ -466,8 +466,8 @@ Select an exact byte interval without off-by-one errors or out-of-bounds access.
 **Inputs**
 
 - Existing file path and output mode.
-- `--offset N`: non-negative base-10 integer, default 0.
-- `--length N`: non-negative base-10 integer, optional.
+- \`--offset N\`: non-negative base-10 integer, default 0.
+- \`--length N\`: non-negative base-10 integer, optional.
 - If length is omitted, inspect from the offset through the end of the input.
 
 **Outputs**
@@ -524,7 +524,7 @@ Input arguments are untrusted. Validate numeric conversion and range boundaries 
 
 **Acceptance criteria**
 
-- For a known file, `--offset 4 --length 8` displays exactly eight bytes beginning at index 4.
+- For a known file, \`--offset 4 --length 8\` displays exactly eight bytes beginning at index 4.
 - A range at the end of the file behaves according to the boundary rules above.
 - Invalid ranges fail clearly and do not panic.
 - A valid zero-length range exits successfully with no data rows.
@@ -561,7 +561,7 @@ Samia wants two explicit interpretations: ASCII and UTF-8. Neither is allowed to
 
 ### What you will build
 
-Add `--decode ascii` and `--decode utf8` modes. The tool reports printable text, non-printable or non-ASCII values, and invalid UTF-8 bytes without repairing or discarding them.
+Add \`--decode ascii\` and \`--decode utf8\` modes. The tool reports printable text, non-printable or non-ASCII values, and invalid UTF-8 bytes without repairing or discarding them.
 
 ### Prerequisites
 
@@ -570,7 +570,7 @@ Add `--decode ascii` and `--decode utf8` modes. The tool reports printable text,
 
 ### Just-in-time theory
 
-**ASCII** is a seven-bit character encoding. Its standard character assignments occupy values 0 through 127. Values above `0x7F` are not ASCII characters. Some values within the range are control characters rather than printable symbols.
+**ASCII** is a seven-bit character encoding. Its standard character assignments occupy values 0 through 127. Values above \`0x7F\` are not ASCII characters. Some values within the range are control characters rather than printable symbols.
 
 **UTF-8** encodes Unicode code points using sequences of one to four bytes. ASCII characters use the same single-byte values in UTF-8, which is why ordinary English text often looks identical in both. Non-ASCII characters require multi-byte sequences.
 
@@ -578,22 +578,22 @@ A UTF-8 sequence has structure:
 
 | Leading byte range | Meaning |
 |---|---|
-| `00`–`7F` | One-byte ASCII-compatible code point |
-| `C2`–`DF` | Start of a two-byte sequence |
-| `E0`–`EF` | Start of a three-byte sequence |
-| `F0`–`F4` | Start of a four-byte sequence |
-| `80`–`BF` | Continuation byte; not a valid leading byte |
+| \`00\`–\`7F\` | One-byte ASCII-compatible code point |
+| \`C2\`–\`DF\` | Start of a two-byte sequence |
+| \`E0\`–\`EF\` | Start of a three-byte sequence |
+| \`F0\`–\`F4\` | Start of a four-byte sequence |
+| \`80\`–\`BF\` | Continuation byte; not a valid leading byte |
 | Other values | Invalid as UTF-8 leading bytes |
 
-This table is a guide to the byte roles, not the complete validation algorithm. Some leading-byte and continuation-byte combinations are invalid because they would encode overlong values, surrogate code points, or values beyond the Unicode range. Use Go's standard `unicode/utf8` facilities to validate UTF-8 rather than attempting to infer validity from the first byte alone.
+This table is a guide to the byte roles, not the complete validation algorithm. Some leading-byte and continuation-byte combinations are invalid because they would encode overlong values, surrogate code points, or values beyond the Unicode range. Use Go's standard \`unicode/utf8\` facilities to validate UTF-8 rather than attempting to infer validity from the first byte alone.
 
 A Unicode character can occupy several bytes. Therefore, a byte offset may point into the middle of a multi-byte character. A selected range is still a valid byte range even if it begins or ends inside a UTF-8 sequence.
 
 ### Visual explanation
 
-The character `€` is encoded in UTF-8 as three bytes:
+The character \`€\` is encoded in UTF-8 as three bytes:
 
-```text
+\`\`\`text
 Character:       €
 Unicode code:    U+20AC
 UTF-8 bytes:     E2 82 AC
@@ -601,17 +601,17 @@ UTF-8 bytes:     E2 82 AC
 E2 = 11100010   three-byte sequence begins
 82 = 10000010   continuation byte
 AC = 10101100   continuation byte
-```
+\`\`\`
 
 All three bytes are needed for the complete character. If the final byte is missing, the remaining prefix is not a complete UTF-8 encoding of that character.
 
-For a deliberately malformed sequence such as `41 82 42`, the ASCII-compatible bytes around the invalid value must remain visible. The byte `82` is a continuation byte with no valid leading byte before it.
+For a deliberately malformed sequence such as \`41 82 42\`, the ASCII-compatible bytes around the invalid value must remain visible. The byte \`82\` is a continuation byte with no valid leading byte before it.
 
 ### Challenge specification
 
 🎯 **Problem statement**
 
-Add explicit ASCII and UTF-8 interpretation modes to `byteinspect`. Report invalid or non-ASCII bytes without changing the underlying data.
+Add explicit ASCII and UTF-8 interpretation modes to \`byteinspect\`. Report invalid or non-ASCII bytes without changing the underlying data.
 
 **Objective**
 
@@ -620,7 +620,7 @@ Make text interpretation useful for investigation while preserving every raw byt
 **Inputs**
 
 - Existing input file and range options.
-- `--decode ascii` or `--decode utf8`.
+- \`--decode ascii\` or \`--decode utf8\`.
 - The selected byte range is interpreted; if no range is supplied, the full input is selected.
 
 **Outputs**
@@ -628,31 +628,31 @@ Make text interpretation useful for investigation while preserving every raw byt
 For ASCII mode:
 
 - Values 0–127 are recognized as within the ASCII encoding.
-- Printable ASCII values `0x20`–`0x7E` may be shown as characters.
+- Printable ASCII values \`0x20\`–\`0x7E\` may be shown as characters.
 - Control values are identified as non-printable/control values.
-- Values above `0x7F` are annotated as `[non-ASCII]`.
+- Values above \`0x7F\` are annotated as \`[non-ASCII]\`.
 
 For UTF-8 mode:
 
 - Valid UTF-8 sequences are displayed as their decoded text.
-- Invalid byte sequences are annotated with `[invalid]` and their raw byte value remains available in the output.
+- Invalid byte sequences are annotated with \`[invalid]\` and their raw byte value remains available in the output.
 - The tool must identify invalid bytes or invalid sequence spans accurately enough that no malformed byte is silently dropped.
 - The output must preserve the order of valid and invalid portions.
 
-Illustrative logical output for bytes `41 82 42`:
+Illustrative logical output for bytes \`41 82 42\`:
 
-```text
+\`\`\`text
 offset 0: A
 offset 1: 0x82 [invalid]
 offset 2: B
-```
+\`\`\`
 
 This is an illustration of the information that must be retained; the exact line layout is yours to define.
 
 **Behavioral contract**
 
 - ASCII and UTF-8 are explicit modes. Do not guess an encoding automatically.
-- ASCII bytes above `0x7F` are annotated as non-ASCII, not silently converted.
+- ASCII bytes above \`0x7F\` are annotated as non-ASCII, not silently converted.
 - ASCII control values are not emitted raw to the terminal.
 - UTF-8 validation must follow UTF-8 validity rules, not merely check whether a byte is in a continuation range.
 - Valid multi-byte sequences are decoded as a unit.
@@ -700,7 +700,7 @@ Malformed text is a common source of parser disagreement and security bugs. Neve
 - A valid UTF-8 emoji is recognized as one valid multi-byte sequence.
 - A lone continuation byte is identified as invalid.
 - An incomplete sequence at end of input is identified as invalid.
-- ASCII values above `0x7F` are marked non-ASCII.
+- ASCII values above \`0x7F\` are marked non-ASCII.
 - Control bytes are not emitted raw.
 - Invalid bytes remain identifiable by their original hexadecimal values.
 - The selected range is respected, including ranges that split a multi-byte sequence.
@@ -734,12 +734,12 @@ Samia receives a byte sequence from a command pipeline rather than a file. Requi
 
 ### What you will build
 
-Unify input handling so `byteinspect` reads a named file or stdin, and add a `--format` option for `hex`, `decimal`, `binary`, `utf8`, and `ascii`.
+Unify input handling so \`byteinspect\` reads a named file or stdin, and add a \`--format\` option for \`hex\`, \`decimal\`, \`binary\`, \`utf8\`, and \`ascii\`.
 
 ### Prerequisites
 
 - Completed 01.1 through 01.4.
-- Understand command-line flags, `os.Stdin`, and the `io.Reader` abstraction.
+- Understand command-line flags, \`os.Stdin\`, and the \`io.Reader\` abstraction.
 
 ### Just-in-time theory
 
@@ -750,9 +750,9 @@ A command-line program can receive data through two common paths:
 
 A pipe connects one program's stdout to another program's stdin:
 
-```text
+\`\`\`text
 producer stdout ───────► byteinspect stdin
-```
+\`\`\`
 
 From the reader's perspective, stdin is an input stream. It does not need to know whether the bytes came from a file, a pipe, or another source.
 
@@ -762,7 +762,7 @@ The output format is independent of the input source. A file and a pipe containi
 
 ### Visual explanation
 
-```mermaid
+\`\`\`mermaid
 flowchart LR
     F[Named file] --> R[Input reader]
     P[Pipe / stdin] --> R
@@ -775,7 +775,7 @@ flowchart LR
     M --> B[Binary]
     M --> U[UTF-8 interpretation]
     M --> A[ASCII interpretation]
-```
+\`\`\`
 
 The input path converges before formatting. This is the central design property: output behavior should not depend on whether the bytes came from a file or stdin.
 
@@ -783,7 +783,7 @@ The input path converges before formatting. This is the central design property:
 
 🎯 **Problem statement**
 
-Complete `byteinspect` by supporting file or stdin input and a unified output-format flag.
+Complete \`byteinspect\` by supporting file or stdin input and a unified output-format flag.
 
 **Objective**
 
@@ -793,14 +793,14 @@ Provide one command-line interface that accepts either a named file or piped inp
 
 - Optional positional file path.
 - If no path is provided, read from stdin.
-- `--format` accepts exactly one of:
-  - `hex`
-  - `decimal`
-  - `binary`
-  - `utf8`
-  - `ascii`
-- `--offset N` and `--length N` retain the behavior from 01.3.
-- Default format: `hex`.
+- \`--format\` accepts exactly one of:
+  - \`hex\`
+  - \`decimal\`
+  - \`binary\`
+  - \`utf8\`
+  - \`ascii\`
+- \`--offset N\` and \`--length N\` retain the behavior from 01.3.
+- Default format: \`hex\`.
 - Maximum total input size: 10 MiB (10,485,760 bytes).
 
 **Outputs**
@@ -808,10 +808,10 @@ Provide one command-line interface that accepts either a named file or piped inp
 - The selected format is written to stdout.
 - Diagnostics and usage errors are written to stderr.
 - The same byte sequence with the same options must produce identical output regardless of whether it comes from a file or stdin.
-- For `hex`, use the hexdump layout established in 01.2.
-- For `decimal`, print zero-based absolute index and decimal value as established in 01.1.
-- For `binary`, print zero-based absolute index and exactly eight binary digits.
-- For `utf8` and `ascii`, use the interpretation and annotation rules established in 01.4.
+- For \`hex\`, use the hexdump layout established in 01.2.
+- For \`decimal\`, print zero-based absolute index and decimal value as established in 01.1.
+- For \`binary\`, print zero-based absolute index and exactly eight binary digits.
+- For \`utf8\` and \`ascii\`, use the interpretation and annotation rules established in 01.4.
 
 **Behavioral contract**
 
@@ -819,7 +819,7 @@ Provide one command-line interface that accepts either a named file or piped inp
 - With one positional path, read that file.
 - With no positional path, read stdin.
 - More than one positional path is an error.
-- The default format is `hex`.
+- The default format is \`hex\`.
 - Unsupported format values are errors; do not silently fall back.
 - Apply range validation consistently to file and stdin input.
 - The input limit is 10 MiB. Read only up to the limit plus one byte to detect overflow. Do not write formatted output until EOF and the size check have succeeded. If the input exceeds the limit, fail with a clear error and produce no dump on stdout.
@@ -875,8 +875,8 @@ Stdin is untrusted input just like a file. A pipe can produce an arbitrarily lon
 
 **Acceptance criteria**
 
-- `echo "hello" | byteinspect --format hex` produces the expected hexdump.
-- `byteinspect --format binary myfile.bin` produces binary output with absolute indexes.
+- \`echo "hello" | byteinspect --format hex\` produces the expected hexdump.
+- \`byteinspect --format binary myfile.bin\` produces binary output with absolute indexes.
 - A file and stdin containing identical bytes produce byte-for-byte identical output for every format.
 - Empty file and empty stdin are valid.
 - Input exactly at 10 MiB is accepted; one byte above the limit is rejected.
@@ -890,7 +890,7 @@ Test the input-selection and formatting logic with deterministic byte slices. Ad
 
 **Definition of completion**
 
-A single `byteinspect` binary can inspect a bounded file or stdin stream in any supported format, with consistent range semantics and deterministic output.
+A single \`byteinspect\` binary can inspect a bounded file or stdin stream in any supported format, with consistent range semantics and deterministic output.
 
 ### Verification
 
@@ -906,10 +906,10 @@ The final tool has a clean separation between where bytes come from, which range
 
 | Property | Contract |
 |---|---|
-| Tool name | `byteinspect` |
+| Tool name | \`byteinspect\` |
 | Initial capability | 01.1: file input, decimal and binary inventory |
 | Final input | One file path or stdin |
-| Final formats | `hex`, `decimal`, `binary`, `utf8`, `ascii` |
+| Final formats | \`hex\`, \`decimal\`, \`binary\`, \`utf8\`, \`ascii\` |
 | Range support | Zero-based offset and byte length |
 | File limit | 1 MiB through 01.4 |
 | Final input limit | 10 MiB, including stdin |
@@ -988,8 +988,8 @@ Before considering this chapter complete, verify:
 - [ ] Tests use deterministic local data only.
 - [ ] Invalid UTF-8 is preserved and annotated, not silently repaired.
 - [ ] Earlier milestone tests remain regression coverage.
-- [ ] Tool name, final flags, limits, and milestone scope match `docs/CURRICULUM.md`.
-- [ ] The temporary `--hex` milestone flag is explicitly replaced by `--format hex` in 01.5.
+- [ ] Tool name, final flags, limits, and milestone scope match \`docs/CURRICULUM.md\`.
+- [ ] The temporary \`--hex\` milestone flag is explicitly replaced by \`--format hex\` in 01.5.
 - [ ] Stdin is bounded to 10 MiB plus one overflow-detection byte and validated before stdout output.
 - [ ] No tests are claimed to have passed unless they were actually run.
 
