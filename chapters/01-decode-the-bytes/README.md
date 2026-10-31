@@ -634,7 +634,7 @@ For ASCII mode:
 
 For UTF-8 mode:
 
-- Valid UTF-8 sequences are displayed as their decoded text.
+- Valid UTF-8 sequences are decoded, but Unicode control characters (General_Category `Cc`, including C0 and C1 controls) are rendered as visible escapes rather than emitted literally. Use a documented form such as `\\u{001B}` for ESC; apply the same rule to LF, TAB, and other controls.
 - Invalid byte sequences are annotated with \`[invalid]\` and their raw byte value remains available in the output.
 - The tool must identify invalid bytes or invalid sequence spans accurately enough that no malformed byte is silently dropped.
 - The output must preserve the order of valid and invalid portions.
@@ -654,9 +654,11 @@ This is an illustration of the information that must be retained; the exact line
 - ASCII and UTF-8 are explicit modes. Do not guess an encoding automatically.
 - ASCII bytes above \`0x7F\` are annotated as non-ASCII, not silently converted.
 - ASCII control values are not emitted raw to the terminal.
+- UTF-8 control characters (Unicode General_Category `Cc`, including C0 and C1) are escaped visibly, never emitted raw; for example, ESC is rendered as `\\u{001B}`. Preserve original byte values in the raw/hex view.
 - UTF-8 validation must follow UTF-8 validity rules, not merely check whether a byte is in a continuation range.
 - Valid multi-byte sequences are decoded as a unit.
 - Invalid sequences remain represented in the output with their original byte values.
+- Valid UTF-8 control code points are represented by visible escapes, not literal terminal control effects.
 - Do not repair, normalize, skip, or replace invalid bytes without an explicit annotation that preserves the original value.
 - A range beginning or ending inside a multi-byte sequence is handled as the selected bytes actually stand: an incomplete fragment is invalid within that selected input.
 - Existing decimal, binary, and hexdump modes remain available and unchanged.
