@@ -1,135 +1,102 @@
-# AGENTS.md — Instructions for AI-Assisted Work on red-blue-lab
+# AGENTS.md — AI Agent-এর বাধ্যতামূলক নির্দেশনা
 
-This file governs how AI agents should contribute to this repository. Read it completely before making any changes.
+এই repository-তে content তৈরি, পরিবর্তন বা review করার আগে এই ফাইল এবং সংশ্লিষ্ট source-of-truth document পড়ো।
 
----
+## 1. Source of truth ও precedence
 
-## Primary Sources of Truth
+1. User-এর সর্বশেষ স্পষ্ট নির্দেশনা।
+2. docs/PROJECT-CHARTER.md
+3. docs/DECISIONS.md
+4. docs/AUTHORING-GUIDELINES.md
+5. docs/LEARNING-ARCHITECTURE.md
+6. docs/VISUAL-DESIGN-GUIDELINES.md
+7. docs/SECURITY-AND-SAFETY.md
+8. docs/AI-WORKFLOW.md এবং সংশ্লিষ্ট template।
 
-| Document | Purpose |
-|---|---|
-| [`docs/CURRICULUM.md`](docs/CURRICULUM.md) | Canonical chapter plan, milestone blueprints, tool lifecycles, dependencies |
-| [`docs/CONTENT-GUIDELINES.md`](docs/CONTENT-GUIDELINES.md) | Chapter structure, writing rules, challenge format, visual rules, quality checklist |
-| This file | Agent-specific behavioural constraints |
+তথ্য অনুপস্থিত থাকলে গুরুত্বপূর্ণ world-building decision নিজে থেকে নিও না। Unknown ও proposed বিষয় আলাদা করে human review চাও।
 
-Before authoring or modifying a chapter, read the relevant entries in `CURRICULUM.md` and the complete `CONTENT-GUIDELINES.md`.
+## 2. কাজ শুরুর আগে
 
----
+- Request, deliverable ও scope বুঝে নাও।
+- সংশ্লিষ্ট source documents পড়ো।
+- Existing canon, chronology, character knowledge ও dependencies পরীক্ষা করো।
+- Confirmed, proposed, unresolved ও unknown তথ্য আলাদা করো।
+- Technical, narrative, visual ও safety impact বিবেচনা করো।
+- Scope conflict থাকলে কাজের আগে সবচেয়ে প্রয়োজনীয় clarification চাও।
 
-## When Authoring a Chapter
+## 3. Non-negotiable principles
 
-### Read first, write second
+- **Story-first:** Novel-কে tutorial-এর wrapper বানাবে না।
+- **Concept-first:** আগে system model, data flow, trust boundary, protocol, threat, failure ও evidence বোঝাও।
+- **Tool-second:** Tool কেবল বাস্তব investigative বা engineering need থাকলে তৈরি হবে।
+- **Visualize:** Diagram, flowchart, sequence, state model, table বা annotated example prose-এর চেয়ে কার্যকর হলে ব্যবহার করো।
+- **Optional learning:** গল্প পড়তে lab বাধ্যতামূলক নয়; lab করতে গল্প বাধ্যতামূলক নয়।
+- **Evidence:** Observation, hypothesis, inference, confirmed finding ও unknown গুলিয়ে ফেলবে না।
 
-1. Read the chapter's full entry in `CURRICULUM.md`: identity, outcomes, prerequisites, milestone plan, tool lifecycle, testing strategy, Red/Blue learning, and visual plan.
-2. Read `CONTENT-GUIDELINES.md` in full if you have not done so in this session.
-3. Identify which existing tools or chapters the new chapter depends on. Read them if they exist in `chapters/`.
+## 4. Narrative quality
 
-### Respect the milestone structure
+- চরিত্রকে technical concept বোঝানোর mouthpiece বানাবে না।
+- Character-এর motive, limitation, ভুল, দ্বিধা, সম্পর্ক ও consequence থাকবে।
+- Tension তৈরি হবে uncertainty, conflicting evidence, risk, deadline ও competing incentives থেকে।
+- একই scene formula বা cliffhanger বারবার ব্যবহার করবে না।
+- Filler বা artificial word count নয়।
+- Continuity না পড়ে নতুন canon invent করবে না।
+- Hypothesis-কে evidence হিসেবে উপস্থাপন করবে না।
 
-- Each subchapter corresponds to exactly one milestone from the curriculum plan.
-- Do not combine milestones or skip ahead because they seem minor.
-- Each milestone must end with the learner holding a working, testable increment.
+## 5. Technical correctness
 
-### Preserve independent challenges
+- Protocol, OS, architecture, cryptography, AI ও security behavior যাচাই ছাড়া দাবি করবে না।
+- Drama তৈরির জন্য technical law বদলাবে না।
+- Diagram ও prose একই behavior দেখাবে।
+- Logs, packets, outputs, vulnerabilities ও fixtures consistent হবে।
+- Limitation, uncertainty ও failure mode প্রকাশ করবে।
+- Simplification করলে label করো।
 
-- Do not include implementation code in the regular chapter body.
-- Do not provide a starter implementation that effectively solves the challenge.
-- Do not write fill-in-the-blank exercises that remove meaningful implementation decisions.
-- Do provide clear behavioral contracts: inputs, outputs, error states, constraints, acceptance criteria.
-- Hints may be included in a collapsible section or a separate `hints/` note. Hints must be conceptual, not code-revealing.
-- A complete reference implementation may only be included if the chapter explicitly designates a reference section and the curriculum approves it.
+## 6. Language
 
-### Introduce theory incrementally
+- Explanatory content ও narrative বাংলা।
+- Technical terms, code, command, flags, API, protocol, identifier ও schema field English-এ।
+- Natural Bengali prose; অপ্রয়োজনীয় English sentence নয়।
+- প্রথমবার term এলে ছোট বাংলা ব্যাখ্যা দাও।
+- Technical precision নষ্ট করে জোরপূর্বক অনুবাদ করবে না।
 
-- Teach only what is needed for the current milestone.
-- Do not front-load theory for future milestones.
-- Introduce each new concept immediately before the milestone that requires it.
+## 7. Visuals
 
-### Use capability-first naming
+- Concept বোঝাতে Mermaid, flowchart, sequence, architecture, state, timeline বা table ব্যবহার করো।
+- Narrative image সত্যিই scene উন্নত করলে placeholder ও detailed English prompt দাও।
+- AI-generated image-কে accurate architecture বা technical evidence হিসেবে ব্যবহার করবে না।
+- World Bible অনুমোদিত হওয়ার আগে character design স্থির করবে না।
+- Decorative visual যোগ করবে না।
 
-- Chapter titles: `[Memorable Capability]: Build [Concrete Tool]`
-- Subchapter titles: outcome-oriented, specific to the milestone gained
-- Do not use generic academic titles.
+## 8. Safety
 
-### Embed diagrams in Markdown
+docs/SECURITY-AND-SAFETY.md বাধ্যতামূলক। Real unauthorized target, credential theft, persistence, stealth, malware deployment বা ক্ষতিকর operational walkthrough তৈরি করবে না। Safe local simulation, synthetic evidence, detection ও mitigation-কে অগ্রাধিকার দাও।
 
-- All Mermaid diagrams go directly in the chapter `.md` file.
-- Do not create a `diagrams/` directory, a chapter-level diagram folder, or separate diagram files.
-- Every diagram must explain a concept. Do not add diagrams for decoration.
-- Explain the diagram's key takeaways in nearby text.
+## 9. AI workflow
 
----
+1. Understand: request ও canon পড়ো।
+2. Plan: deliverable, dependency, uncertainty ও review criteria নির্ধারণ।
+3. Propose: বড় plot বা architecture পরিবর্তনের আগে review চাও।
+4. Draft: approved facts ও template অনুসরণ।
+5. Verify: narrative, technical, visual, continuity, language ও safety review।
+6. Report: কী বদলেছে, কী যাচাই হয়েছে, কী বাকি এবং কোন human decision প্রয়োজন তা জানাও।
 
-## When Modifying Existing Content
+## 10. নিষিদ্ধ অনুমান
 
-### Check prerequisites and downstream dependencies before changing a chapter
+- User approval ছাড়া DC character, setting, relationship বা plot-কে final canon ধরবে না।
+- প্রতিটি episode-এ tool, diagram, image, quiz বা lab বাধ্যতামূলক করবে না।
+- Tool count-কে learning quality-এর মাপকাঠি করবে না।
+- Professional competency-কে নির্দিষ্ট tool বা volume count-এ সীমাবদ্ধ করবে না।
+- Research বা test না করে verified বলবে না।
 
-`CURRICULUM.md` documents which chapters depend on each chapter's tools and outcomes. Verify that changes do not silently invalidate downstream work.
+## 11. Completion checklist
 
-### Preserve established tool contracts
-
-- Do not change a tool's output format, error behavior, or state classification without explicit justification.
-- Document intentional contract changes in the chapter's debrief section and in `CURRICULUM.md`.
-- Add regression tests when modifying existing behavior.
-
-### Update CURRICULUM.md when a change affects scope
-
-If a chapter is split, merged, reordered, or its milestone plan materially changes, update the relevant entries in `CURRICULUM.md`. Do not let the curriculum drift out of sync with the actual chapters.
-
----
-
-## Safety and Security Boundaries
-
-- All exercises must target local test servers, synthetic traffic, intentionally vulnerable local applications, or explicitly authorized targets.
-- Do not design exercises that depend on external public services.
-- Where a tool can reach external systems, make the scope and authorization requirements explicit in the challenge specification.
-- Safe defaults are mandatory: tools must use timeouts, respect resource limits, and handle cancellation.
-- Do not teach users to disable certificate validation, suppress errors, or ignore security warnings as routine practice.
-
----
-
-## Testing
-
-- Do not claim that tests passed if none were run.
-- Do not assert that a tool is correct based on reading the code alone.
-- Include deterministic local test fixtures wherever the behavior can be verified without a live network.
-- When the curriculum plan specifies a verification approach for a milestone, implement it.
-
----
-
-## Repository Structure
-
-The intended structure is minimal. Do not introduce new top-level directories without a strong curriculum justification.
-
-**Allowed to create as implementation begins:**
-- `chapters/NN-chapter-slug/` — chapter content
-- `go.mod` — when the first Go implementation begins
-- Tool directories as implementation milestones are reached
-
-**Do not create prematurely:**
-- `diagrams/`
-- `scripts/`
-- `cmd/`, `internal/`
-- `lab/`
-- `Makefile`, `.github/workflows/`, Docker configuration
-
-These are introduced when actual implementation work justifies them.
-
----
-
-## Red/Blue Balance
-
-Maintain meaningful offensive and defensive coverage across the overall curriculum. When writing a chapter:
-
-- Identify which Red Team activities and Blue Team activities the chapter covers.
-- Do not treat Blue Team content as a short note appended to an offensive tutorial.
-- Connect offensive findings to defensive actions explicitly.
-
----
-
-## Honesty Constraints
-
-- Do not claim unverified behavior.
-- Do not invent curriculum details not present in `CURRICULUM.md`. If details are missing, flag the gap rather than inventing a resolution.
-- Do not silently make major scope changes. Document decisions and their rationale.
-- When the curriculum is ambiguous, note the ambiguity and propose a resolution for human review.
+- [ ] User request পূরণ।
+- [ ] Story-first ও concept-first philosophy অক্ষুণ্ণ।
+- [ ] Bengali prose, English technical terms।
+- [ ] Technical claims accurate ও evidence-aware।
+- [ ] Visuals প্রয়োজনমতো, decorative নয়।
+- [ ] Safety boundary অক্ষুণ্ণ।
+- [ ] Canon ও continuity ভাঙেনি।
+- [ ] Unknown ও human decision স্পষ্ট।
+- [ ] Verification status সত্যভাবে জানানো হয়েছে।

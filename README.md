@@ -1,120 +1,56 @@
-# red-blue-lab
+# Cyber Thriller Learning Project
 
-A progressive, story-driven, hands-on cybersecurity curriculum.
+> 📖 **প্রথমে একটি গল্প। গল্পের ভেতর দিয়ে আবিষ্কৃত হবে technology, security এবং engineering-এর জগৎ।**
 
----
+এই repository একটি AI-assisted **Cyber Security Mystery Thriller** project-এর foundation। পাঠক এখানে গল্প পড়তে আসবে, syllabus শেষ করতে নয়। রহস্য, conflict, investigation ও character journey অনুসরণ করতে গিয়ে সে স্বাভাবিকভাবেই বাস্তব Cyber Security ও Systems Engineering সম্পর্কে গভীর ধারণা অর্জন করবে।
 
-## What is this?
+## 🎯 মূল দর্শন
 
-`red-blue-lab` is an executable learning journey through offensive and defensive security.
+- **Story-first:** গল্পের mystery ও character motivation আগে। Learning objective গল্পকে জোর করে চালাবে না।
+- **Concept-first, tool-second:** Tool হলো বোঝা, পরীক্ষা বা প্রতিরক্ষার instrument; project-এর কেন্দ্র নয়।
+- **Visualization-led:** System, data flow, trust boundary, protocol, state transition, attack path ও failure mode বোঝাতে উপযুক্ত visual ব্যবহার করো।
+- **Professional depth:** Foundational থেকে advanced security engineering competency তৈরি করো; চাকরি বা certification-এর নিশ্চয়তা দিও না।
+- **Evidence over assumption:** Observation, hypothesis, inference, confirmed finding ও unknown আলাদা রাখো।
+- **Safe by design:** Practical exercise local lab, synthetic fixture, intentionally vulnerable environment অথবা explicitly authorized target-এ হবে।
+- **Readable, not exhausting:** Scene, dialogue, visual break, evidence card, diagram ও pacing ব্যবহার করো।
 
-Each chapter asks you to build a real tool — a port scanner, an HTTP inspector, a packet parser, a crypto auditor — and use it to investigate, attack, and defend systems in a controlled lab environment. The tools evolve chapter by chapter, growing in capability and correctness as your knowledge grows.
+## 🧭 পাঠকের অভিজ্ঞতা
 
-This is not a collection of notes or a reading list. It is a curriculum designed around **doing**: reading specifications, writing implementations, running experiments, and verifying results.
+Novel পড়তে Cyber Lab করা বাধ্যতামূলক নয়। Lab করতে Novel পড়াও বাধ্যতামূলক নয়। গল্পের কোনো অস্বাভাবিক network event পাঠকের কৌতূহল তৈরি করতে পারে; চাইলে সে আলাদা Concept Note বা Lab খুলে গভীরে যেতে পারবে।
 
----
+## 🗺️ Repository map
 
-## Who is this for?
-
-Learners who want to:
-
-- Understand how networks, protocols, and operating systems actually work.
-- Build practical security tools from first principles.
-- Think like both an attacker and a defender.
-- Develop the habit of verifying claims with evidence rather than accepting them at face value.
-
-Prior programming experience is assumed. Familiarity with Go is helpful but not required. No prior security background is needed.
-
----
-
-## What will you build?
-
-By the end of the curriculum, you will have built a personal toolkit of security tools, each capable of real investigative work:
-
-| Tool | Capability |
+| Path | দায়িত্ব |
 |---|---|
-| Byte Inspector | Inspect raw bytes, encodings, and representations |
-| Network Diagnostic Tool | Diagnose local network configuration and connectivity |
-| TCP Port Scanner | Identify open, closed, and uncertain ports with bounded concurrency |
-| DNS Inspector | Query and compare DNS records across record types |
-| Service Fingerprinter | Identify services by banner and protocol probe |
-| HTTP Inspector | Examine requests, responses, headers, and redirects |
-| HTTP Proxy | Intercept, log, and modify HTTP traffic |
-| Web Security Header Scanner | Audit security headers and cookie attributes |
-| Web Authorization Tester | Test authentication and authorization boundaries |
-| Packet Inspector | Parse captured network packets and reconstruct streams |
-| TLS Certificate Checker | Validate certificate chains, expiry, and configuration |
-| System Diagnostics Tool | Inspect processes, file descriptors, and permissions |
-| Fuzz Testing Tool | Generate malformed inputs and catch parser failures |
-| Vulnerability Regression Harness | Reproduce bugs, verify fixes, and prevent regressions |
-| Crypto Audit Tool | Detect cryptographic misuse and weak configurations |
-| Security Event Detector | Parse logs, apply detection rules, and generate alerts |
-| Incident Investigation Tool | Reconstruct timelines and produce structured incident reports |
-| Red/Blue Assessment Toolkit | Integrate all tools in an authorized lab engagement |
+| AGENTS.md | AI agent-এর বাধ্যতামূলক operating rules |
+| docs/PROJECT-CHARTER.md | Project identity, goals ও non-goals |
+| docs/AUTHORING-GUIDELINES.md | Narrative ও explanatory content rules |
+| docs/LEARNING-ARCHITECTURE.md | Competency-first learning model |
+| docs/VISUAL-DESIGN-GUIDELINES.md | Diagram, flowchart ও image rules |
+| docs/SECURITY-AND-SAFETY.md | Offensive/defensive learning safety |
+| docs/AI-WORKFLOW.md | AI planning, authoring ও review workflow |
+| docs/CONTENT-TEMPLATES.md | Reusable content templates |
+| docs/DECISIONS.md | Approved ও open decisions |
+| templates/ | Episode, concept ও image starter templates |
 
-All tools are implemented in **Go**, using the standard library wherever it teaches the mechanism directly.
+## 🧱 Foundation-এর সীমা
 
----
+এই PR কোনো character, plot, villain motivation, setting, AI system বা world rule স্থির করছে না। এগুলো পরবর্তী world-building phase-এ human review-এর মাধ্যমে স্থির হবে।
 
-## The Red/Blue Perspective
+## 🚦কোথা থেকে শুরু করবে?
 
-Every chapter is told through the work of two fictional engineers:
+1. docs/PROJECT-CHARTER.md
+2. docs/AUTHORING-GUIDELINES.md
+3. docs/LEARNING-ARCHITECTURE.md
+4. docs/VISUAL-DESIGN-GUIDELINES.md
+5. AI content তৈরির আগে AGENTS.md ও docs/AI-WORKFLOW.md
 
-**Rayhan** is on the Red Team. He investigates services, discovers weaknesses, reproduces bugs in controlled environments, and maps attack paths.
+## 🌐 ভাষানীতি
 
-**Samia** is on the Blue Team. She analyzes evidence, identifies suspicious behavior, builds detections, implements mitigations, and verifies that defenses hold.
+সব README, instruction, guideline, template ও explanatory prose বাংলা হবে। Technical terms, protocol names, API, command, code identifier, schema field ও machine-readable value English-এ থাকবে। প্রথমবার technical term এলে প্রয়োজনমতো ছোট বাংলা ব্যাখ্যা দাও।
 
-Their work is not separate. Rayhan's findings motivate Samia's defenses. Samia's detections constrain what Rayhan can do unnoticed. The curriculum follows the full chain:
+## ⚖️ Intellectual Property
 
-> Discover weakness → Reproduce it → Understand root cause → Implement defense → Test the defense → Verify the fix
+DC Comics-এর character নিয়ে fan-fiction বা alternate-universe concept copyrighted character ও trademark-এর সীমাবদ্ধতার আওতায় পড়তে পারে। Repository কোনো ownership বা license দাবি করে না। Public distribution বা commercial release-এর আগে permission/licensing অথবা original-character adaptation বিবেচনা করতে হবে। বিস্তারিত docs/DECISIONS.md-এ।
 
----
-
-## The Independent Challenge Model
-
-Each chapter gives you:
-
-- A technical explanation of the concepts you need.
-- Diagrams, examples, and experiments that make the concepts concrete.
-- A precise specification: inputs, outputs, behavior, constraints, edge cases, error handling, and acceptance criteria.
-
-What it does **not** give you is the implementation.
-
-You write the code. You verify it passes the acceptance criteria. You decide how to structure it.
-
-When you need a nudge, hints are available. When you genuinely want to compare your approach, a reference implementation can be requested. But the primary path is independent: you read the spec, you build the tool, you verify the result.
-
----
-
-## Incremental Tool Evolution
-
-No chapter asks you to build a large, complete tool from nothing.
-
-Each chapter begins where the last one left off. A scanner that opens one TCP connection in subchapter 1 gains range support in subchapter 2, proper timeout handling in subchapter 3, bounded concurrency in subchapter 4, and structured output in subchapter 5. Each milestone adds one meaningful capability, leaves you with a working and testable increment, and includes regression tests to ensure earlier behavior is preserved.
-
----
-
-## Learning Philosophy
-
-- **Just-in-time theory:** Concepts are introduced when you need them, not front-loaded.
-- **Visual-first:** Diagrams, tables, and annotated examples take priority over prose.
-- **Evidence over assumption:** You verify behavior with tests, not by reading that something should work.
-- **Safety by default:** All exercises run against local test servers or authorized targets. The curriculum explains operational boundaries throughout.
-
----
-
-## How to Navigate
-
-Start at [**Chapter 00: Your First Security Lab**](chapters/00-your-first-security-lab/README.md). Each chapter lists its prerequisites explicitly. The curriculum is designed to be followed in order, but later chapters identify exactly which earlier tools and concepts they depend on.
-
-**Curriculum overview:** [`docs/CURRICULUM.md`](docs/CURRICULUM.md)
-
-**Content and authoring guidelines:** [`docs/CONTENT-GUIDELINES.md`](docs/CONTENT-GUIDELINES.md)
-
-**Chapter content:** [`chapters/`](chapters/)
-
----
-
-## License
-
-Content and curriculum are for educational use. See `LICENSE` when added.
+✨ **মানদণ্ড:** পাঠক যেন পরের episode পড়তে চায়; পরে বুঝতে পারে গল্পের সঙ্গে সঙ্গে তার system বোঝার ক্ষমতাও বদলে গেছে।
