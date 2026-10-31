@@ -209,15 +209,6 @@ Verification-এ দেখা হবে পাঠক:
 - Root cause, limitation ও residual risk ব্যাখ্যা করতে পারে কি না।
 - Trade-off-সহ design বা mitigation প্রস্তাব করতে পারে কি না।
 
-## 8. Existing learning repositories-এর সঙ্গে সম্পর্ক
-
-এই project-এর domain map standalone এবং বিস্তৃত থাকবে। বিদ্যমান repository-র content duplicate করার প্রয়োজন নেই; প্রয়োজনমতো সেগুলোকে companion learning resource হিসেবে reference করা যাবে।
-
-- **network-stack:** Networking fundamentals, protocols, addressing, routing, TLS, network security, production networking ও troubleshooting-এর companion resource।
-- **trust-stack:** Authentication, authorization, session, token, OAuth/OIDC এবং web identity security-এর companion resource।
-
-এই দুই repository পুরো Learning Domain cover করে না। Computing foundations, OS internals, distributed systems, forensics, reverse engineering, AI/ML, embedded, hardware ও control systems-এর মতো বিষয় এই project-এর broader scope-এর অংশ থাকবে।
-
-## 9. Scope ও evolution
+## 8. Scope ও evolution
 
 এই taxonomy approved learning direction, exhaustive syllabus বা chapter commitment নয়। Story arc, technical research ও reader needs অনুযায়ী topic-এর depth, order এবং specialization evolve করতে পারে। বড় structural পরিবর্তন DECISIONS.md-এ review ও approval-এর মাধ্যমে নথিভুক্ত করতে হবে।
