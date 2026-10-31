@@ -5,10 +5,9 @@
 > **প্রধান deliverable:** portscan, একটি host-এর TCP port bounded concurrency-তে পরীক্ষা করার CLI tool  
 > **পূর্বশর্ত:** [Chapter 00](../00-your-first-security-lab/README.md) এবং [Chapter 02](../02-see-your-network/README.md)-এর TCP connectivity ধারণা
 
-Rayhan একটি অনুমোদিত lab host-এর service inventory তৈরি করছে। একটি port-এ connect করা আর অনেকগুলো port পরীক্ষা করা এক কাজ নয়। Samia চায় scanner যেন resource limit মানে, অনিশ্চিত ফলাফলকে “বন্ধ” বলে চালিয়ে না দেয় এবং মাঝপথে থামালেও partial evidence সৎভাবে দেখায়।
+Chapter 02-এর report-এ একটি authorized lab host-এর address ও TCP connectivity evidence পাওয়া গেছে। একটি নির্দিষ্ট port-এ connection সফল হওয়া মানে host-এর সব service জানা হয়ে গেছে, এমন নয়। Rayhan জানতে চায় আর কোন TCP port connection গ্রহণ করছে; Samia চায় প্রতিটি attempt-এর scope, resource use এবং uncertainty নিয়ন্ত্রণে থাকুক।
 
-এই অধ্যায়ে scanner ধাপে ধাপে তৈরি হবে: একটি port, একাধিক port, timeout classification, bounded concurrency, cancellation এবং structured output।
-
+তাদের সামনে এখন একটি নতুন সমস্যা: অনেক port পরীক্ষা করতে গিয়ে যেন scanner নিজেই lab-কে অস্থিতিশীল না করে, আর timeout-কে ভুল করে “closed” না বলে। এই অধ্যায়ে তুমি `portscan` তৈরি করবে। একটি port দিয়ে শুরু করে ধাপে ধাপে selection, timeout classification, bounded concurrency, cancellation এবং structured output যোগ হবে.
 ### কয়েকটি প্রয়োজনীয় Technical term
 
 - **Worker pool:** নির্দিষ্ট সংখ্যক worker-এর দল, যারা queue থেকে কাজ নিয়ে সীমিত সংখ্যায় একসঙ্গে সম্পন্ন করে।
@@ -94,6 +93,8 @@ Firewall drop, route failure বা lost response timeout তৈরি করত
 
 # 03.1: একটি Port পরীক্ষা করো
 
+Chapter 02-এ একটি endpoint পরীক্ষা করে যে পার্থক্যগুলো শেখা হয়েছে, এবার সেগুলো scanner-এর প্রথম result-এ প্রকাশ করতে হবে। Rayhan একটি নির্দিষ্ট lab port বেছে নেয়। Samia বলে, “একটি attempt, একটি evidence-based state; এর বেশি কিছু এখনো দাবি করা যাবে না।”
+
 ### কী তৈরি করবে
 
 একটি host ও একটি TCP port পরীক্ষা করবে।
@@ -140,6 +141,7 @@ Firewall drop, route failure বা lost response timeout তৈরি করত
 
 # 03.2: একাধিক Port ধারাবাহিকভাবে পরীক্ষা করো
 
+একটি port-এর ফলাফল তাদের একটি উত্তর দিয়েছে, কিন্তু service inventory দেয়নি। Rayhan কয়েকটি নির্দিষ্ট port পরীক্ষা করতে চায়। Samia প্রথমে concurrency বাড়াতে রাজি নয়: selection parsing ও sequential result সঠিক না হলে দ্রুত scan কেবল দ্রুত ভুল তৈরি করবে।
 একটি port-এর বদলে Rayhan এখন ছোট selection পরীক্ষা করতে চায়। আগে sequential execution রাখলে ফলাফল বোঝা সহজ হবে।
 
 ### কী তৈরি করবে
@@ -179,6 +181,7 @@ Firewall drop, route failure বা lost response timeout তৈরি করত
 
 # 03.3: Timeout সামলাও, নীরবতাকে 'না' ভেবো না
 
+দ্বিতীয় scan-এ একটি port উত্তর দেয়নি। Rayhan সেটিকে বন্ধ হিসেবে লিখতে যাচ্ছিল, কিন্তু Samia আগের diagnostic report খুলে timeout-এর সীমা মনে করিয়ে দেয়। এবার deadline এবং অন্য dial error-কে আলাদা করে পরীক্ষা করতে হবে, যাতে নীরবতাকে ভুল verdict না বানানো হয়।
 Timeout হলো অপেক্ষার সীমা, remote port-এর verdict নয়। এখন timeout configurable হবে এবং error classification আলাদা করে test করা হবে।
 
 ### কী তৈরি করবে
@@ -215,6 +218,7 @@ Timeout হলো অপেক্ষার সীমা, remote port-এর verd
 
 # 03.4: নিরাপদে গতি বাড়াও, Concurrency সীমাবদ্ধ রাখো
 
+Sequential scan সঠিক, কিন্তু port selection বড় হলে অপেক্ষা দীর্ঘ হয়। Rayhan একসঙ্গে অনেক attempt চালানোর প্রস্তাব দেয়। Samia প্রশ্ন করে, “তুমি কি জানো একসঙ্গে কতগুলো connection তৈরি হচ্ছে?” গতি বাড়াতে হবে, কিন্তু worker ও resource-এর সীমা না হারিয়ে।
 Sequential scan সহজ, কিন্তু অনেক port ও timeout থাকলে ধীর। Unbounded goroutine তৈরি করা সমাধান নয়: file descriptor, memory, ephemeral port এবং target-এর capacity শেষ হতে পারে।
 
 ### কী তৈরি করবে
@@ -271,6 +275,7 @@ Worker count concurrent dial attempt-এর সর্বোচ্চ সংখ�
 
 # 03.5: পরিষ্কারভাবে Scan থামাও, Context ও Cancellation
 
+একটি lab run-এ Rayhan বুঝতে পারে target selection ভুল হয়েছে। Ctrl-C চাপলেই যেন সব কাজ হঠাৎ হারিয়ে না যায়; ইতিমধ্যে সম্পন্ন attempt-এর evidence দরকার, কিন্তু নতুন attempt আর শুরু হওয়া চলবে না। Samia চায় scanner থামার সংকেত মানুক, in-flight কাজ পরিষ্কার করুক এবং অসম্পূর্ণ scan-কে অসম্পূর্ণ বলেই দেখাক.
 Rayhan ভুল target selection দিয়ে scan শুরু করেছে। Terminal process জোর করে বন্ধ করলে cleanup অসম্পূর্ণ হতে পারে। Scanner-কে থামতে হবে, কিন্তু ইতিমধ্যে পাওয়া evidence রাখতে হবে।
 
 ### কী তৈরি করবে
@@ -340,6 +345,7 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 
 # 03.6: ফলাফলের ওপর আস্থা রাখো, Structured Output ও Test
 
+Rayhan-এর human-readable report তদন্তের জন্য যথেষ্ট, কিন্তু Samia একই ফলাফল পরের tool-এ দিতে চায়। Timestamp ও duration বদলালেও record-এর অর্থ ও schema বদলানো চলবে না। এখন scanner-কে শুধু মানুষের পড়ার উপযোগী নয়, machine-এর সঙ্গে নির্ভরযোগ্যভাবে কথা বলার উপযোগীও করতে হবে.
 মানুষের জন্য readable output ভালো, কিন্তু পরের tool-এ scan result পাঠাতে structured data দরকার। Timestamp ও duration প্রতিবার বদলাবে। Stable output বলতে schema, field meaning এবং ordering স্থিতিশীল হওয়া বোঝায়, byte-for-byte identical output নয়।
 
 ### কী তৈরি করবে
