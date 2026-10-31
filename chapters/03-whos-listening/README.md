@@ -1,4 +1,4 @@
-# Chapter 03: Who's Listening?: Build a TCP Port Scanner
+# অধ্যায় ০৩: কে শুনছে? একটি TCP Port Scanner তৈরি
 
 > **পর্যায়:** ২, Network-এ কী চলছে তা আবিষ্কার  
 > **স্তর:** L2, reliable tool  
@@ -73,7 +73,7 @@ sequenceDiagram
 
 এই trace-গুলো সাধারণ outcome বোঝায়। প্রতিটি OS/network-এ packet behavior হুবহু একই হবে, এমন নিশ্চয়তা নয়।
 
-| State | Evidence | অর্থ |
+| State | প্রমাণ | অর্থ |
 |---|---|---|
 | open | TCP connection সফল | Connection গ্রহণ করা হয়েছে |
 | closed | Explicit connection refused | Connection প্রত্যাখ্যাত |
@@ -83,7 +83,7 @@ Firewall drop, route failure বা lost response timeout তৈরি করত
 
 ---
 
-# 03.1: One at a Time: Scan a Single Port
+# 03.1: একটি Port পরীক্ষা করো
 
 ### কী তৈরি করবে
 
@@ -129,7 +129,7 @@ Firewall drop, route failure বা lost response timeout তৈরি করত
 
 ---
 
-# 03.2: More Ports: Scan a Range Sequentially
+# 03.2: একাধিক Port ধারাবাহিকভাবে পরীক্ষা করো
 
 একটি port-এর বদলে Rayhan এখন ছোট selection পরীক্ষা করতে চায়। আগে sequential execution রাখলে ফলাফল বোঝা সহজ হবে।
 
@@ -154,7 +154,7 @@ Firewall drop, route failure বা lost response timeout তৈরি করত
 
 **Edge cases:** Single port, single-element range, reversed range, overlapping range, duplicate, empty component, whitespace, port 1/65535, zero, 65536, malformed number।
 
-**Errors:** Invalid selection stderr ও non-zero; কোনো partial scan নয়। Valid scan-এ প্রতিটি port-এর result দেখাবে। Exit behavior: সব port open হলে zero, অন্য state থাকলে non-zero।
+**Error ও Exit behavior:** Invalid selection হলে stderr-এ error এবং non-zero exit; কোনো port scan হবে না। Valid selection-এর সব port attempt সম্পন্ন হলে ফলাফল `open`, `closed` বা `unknown` যাই হোক exit code `0`। Finding-এর state execution failure নয়।
 
 **Acceptance criteria**
 - Single/range/list parsing সঠিক।
@@ -168,7 +168,7 @@ Firewall drop, route failure বা lost response timeout তৈরি করত
 
 ---
 
-# 03.3: Not Every Silence Is a No: Handle Timeouts Properly
+# 03.3: Timeout সামলাও, নীরবতাকে 'না' ভেবো না
 
 Timeout হলো অপেক্ষার সীমা, remote port-এর verdict নয়। এখন timeout configurable হবে এবং error classification আলাদা করে test করা হবে।
 
@@ -184,7 +184,7 @@ Timeout হলো অপেক্ষার সীমা, remote port-এর verd
 - Error classification string matching দিয়ে নয়; typed/wrapped error semantics দিয়ে।
 - Classification logic dial operation থেকে আলাদা test করা যাবে।
 - Invalid timeout হলে network attempt-এর আগেই reject।
-- 03.2-এর exit rule বজায়: কোনো selected port open না হলে non-zero।
+- সব selected port attempt সম্পন্ন হলে exit code `0`, কোনো port open না হলেও। `open`, `closed` ও `unknown` হলো finding, execution failure নয়।।
 
 **Edge cases:** Default, short/long positive timeout, zero/negative/malformed/অত্যন্ত বড় duration, wrapped refusal, deadline error, network unreachable, DNS error, unrelated error, deadline-এর আগে success।
 
@@ -204,7 +204,7 @@ Timeout হলো অপেক্ষার সীমা, remote port-এর verd
 
 ---
 
-# 03.4: Speed Up Safely: Bounded Concurrency
+# 03.4: নিরাপদে গতি বাড়াও, Concurrency সীমাবদ্ধ রাখো
 
 Sequential scan সহজ, কিন্তু অনেক port ও timeout থাকলে ধীর। Unbounded goroutine তৈরি করা সমাধান নয়: file descriptor, memory, ephemeral port এবং target-এর capacity শেষ হতে পারে।
 
@@ -214,14 +214,14 @@ Worker pool এবং `--workers N`।
 
 ```mermaid
 flowchart LR
-    P["Validated port list"] --> Q["Work queue"]
-    Q --> W1["Worker 1"]
-    Q --> W2["Worker 2"]
+    P["যাচাইকৃত Port তালিকা"] --> Q["কাজের Queue"]
+    Q --> W1["Worker ১"]
+    Q --> W2["Worker ২"]
     Q --> WN["Worker N"]
     W1 --> R["Results"]
     W2 --> R
     WN --> R
-    R --> C["Collector and sorter"]
+    R --> C["সংগ্রাহক ও Sorter"]
 ```
 
 Worker count concurrent dial attempt-এর সর্বোচ্চ সংখ্যা নির্ধারণ করে। Execution order এবং presentation order আলাদা।
@@ -260,7 +260,7 @@ Worker count concurrent dial attempt-এর সর্বোচ্চ সংখ�
 
 ---
 
-# 03.5: Cancel Cleanly: Context and Cancellation
+# 03.5: পরিষ্কারভাবে Scan থামাও, Context ও Cancellation
 
 Rayhan ভুল target selection দিয়ে scan শুরু করেছে। Terminal process জোর করে বন্ধ করলে cleanup অসম্পূর্ণ হতে পারে। Scanner-কে থামতে হবে, কিন্তু ইতিমধ্যে পাওয়া evidence রাখতে হবে।
 
@@ -277,13 +277,13 @@ Context-aware scan এবং Ctrl-C/SIGINT cancellation।
 
 ```mermaid
 flowchart TD
-    S["SIGINT / Ctrl-C"] --> C["Cancel scan context"]
-    C --> Q["Stop scheduling"]
-    C --> D["In-flight dials observe cancellation"]
-    Q --> W["Workers exit"]
+    S["SIGINT / Ctrl-C"] --> C["Scan Context বাতিল"]
+    C --> Q["নতুন কাজ দেওয়া বন্ধ"]
+    C --> D["চলমান Dial cancellation বুঝবে"]
+    Q --> W["Worker-গুলো শেষ হবে"]
     D --> W
-    W --> R["Collect completed results"]
-    R --> O["Print partial results and summary"]
+    W --> R["সম্পন্ন ফলাফল সংগ্রহ"]
+    R --> O["আংশিক ফলাফল ও সারাংশ দেখাও"]
 ```
 
 Cancellation মানে সব selected port-এর result পাওয়া যায়নি।
@@ -312,7 +312,7 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 
 **Edge cases:** প্রথম port schedule-এর আগে cancel, সব worker dial-এ blocked, কিছু result collect হওয়ার পরে cancel, final result-এর পর presentation-এর আগে cancel, repeated signal, dial completion ও cancellation একই সময়ে।
 
-**Exit behavior:** Cancelled CLI scan partial result ও summary দেখিয়ে non-zero exit। Normal scan আগের exit behavior রাখবে।
+**Exit behavior:** স্বাভাবিকভাবে সব selected port attempt সম্পন্ন হলে exit code `0`, finding যাই হোক। Cancelled scan partial result ও summary দেখিয়ে non-zero exit। Invalid input/configuration-এ scan শুরুর আগেই non-zero exit।
 
 **Acceptance criteria**
 - Cancellation নতুন কাজ থামায়।
@@ -329,7 +329,7 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 
 ---
 
-# 03.6: Trust the Results: Structured Output and Tests
+# 03.6: ফলাফলের ওপর আস্থা রাখো, Structured Output ও Test
 
 মানুষের জন্য readable output ভালো, কিন্তু পরের tool-এ scan result পাঠাতে structured data দরকার। Timestamp ও duration প্রতিবার বদলাবে। Stable output বলতে schema, field meaning এবং ordering স্থিতিশীল হওয়া বোঝায়, byte-for-byte identical output নয়।
 
@@ -370,7 +370,7 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 
 **Edge cases:** Empty selection, one/many result, তিন state-ই, cancellation before/after partial result, hostname/IP, unusual host string-এর JSON escaping, invalid output mode, খুব short duration।
 
-**Error behavior:** Invalid mode stderr ও non-zero, scan শুরুর আগে। Interrupted JSON stream parseable থাকবে; explanation stderr-এ। Completed scan-এর আগের exit rule বজায়, cancellation non-zero।
+**Error ও Exit behavior:** Invalid mode stderr-এ error ও non-zero exit, scan শুরুর আগে। Completed scan-এর সব result emit হলে exit code `0`, finding state যাই হোক। Interrupted JSON stream-এ completed record থাকবে, explanation stderr-এ এবং exit code non-zero।
 
 **Acceptance criteria**
 - Default human।
