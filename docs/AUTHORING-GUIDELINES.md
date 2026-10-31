@@ -54,7 +54,16 @@ Log-এ event নেই মানেই event ঘটেনি নয়। Timeout 
 - Vulnerability, exploitability, impact ও attribution আলাদা।
 - Simplification করলে label করো।
 
-## 4. Story ও learning content আলাদা
+## 4. Story ও learning content-এর integration
+
+Story ও learning material-এর format আলাদা হতে পারে, কিন্তু reader-facing experience-এ তারা বিচ্ছিন্ন নয়। Story curiosity বা knowledge gap তৈরি করলে সংশ্লিষ্ট detailed learning material narrative sequence-এর অংশ হিসেবে উপস্থাপিত হবে। এরপর character-এর application, experiment, decision বা consequence-এ গল্প এগোতে পারে।
+
+- **Novel scene:** scene, dialogue, action, clue, conflict, revelation।
+- **Concept Note / Study Material:** system explanation, diagram, protocol walkthrough, comparison।
+- **Lab:** experiment, implementation specification, local fixture, verification।
+- **Reference:** glossary, architecture note, evidence index, continuity fact।
+
+Learning material-এর নিজস্ব structure থাকবে এবং Novel ও learning material independently readable থাকবে। Learning source শুধু Peter নয়; বর্তমান POV character-এর study, research, investigation, design বা tool-building থেকেও material আসতে পারে। Novel-এ classroom lecture বা artificial syllabus narration ঢোকাবে না।
 
 - **Novel:** scene, dialogue, action, clue, conflict, revelation।
 - **Concept Note:** system explanation, diagram, protocol walkthrough, comparison।
@@ -80,7 +89,7 @@ Novel-এ checklist বা acceptance criteria ঢোকাবে না। গ�
 
 ## 7. Learning connection
 
-প্রয়োজন অনুযায়ী আলাদা artifact:
+প্রয়োজন অনুযায়ী story-এর সঙ্গে integrated learning artifact:
 - Concept Note
 - Visual Walkthrough
 - Safe Experiment

@@ -118,3 +118,46 @@ Concept explainer, architecture diagram, protocol walkthrough, safe experiment, 
 - পূর্বের concept reference করে নতুন depth যোগ করো।
 - শুধু completeness-এর জন্য domain যোগ করো না।
 - Roadmap review-এর মাধ্যমে evolve করবে।
+
+
+## 11. Integrated narrative learning
+
+Learning-এর reader-facing flow:
+
+**Story → Curiosity → Knowledge → Exploration → Discovery → Engineering Judgment**
+
+Story কোনো প্রশ্ন, failure, investigation বা character need তৈরি করবে। সেই moment-এর পর সংশ্লিষ্ট detailed learning material narrative sequence-এর অংশ হিসেবে আসবে; এরপর character-এর প্রয়োগ, পরীক্ষা, সিদ্ধান্ত বা consequence-এ গল্প এগোবে।
+
+- Learning material শুধু Peter-এর জন্য নয়; বর্তমান POV character-এর কাজ ও knowledge context অনুযায়ী হবে।
+- Character study, research, investigation, experiment, design এবং tool-building learning-এর স্বাভাবিক উৎস হতে পারে।
+- Learning material-এর নিজস্ব heading, diagram, evidence বা explanatory structure থাকতে পারে; কিন্তু story experience থেকে বিচ্ছিন্ন classroom interruption হবে না।
+- Novel ও learning material independently readable থাকবে। এটি content organization-এর স্বাধীনতা দেয়, reader experience-এ বিচ্ছিন্নতা বাধ্যতামূলক করে না।
+
+## 12. Hybrid Knowledge Graph
+
+Knowledge Graph-এর দায়িত্ব knowledge structure ও relationship প্রকাশ করা; এটি নিজে learner-এর route generate করবে না। Learning Path Generator ভবিষ্যতে graph ব্যবহার করে learner route তৈরি করতে পারে, তবে সেটি আলাদা component।
+
+### Node types
+
+- **Domain:** Knowledge-এর logical area; একটি knowledge item একাধিক domain-এর সঙ্গে যুক্ত হতে পারে।
+- **Concept:** Technical knowledge unit, যেমন TCP, SYN flag, sequence number, digital signature বা certificate authority।
+- **Learning Objective (LO):** Learner কী ব্যাখ্যা, trace, analyze, test, design বা evaluate করতে পারবে তার নির্দিষ্ট statement।
+
+Concept ও LO আলাদা node। Concept-এর canonical identity একটিই থাকবে; একই concept একাধিক domain, LO ও learning artifact-এর সঙ্গে সম্পর্কিত হতে পারে।
+
+### Relationship families
+
+- **Concept-to-Concept:** Technical relationship, যেমন uses, contains, depends_on বা interacts_with। এগুলো knowledge relationship; learner prerequisite নয়।
+- **LO-to-Concept:** LO অর্জনের সঙ্গে concept-এর সম্পর্ক: **Required**, **Supporting** অথবা **Related**। Classification প্রতিটি LO–Concept pair-এর জন্য নির্ধারিত হবে।
+- **LO-to-LO:** Strict learning prerequisite। Prerequisite LO সম্পন্ন না হলে dependent LO-তে অগ্রসর হওয়া যাবে না।
+
+**Related** কোনো prerequisite edge নয়। Technical Concept-to-Concept relationship থেকেও strict learning prerequisite অনুমান করা যাবে না।
+
+### Graph constraints
+
+- Mandatory LO prerequisite subgraph acyclic (DAG) হতে হবে।
+- Whole knowledge graph-এ technical relationship-এর cycle থাকতে পারে।
+- Concept node তৈরি হবে যখন knowledge item independently meaningful, reusable, একাধিক LO-তে প্রাসঙ্গিক, অথবা নিজস্ব explanation/experiment/assessment পাওয়ার যোগ্য। প্রতিটি atomic detail আলাদা node হওয়া বাধ্যতামূলক নয়।
+- Graph structure ও learning path generation আলাদা দায়িত্ব।
+
+**Open:** Concrete node/edge schema, metadata fields, graph storage/format, validation tooling ও maintenance workflow।

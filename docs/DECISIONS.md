@@ -102,7 +102,7 @@
 - Central mystery, antagonist motive এবং long-term story arc।
 - Volume, season ও episode structure।
 - Learning roadmap-এর chapter-level sequence, prerequisite detail ও specialization depth।
-- Knowledge Dependency Graph-এর schema ও maintenance process।
+- Knowledge Dependency Graph-এর concrete schema, implementation ও maintenance process।
 - Learning activity-এর difficulty, hints, validation, assessment ও reference-solution format।
 - Tool inventory এবং কোন tool implementation পাঠক explore করবে।
 - Narrative image style ও approved references।
@@ -120,3 +120,23 @@
 - Date:
 
 Superseded decision মুছবে না; নতুন decision দিয়ে reference করবে।
+
+
+### D-022 — Integrated narrative learning
+**Decision:** Learning experience-এর মূল flow হবে **Story → Curiosity → Knowledge → Exploration → Discovery → Engineering Judgment**। Character-এর study, research, investigation, experiment বা tool-building-এর প্রয়োজন গল্পে তৈরি হবে; তার সঙ্গে সম্পর্কিত detailed learning material গল্পের narrative sequence-এর মধ্যেই উপস্থাপিত হবে। Learning source শুধু Peter নয়; বর্তমান POV character-এর knowledge, objective, কাজ ও context অনুযায়ী learning material তৈরি হবে। Novel ও learning material independently readable থাকবে।
+**Rationale:** পাঠক যেন গল্পের বাইরে হঠাৎ classroom-এ চলে গেছে এমন অনুভব না করে; learning গল্পের অভিজ্ঞতার অংশ হয়।
+**Consequences:** Learning material আলাদা file বা section-এ থাকতে পারে, কিন্তু reader-facing sequence-এ তা সংশ্লিষ্ট story moment-এর সঙ্গে যুক্ত থাকবে। Character-এর POV ও knowledge boundary বজায় রাখতে হবে।
+
+### D-023 — Hybrid Knowledge Graph
+**Decision:** Knowledge architecture হবে Hybrid Knowledge Graph। Graph-এ Domain, Concept ও Learning Objective (LO)-এর মতো typed knowledge node এবং একাধিক explicit relationship থাকবে। Concept ও LO আলাদা node type; একই concept-এর একটিই canonical identity থাকবে, যদিও তা একাধিক domain ও LO-এর সঙ্গে সম্পর্কিত হতে পারে।
+**Rationale:** Technical knowledge-এর cross-domain reuse এবং learner capability-র objective-কে একই structure-এ প্রকাশ করা, কিন্তু তাদের semantics গুলিয়ে না ফেলা।
+**Consequences:** Concept-to-Concept technical relationships এবং LO-to-LO prerequisite dependencies আলাদা relationship family হবে। Graph-এর exact schema ও implementation এখনো open।
+
+### D-024 — Learning Objective to Concept relationship semantics
+**Decision:** LO ও Concept-এর সম্পর্ক তিনভাবে শ্রেণিবদ্ধ হবে: **Required**, **Supporting** এবং **Related**। Required concept LO অর্জনের জন্য প্রয়োজনীয়; Supporting concept বোঝাপড়ায় সহায়তা করে; Related concept প্রাসঙ্গিক হলেও আবশ্যিক নয়। একই Concept ভিন্ন LO-তে ভিন্ন classification পেতে পারে। Related relationship prerequisite বোঝায় না।
+**Rationale:** একটি concept-এর গুরুত্ব learning objective অনুযায়ী বদলাতে পারে; একে global fixed label দেওয়া যথাযথ।
+
+### D-025 — Strict Learning Objective prerequisites
+**Decision:** LO-to-LO prerequisite strict হবে। কোনো LO-এর prerequisite LO থাকলে learner-কে পরবর্তী LO-তে অগ্রসর হওয়ার আগে সেগুলো সম্পন্ন করতে হবে। Story chronology প্রয়োজন অনুযায়ী এমনভাবে সাজানো হবে, যাতে এই dependency বজায় থাকে।
+**Rationale:** Advanced learning-এর আগে প্রয়োজনীয় foundation নিশ্চিত করা।
+**Consequences:** Mandatory prerequisite subgraph acyclic হতে হবে। Technical Concept-to-Concept relationship prerequisite হিসেবে গণ্য হবে না; prerequisite কেবল LO-to-LO dependency-তে প্রকাশিত হবে।
