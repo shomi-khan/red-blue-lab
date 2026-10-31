@@ -3,7 +3,7 @@
 > **পর্যায়:** ১, ভিত্তি বোঝা  
 > **স্তর:** L1, learning tool  
 > **প্রধান deliverable:** netdiag, local interface, IP address ও TCP connectivity পরীক্ষা করার CLI tool  
-> **পূর্বশর্ত:** Chapter 00 এবং Chapter 01-এর byte-level ভিত্তি
+> **পূর্বশর্ত:** [Chapter 00](../00-your-first-security-lab/README.md) এবং [Chapter 01](../01-decode-the-bytes/README.md)-এর byte-level ভিত্তি
 
 Rayhan একটি lab service-এ connect করতে পারছে না। Samia জানতে চায় সমস্যাটি local interface-এ, destination address-এ, নাকি TCP connection-এ। একটি মাত্র “ব্যর্থ” ফলাফল দিয়ে এর উত্তর হয় না। netdiag আলাদা observation সংগ্রহ করবে এবং সেগুলো এক report-এ সাজাবে।
 
