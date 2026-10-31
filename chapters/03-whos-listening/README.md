@@ -226,7 +226,7 @@ flowchart LR
     P["যাচাইকৃত Port তালিকা"] --> Q["কাজের Queue"]
     Q --> W1["Worker ১"]
     Q --> W2["Worker ২"]
-    Q --> WN["Worker N"]
+    Q --> WN["Worker N (কর্মী)"]
     W1 --> R["ফলাফল"]
     W2 --> R
     WN --> R
