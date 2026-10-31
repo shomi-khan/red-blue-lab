@@ -1,4 +1,4 @@
-# Chapter 01: Decode the Bytes: Build a Byte Inspector
+# অধ্যায় ০১: Byte-এর ভেতরটা দেখো, একটি Byte Inspector তৈরি
 
 > **পর্যায়:** ১, ভিত্তি বোঝা  
 > **স্তর:** L2, নির্ভরযোগ্য learning tool  
@@ -74,7 +74,7 @@ Hexadecimal সুবিধাজনক, কারণ একটি hex digit চ
 
 ---
 
-# 01.1: Read and Display: Bytes Are Just Numbers
+# 01.1: Byte পড়ো ও দেখাও, এগুলো সংখ্যামাত্র
 
 Rayhan প্রথমে অনুমান নয়, inventory চায়। Samia এমন output চায় যা হাতে হিসাব করে যাচাই করা যায়।
 
@@ -156,7 +156,7 @@ Spacing তোমার পছন্দমতো হতে পারে, তব�
 
 ---
 
-# 01.2: Hexdump: The Classic View
+# 01.2: Hexdump-এ Byte দেখো
 
 প্রতি byte-এর জন্য আলাদা line সঠিক হলেও বড় file পড়া কঠিন। Hexdump একই সঙ্গে offset, hexadecimal value এবং printable ASCII-এর সংক্ষিপ্ত দৃশ্য দেয়।
 
@@ -207,7 +207,7 @@ offset    hex bytes                                        ASCII view
 
 ---
 
-# 01.3: Navigate: Inspect Ranges by Offset and Length
+# 01.3: Offset ও Length দিয়ে নির্দিষ্ট অংশ পরীক্ষা করো
 
 বড় binary file-এর নির্দিষ্ট অংশ পরীক্ষা করতে পুরো file dump করার দরকার নেই। Offset বলে কোথা থেকে শুরু হবে, length বলে কত byte নেওয়া হবে।
 
@@ -255,7 +255,7 @@ Range হলো `[offset, offset+length)`: শুরু অন্তর্ভু
 
 ---
 
-# 01.4: Interpret: Decode as Text Encodings
+# 01.4: Text Encoding অনুযায়ী Byte ব্যাখ্যা করো
 
 একটি byte sequence প্রায় readable message-এর মতো দেখাতে পারে, কিন্তু মাঝখানে invalid byte থাকতে পারে। সেটিকে প্রশ্নবোধক চিহ্ন দিয়ে বদলে দিলে evidence হারিয়ে যায়।
 
@@ -322,7 +322,7 @@ UTF-8 Unicode code point-কে এক থেকে চার byte-এ encode �
 
 ---
 
-# 01.5: Compose: Accept Stdin and Multiple Formats
+# 01.5: Stdin ও একাধিক Format গ্রহণ করো
 
 Samia এবার pipeline থেকে byte পেয়েছে, file হিসেবে নয়। একই tool যেন file এবং stdin দুই উৎস থেকেই পড়তে পারে। Input কোথা থেকে এসেছে, তার ওপর output বদলানো চলবে না।
 
@@ -385,7 +385,7 @@ Stream-এর মোট size আগে থেকে জানা নাও থ�
 
 **Tests:** In-memory reader, temporary file ও pipe-like reader ব্যবহার করো। Exact limit এবং limit+1 byte পরীক্ষা করো। Read error inject করো। Public network বা machine-specific file-এর ওপর নির্ভর করবে না।
 
-## Final tool contract
+## চূড়ান্ত Tool contract
 
 | বিষয় | চূড়ান্ত নিয়ম |
 |---|---|
@@ -400,7 +400,7 @@ Stream-এর মোট size আগে থেকে জানা নাও থ�
 | Side effects | কোনো file পরিবর্তন/execute/upload নয় |
 | Maturity | L2 |
 
-## Red/Blue learning
+## Red Team ও Blue Team-এর শেখা
 
 🔴 **Rayhan:** Synthetic fixture-এর byte signature, control byte, printable ASCII ও invalid UTF-8 খুঁজে বের করো। প্রতিটি finding-এর offset ও raw hex value নথিভুক্ত করো। Interpretation-কে raw evidence হিসেবে উপস্থাপন করবে না।
 
