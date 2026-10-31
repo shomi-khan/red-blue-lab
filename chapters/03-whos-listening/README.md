@@ -9,6 +9,13 @@ Rayhan একটি অনুমোদিত lab host-এর service inventory �
 
 এই অধ্যায়ে scanner ধাপে ধাপে তৈরি হবে: একটি port, একাধিক port, timeout classification, bounded concurrency, cancellation এবং structured output।
 
+### কয়েকটি প্রয়োজনীয় শব্দ
+
+- **Worker pool:** নির্দিষ্ট সংখ্যক worker-এর দল, যারা queue থেকে কাজ নিয়ে সীমিত সংখ্যায় একসঙ্গে সম্পন্ন করে।
+- **Concurrency:** একই সময়ে একাধিক কাজের অগ্রগতি চলা। এটি parallel execution-এর সমার্থক নয়; কাজগুলো একই সময়ে progress করতে পারে, কিন্তু একই মুহূর্তে CPU-তে চলতেই হবে এমন নয়।
+- **Context cancellation:** Go-তে context-এর মাধ্যমে চলমান কাজকে থামার সংকেত দেওয়া। এটি জোর করে goroutine বন্ধ করে না; কাজকে cancellation signal মানতে হয়।
+- **Evidence:** কোনো state কেন দেওয়া হয়েছে তার পর্যবেক্ষণযোগ্য ভিত্তি। unknown state-ও evidence-এর সীমাবদ্ধতা প্রকাশ করে।
+
 ## কী তৈরি করবে
 
 শেষে portscan পারবে:
@@ -46,7 +53,9 @@ sequenceDiagram
     C->>S: ACK
     Note over C,S: TCP connection established: open
     C->>S: FIN
-    S->>C: FIN-ACK
+    S-->>C: ACK
+    S->>C: FIN
+    C-->>S: ACK
 ```
 
 ### Refusal
@@ -218,7 +227,7 @@ flowchart LR
     Q --> W1["Worker ১"]
     Q --> W2["Worker ২"]
     Q --> WN["Worker N"]
-    W1 --> R["Results"]
+    W1 --> R["ফলাফল"]
     W2 --> R
     WN --> R
     R --> C["সংগ্রাহক ও Sorter"]
@@ -387,7 +396,7 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 
 ---
 
-## Final tool contract
+## চূড়ান্ত Tool contract
 
 | Property | Contract |
 |---|---|
@@ -403,6 +412,7 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 | Classification | Success=open; explicit refusal=closed; অন্য dial error=unknown |
 | Cancellation | নতুন কাজ বন্ধ, in-flight cancel, completed result রাখা, cleanup |
 | Output | Human-readable অথবা NDJSON |
+| Exit code | সব selected port attempt সম্পন্ন হলে 0, finding state যাই হোক; invalid input বা cancellation-এ non-zero |
 | Resource invariant | Active dial configured worker-এর বেশি নয়; worker/connection leak নয় |
 | Maturity | L2, Reliable tool |
 
