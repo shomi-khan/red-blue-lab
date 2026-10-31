@@ -105,7 +105,7 @@ Each chapter begins where the last one left off. A scanner that opens one TCP co
 
 ## How to Navigate
 
-Start at **Chapter 00**. Each chapter lists its prerequisites explicitly. The curriculum is designed to be followed in order, but later chapters identify exactly which earlier tools and concepts they depend on.
+Start at [**Chapter 00: Your First Security Lab**](chapters/00-your-first-security-lab/README.md). Each chapter lists its prerequisites explicitly. The curriculum is designed to be followed in order, but later chapters identify exactly which earlier tools and concepts they depend on.
 
 **Curriculum overview:** [`docs/CURRICULUM.md`](docs/CURRICULUM.md)
 

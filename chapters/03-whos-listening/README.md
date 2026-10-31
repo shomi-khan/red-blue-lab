@@ -3,7 +3,7 @@
 > **পর্যায়:** ২, Network-এ কী চলছে তা আবিষ্কার  
 > **স্তর:** L2, reliable tool  
 > **প্রধান deliverable:** portscan, একটি host-এর TCP port bounded concurrency-তে পরীক্ষা করার CLI tool  
-> **পূর্বশর্ত:** Chapter 00 এবং Chapter 02-এর TCP connectivity ধারণা
+> **পূর্বশর্ত:** [Chapter 00](../00-your-first-security-lab/README.md) এবং [Chapter 02](../02-see-your-network/README.md)-এর TCP connectivity ধারণা
 
 Rayhan একটি অনুমোদিত lab host-এর service inventory তৈরি করছে। একটি port-এ connect করা আর অনেকগুলো port পরীক্ষা করা এক কাজ নয়। Samia চায় scanner যেন resource limit মানে, অনিশ্চিত ফলাফলকে “বন্ধ” বলে চালিয়ে না দেয় এবং মাঝপথে থামালেও partial evidence সৎভাবে দেখায়।
 
@@ -82,7 +82,7 @@ sequenceDiagram
 
 এই trace-গুলো সাধারণ outcome বোঝায়। প্রতিটি OS/network-এ packet behavior হুবহু একই হবে, এমন নিশ্চয়তা নয়।
 
-| State | প্রমাণ | অর্থ |
+| অবস্থা | প্রমাণ | অর্থ |
 |---|---|---|
 | open | TCP connection সফল | Connection গ্রহণ করা হয়েছে |
 | closed | Explicit connection refused | Connection প্রত্যাখ্যাত |
@@ -348,13 +348,14 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 
 ### Record-এর Schema
 
-| Field | অর্থ |
-|---|---|
-| host | Scanner-এ দেওয়া host |
-| port | TCP port |
-| state | open, closed অথবা unknown |
-| duration | Connection attempt-এর সময় |
-| timestamp | Result record করার সময় |
+| ডেটা Field | ধরন | অর্থ |
+|---|---|---|
+| host | string | Scanner-এ দেওয়া host |
+| port | integer | TCP port |
+| state | string enum | `open`, `closed` অথবা `unknown` |
+| duration | string | Go duration format-এ connection attempt-এর সময়, যেমন `1.42ms` |
+| timestamp | string | RFC3339 timestamp, result record করার সময় |
+
 
 উদাহরণ:
 
@@ -398,7 +399,7 @@ Cancellation মানে সব selected port-এর result পাওয়া য
 
 ## চূড়ান্ত Tool contract
 
-| বৈশিষ্ট্য | Contract |
+| বৈশিষ্ট্য | নিয়ম |
 |---|---|
 | Tool | portscan |
 | Protocol | TCP only |

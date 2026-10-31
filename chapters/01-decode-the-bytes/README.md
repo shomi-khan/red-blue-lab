@@ -42,7 +42,7 @@ Samia চায়, কোনো interpretation-এর কারণে যেন �
 
 Byte নিজে কোনো অক্ষর নয়। এটি একটি সংখ্যা। কোন নিয়মে সেটিকে ব্যাখ্যা করা হচ্ছে, তার ওপর অর্থ নির্ভর করে।
 
-| Representation | মান |
+| উপস্থাপনের ধরন | মান |
 |---|---|
 | Binary | `01000001` |
 | Decimal | `65` |
@@ -86,7 +86,7 @@ Rayhan প্রথমে অনুমান নয়, inventory চায়। Sami
 
 Go-তে `byte` হলো `uint8`-এর alias। এর মান 0–255। `[]byte` হলো byte-এর slice।
 
-| Format verb | অর্থ | 10-এর output |
+| Format verb (ফরম্যাট নির্দেশক) | অর্থ | 10-এর output |
 |---|---|---|
 | `%d` | Decimal integer | `10` |
 | `%08b` | আট digit-এ binary | `00001010` |
@@ -269,7 +269,7 @@ ASCII হলো 7-bit character encoding; এর standard value 0–127। এ�
 
 UTF-8 Unicode code point-কে এক থেকে চার byte-এ encode করে। সাধারণ ASCII character UTF-8-এ একই single-byte value ব্যবহার করে।
 
-| Leading byte range | ভূমিকা |
+| শুরুর Byte range | ভূমিকা |
 |---|---|
 | `00`–`7F` | এক byte-এর ASCII-compatible code point |
 | `C2`–`DF` | দুই byte sequence শুরু |
