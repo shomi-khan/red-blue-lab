@@ -8,6 +8,7 @@
 Chapter 00-তে তৈরি করা loopback lab-এ Samia evidence bundle-এর একটি sanitized copy খুলেছে। ফাইলটির নাম `service-note.txt`, কিন্তু text editor-এ কিছু অক্ষর ভাঙা, কিছু জায়গায় ফাঁকা, আর কয়েকটি চিহ্ন অস্বাভাবিক। Rayhan বলে, “এটা নিশ্চয়ই encoded command।” Samia সঙ্গে সঙ্গে আপত্তি তোলে: “দেখতে অদ্ভুত হলেই command হয় না। আগে raw evidence দেখি।”
 
 ফাইলের extension, editor-এর rendering কিংবা একটি readable fragment কোনোটিই byte sequence-এর বিকল্প নয়। তারা এখনো জানে না data-টি text, binary structure, নাকি কেবল malformed input। তাই প্রথমে interpretation সরিয়ে রেখে দেখতে হবে ফাইলে সত্যিই কোন byte আছে। এই অধ্যায়ে তুমি সেই কাজের জন্য `byteinspect` তৈরি করবে।
+
 ## কী তৈরি করবে
 
 শেষে `byteinspect` পারবে:
