@@ -203,7 +203,7 @@ Timeout মানে এই vantage point থেকে deadline-এর মধ্
 | Delivery/order | Reliable ordered stream semantics | UDP নিজে delivery/order guarantee করে না |
 | এই milestone | পরীক্ষা হবে | তুলনার জন্য ধারণা |
 
-| State | Evidence | যা প্রমাণ করে না |
+| State | প্রমাণ | যা প্রমাণ করে না |
 |---|---|---|
 | connected | TCP handshake সম্পন্ন | Application health |
 | refused | Explicit refusal | Host সম্পূর্ণ unavailable |
@@ -344,7 +344,7 @@ flowchart TD
 
 ## Tool-এর ধাপ ও চূড়ান্ত Contract
 
-| Milestone | Capability | আগের behavior |
+| Milestone | সক্ষমতা | আগের behavior |
 |---|---|---|
 | 02.1 | Interface listing ও address classification | Initial inventory |
 | 02.2 | IP/CIDR ব্যাখ্যা | Listing/classification |
