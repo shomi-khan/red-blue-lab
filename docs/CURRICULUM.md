@@ -505,7 +505,7 @@ By completing Chapter 03, the learner can:
 - *Challenge:* Write a function `classify(err error) PortState` that correctly handles all three cases plus unexpected errors. The function must be independently testable.
 - *Constraints:* The classify function must not call the network. It must be unit-testable with mock errors.
 - *Acceptance criteria:* Unit tests verify each error type maps to the correct classification.
-- *Verification:* Unit tests. Integration test with a firewall-simulated drop is acceptable using a port that deliberately drops connections (if available in the lab) or by timing.
+- *Verification:* Unit tests with injected refusal, deadline, network-unreachable, DNS, and unexpected errors. Do not depend on firewall-simulated drops, arbitrary non-routable addresses, external network access, or timing to manufacture timeout behavior.
 - *Enables:* 03.4.
 
 **03.4 — Speed Up Safely: Bounded Concurrency**
