@@ -6,9 +6,9 @@
 > **পূর্বশর্ত:** Terminal ও text editor-এর প্রাথমিক ব্যবহার  
 > **পরবর্তী অধ্যায়:** [Chapter 01: Byte-এর ভেতরটা দেখো](../01-decode-the-bytes/README.md)
 
-Rayhan নতুন একটি security investigation শুরু করতে যাচ্ছে। Samia তাকে থামিয়ে প্রথমে একটি প্রশ্ন করে: “যে environment-এ পরীক্ষা করবে, সেটি কি তোমার নিয়ন্ত্রণে? আর ফলাফল ভুল হলে তুমি কীভাবে বুঝবে?”
+রাত ১১টা ৪০। অফিসের lab-এর monitor-এ একটি incident ticket খোলা, কিন্তু ticket-এ সিদ্ধান্তের চেয়ে প্রশ্ন বেশি। একটি internal demo service থেকে অস্বাভাবিক আচরণের কথা জানানো হয়েছে; সঙ্গে আছে একটি ছোট evidence bundle, যার উৎস ও অর্থ এখনো যাচাই করা হয়নি। Rayhan bundle-টি খুলে দেখতে চায়। Samia তার হাত থামায়: “আগে বলো, কোন machine-এ পরীক্ষা করবে? আর ভুল ফল পেলে বুঝবে কীভাবে যে ভুল হয়েছে?”
 
-এই অধ্যায়ে আমরা কোনো vulnerability exploit করব না, public host scan করব না, এমনকি কোনো security tool-ও তৈরি করব না। তার বদলে এমন একটি ছোট, নিয়ন্ত্রিত workspace তৈরি করব যেখানে পরের অধ্যায়গুলোর experiment নিরাপদে চালানো যাবে। একই সঙ্গে শিখব, এই curriculum-এ কীভাবে একটি specification পড়ে নিজের implementation তৈরি ও যাচাই করতে হয়।
+তারা জানে না bundle-এ কী আছে, কোনো service সত্যিই অস্বাভাবিক আচরণ করেছে কি না, কিংবা ঘটনাটি security issue কি না। এখনই কোনো exploit বা scan নয়। প্রথমে দরকার নিয়ন্ত্রিত lab, স্পষ্ট authorization, এবং এমন যাচাই-পদ্ধতি যাতে অনুমানকে evidence বলে চালানো না হয়। এই অধ্যায়ে তুমি সেই investigation-এর নিরাপদ ভিত্তি তৈরি করবে।
 
 ## এই অধ্যায়ে কী শিখবে
 
@@ -71,6 +71,7 @@ flowchart LR
 
 # 00.1: Lab-এর নিয়ম জানো, Specification পড়তে শেখো
 
+Ticket-এর প্রথম লাইনেই লেখা: “দ্রুত পরীক্ষা করে দেখুন।” Rayhan বুঝতে পারে, এই নির্দেশনা দিয়ে কাজ শুরু করা যায় না; target, অনুমতি, expected behavior এবং failure condition অনুপস্থিত। Samia তাকে ticket-টিকে একটি নির্দিষ্ট challenge specification হিসেবে পড়তে বলে। তদন্তের প্রথম কাজ তাই code লেখা নয়, অস্পষ্ট অনুরোধকে যাচাইযোগ্য প্রশ্নে ভাঙা।
 Rayhan একটি challenge description পেল। সে সরাসরি editor খুলতে যাচ্ছিল। Samia বলল, “আগে বুঝে নাও, তোমাকে কী বানাতে বলা হয়েছে। ভুল problem solve করলে সুন্দর code-ও ভুল ফল।”
 
 ### কী তৈরি করবে
@@ -141,6 +142,7 @@ Samia-র নিয়মটি মনে রাখো: **প্রথমে scope,
 
 # 00.2: Go চালু করো, প্রথম Program লেখো
 
+Scope পরিষ্কার, কিন্তু এখনো তাদের হাতে কোনো reproducible tool নেই। Rayhan-এর laptop-এ Go আছে কি না, সেটিও নিশ্চিত নয়; Samia চায় দুজনের environment-এ একই source থেকে একইভাবে program build ও run করা যাক। তদন্ত এগোবে কেবল তখনই, যখন experiment-টি অন্য কেউও পুনরাবৃত্তি করতে পারবে।
 Lab-এর নিয়ম বোঝা হয়েছে। এবার Rayhan ও Samia এমন একটি toolchain চায়, যা দিয়ে পরের chapter-গুলোতে program তৈরি ও পরীক্ষা করা যাবে।
 
 ### কী তৈরি করবে
@@ -227,6 +229,7 @@ Hello from my security lab | time=2026-10-31T08:30:00+06:00
 
 # 00.3: TCP Server চালাও, Local Connection গ্রহণ করো
 
+Ticket-এ যে demo service-এর কথা বলা হয়েছে, সেটিকে internet থেকে খুঁজে বের করার দরকার নেই। প্রথমে নিজেদের machine-এ একটি ছোট service চালিয়ে connection-এর আচরণ নিয়ন্ত্রণে আনতে হবে। Rayhan server বানাতে প্রস্তুত; Samia শর্ত দেয়, service-টি যেন loopback-এর বাইরে এক মুহূর্তের জন্যও প্রকাশ না পায়।
 Rayhan এবার একটি local service তৈরি করতে চায়। Samia-র শর্ত: service-টি যেন কেবল নিজের machine থেকেই reachable হয়।
 
 ### কী তৈরি করবে
@@ -328,6 +331,7 @@ Rayhan এখন local service তৈরি করতে পারে। Samia �
 
 # 00.4: TCP Client দিয়ে Server-এর উত্তর যাচাই করো
 
+Local server এখন greeting পাঠাচ্ছে, কিন্তু শুধু log-এ “listening” লেখা থাকলেই client-এর দিক থেকে যোগাযোগ প্রমাণ হয় না। Rayhan এবার নিজে connection খুলে server-এর response পড়তে চায়। Samia আরেকটি সীমা যোগ করে: client-এর destination হবে নির্দিষ্ট loopback address, যাতে test ভুল করে lab-এর বাইরে না যায়.
 Server তৈরি হয়েছে। কিন্তু server চালু আছে দেখলেই client থেকে যোগাযোগ সফল হয়েছে প্রমাণ হয় না। Rayhan এবার এমন একটি client লিখবে, যা নিজে connect করে server-এর response পড়বে। Samia চায় client-এর target যেন loopback-এর বাইরে যেতে না পারে।
 
 ### কী তৈরি করবে

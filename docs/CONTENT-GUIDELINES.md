@@ -266,28 +266,81 @@ Use this level of clarity and simplicity. Avoid overloaded diagrams.
 
 ## Storytelling Rules
 
-Rayhan and Samia give the curriculum continuity. Use them purposefully, not formulaically.
+The curriculum uses a continuous **technical-thriller** narrative. The story is the investigation that gives each tool a reason to exist. Each new capability should answer a question raised by evidence and open the next question.
 
-### When to use them
+### 1. Narrative promise and tone
 
-- At the start of a chapter or subchapter to motivate the investigation.
-- During debrief to connect findings to real-world consequences.
-- When introducing Red Team or Blue Team perspective on a shared finding.
+- Use a grounded technical thriller: uncertainty, clues, conflicting interpretations, careful investigation, and discoveries that change what the characters believe.
+- Build tension through missing evidence, ambiguous observations, operational consequences, and decisions under constraints. Do not manufacture danger with explosions, cinematic countdowns, magical terminals, or implausible adversaries.
+- Keep technical events realistic. Tools do only what their documented capabilities allow. Characters must not know facts that have not yet been observed.
+- Make the learner want to build the tool because the investigation cannot responsibly move forward without it.
+- Avoid melodrama, generic motivational speeches, exaggerated genius, and repetitive "something strange happened" openings.
 
-### How to use them
+### 2. Continuity across chapters
 
-- Keep the story compact (1–5 sentences as a hook, a few more in debrief).
-- Make the situation believable and relevant to the technical material.
-- The story must motivate the technical investigation — not decorate it.
-- Technical accuracy must be maintained whether or not the story is present.
+- Maintain one connected investigation from Chapter 00 onward. Each chapter resolves one bounded question and leaves a credible clue or operational need for the next.
+- Preserve established facts, chronology, locations, evidence, character knowledge, and unresolved questions.
+- The chapter's tool must be the next capability the characters genuinely need. Never let a character use a tool or concept before the curriculum has taught it.
+- Keep transitions plausible: a byte-level clue may motivate network diagnostics; a verified local endpoint may motivate a scoped port scan. Do not jump from an unexplained file directly to conclusions about a remote attacker.
+- A chapter may introduce a sub-mystery, but connect it to the larger investigation through a concrete artifact, observation, question, or consequence.
+- Do not force a cliffhanger at every section. A meaningful discovery, changed hypothesis, or sharper question is enough.
 
-### Story templates
+### 3. Chapter opening scene
 
-**Opening hook:**
-> Rayhan is reviewing the reconnaissance results when he notices that port 8443 is reporting `unknown` on the first scan but `open` on a retry. He wants to understand why the tool produces different results on the same port.
+- Begin each chapter with a scene, not a definition, tool list, or abstract summary.
+- Prefer 2–4 short paragraphs. Establish a specific working context, a concrete event or artifact, what Rayhan or Samia notices, and why existing evidence is insufficient.
+- Give the reader an unanswered question that maps directly to the chapter's learning outcome and tool.
+- Show character through decisions and dialogue. Rayhan probes assumptions and seeks reproducible evidence; Samia challenges weak conclusions, checks scope, and asks what evidence actually proves. Neither is always right.
+- Use sensory details selectively (late hour, fan noise, monitor glow) only when they serve the scene. Do not pad with scenery.
+- End the opening with a clear investigative need that leads naturally to the tool.
 
-**Blue Team debrief:**
-> Samia runs `webscan` against the staging server after Rayhan's report. She finds that `X-Frame-Options` is absent and that the session cookie does not have the `Secure` flag. Both are straightforward to fix — but they were already there in the configuration template. Someone removed them. She needs to find out when and why.
+### 4. Subchapter scenes and narrative progression
+
+- Give every subchapter a short scene or story hook, including milestones that previously begin directly with theory or a build statement.
+- Usually use 2–4 sentences: a fresh clue, decision, failed assumption, disagreement, or consequence from the previous milestone.
+- Vary the scene's function. Do not repeat the same "Rayhan asks / Samia says" pattern in every section.
+- Lead into the exact capability of that milestone. Do not promise behavior outside its scope.
+- Each increment should change what the characters can observe, verify, or safely conclude.
+- Debriefs should record what evidence established, what remains unknown, and how that changes the next step. Do not merely restate acceptance criteria.
+
+### 5. Character roles and dialogue
+
+- Rayhan represents the Red Team perspective: curious, hypothesis-driven, willing to test assumptions inside authorized scope, and responsible for reproducible findings.
+- Samia represents the Blue Team perspective: evidence-conscious, skeptical of overclaiming, attentive to exposure and operational risk, and responsible for validating defensive expectations.
+- Both are competent engineers. Avoid caricatures, permanent teacher/student roles, or characters whose only purpose is explaining concepts.
+- Let them disagree when hypotheses differ, then resolve disagreement with observable evidence rather than authority.
+- Dialogue should sound natural in Bengali. Keep protocol names, commands, identifiers, error strings, and exact technical tokens in English.
+
+### 6. Bengali-first prose and technical integrity
+
+- Write narrative and explanatory prose in natural, literary Bengali. Introduce technical terms with concise Bengali explanations; retain established English terms where clearer or conventional.
+- Keep code, CLI commands, flags, API names, protocol names, identifiers, schema fields, and machine-readable values exact and in English.
+- Prefer concrete action and precise observation over ornate language. Atmosphere is welcome, but prose must remain easy to follow.
+- A character's interpretation is a hypothesis, not evidence. Distinguish observation, inference, and conclusion.
+- Never simplify protocol behavior for drama. A successful TCP handshake does not prove application health; timeout does not prove a closed port; readable text does not establish the meaning of raw bytes.
+- Do not invent logs, packet contents, vulnerabilities, scan results, or environmental details that contradict deterministic fixtures and contracts.
+
+### 7. Keep story and challenge separate
+
+- Story explains **why** a capability matters. Learning material and formal specification explain **what** must be built and **how completion is verified**.
+- Never hide requirements, constraints, safety boundaries, edge cases, or acceptance criteria inside dialogue.
+- Never imply that the learner should test public systems or exceed authorized scope.
+- Do not reveal implementation or solve the challenge through the story.
+- Story must not add requirements to the tool contract. If a scene implies behavior outside scope, revise the story unless the curriculum explicitly approves a scope change.
+- Keep the story proportionate. A chapter opening may be richer than a subchapter hook, but neither should overwhelm the technical learning.
+
+### 8. Narrative review checklist
+
+- [ ] The opening begins with a concrete scene and compelling unanswered question.
+- [ ] The question directly motivates the chapter's actual tool or capability.
+- [ ] The chapter continues the established investigation without continuity errors.
+- [ ] Every subchapter has a purposeful scene or hook, including previously empty openings.
+- [ ] Rayhan and Samia have distinct but nuanced perspectives.
+- [ ] Tension comes from realistic technical uncertainty, not Hollywood hacking tropes.
+- [ ] Conclusions are supported by evidence available at that point in the curriculum.
+- [ ] Bengali prose is natural; technical tokens remain exact.
+- [ ] Narrative does not change or obscure specifications, safety boundaries, or acceptance criteria.
+- [ ] The ending records what is known, what remains unknown, and why the next chapter is necessary.
 
 ---
 
