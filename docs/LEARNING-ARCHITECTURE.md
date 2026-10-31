@@ -18,6 +18,10 @@
 
 Tool তৈরি optional branch, বাধ্যতামূলক ধাপ নয়।
 
+## 3. Learning domain taxonomy
+
+Project-এর approved domain taxonomy, six-layer ecosystem, cross-cutting capabilities, T-shaped competency strategy এবং companion repository mapping-এর canonical source হলো [Learning Domains](LEARNING-DOMAINS.md)। এই file-এর পরের competency map সংক্ষিপ্ত reference হিসেবে থাকবে; taxonomy-এর বিকল্প নয়।
+
 ## 3. Competency domain map
 
 এটি সম্ভাব্য coverage map, final syllabus নয়। World ও story arc স্থির হলে sequence ও depth নির্ধারিত হবে।
