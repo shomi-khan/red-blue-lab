@@ -99,7 +99,7 @@ Rayhan একটি challenge description পেল। সে সরাসরি
 >
 > **Constraints:** কেবল 127.0.0.1-এ connect করবে। Port hard-code করা যাবে না।  
 >
-> **Edge cases:** Invalid port, server বন্ধ থাকা, connection refused, server response না পাঠানো।  
+> **Edge cases:** Invalid port, server বন্ধ থাকা, connection refused, server-এর empty response।  
 >
 > **Error behavior:** Invalid input হলে connection attempt করবে না এবং error stderr-এ দেখাবে। Server বন্ধ থাকলে connection error দেখাবে।  
 >
@@ -391,7 +391,9 @@ sequenceDiagram
 **Error behavior**
 - Invalid port হলে connection attempt-এর আগে error এবং non-zero exit।
 - Server বন্ধ থাকলে connection error stderr-এ দেখাবে।
+- Connection সফল হলেও EOF-এর আগে কোনো byte না এলে server-এর greeting contract ভঙ্গ হয়েছে বলে stderr-এ error দেখাবে এবং non-zero exit করবে।
 - EOF-এর আগে unexpected read error হলে error দেখাবে এবং success output হিসেবে অসম্পূর্ণ response উপস্থাপন করবে না।
+- EOF-এ পৌঁছানোর আগে কোনো data না পেলে empty greeting-কে protocol failure হিসেবে দেখাবে।
 - Connection close করতে ব্যর্থ হলে error report করবে।
 
 **Security considerations**
