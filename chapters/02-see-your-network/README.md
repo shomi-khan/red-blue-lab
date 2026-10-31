@@ -36,15 +36,17 @@ Samia প্রথমে জানতে চায় machine-এ কোন network
 
 Network interface হলো host-এর network communication endpoint। যেমন Ethernet, Wi-Fi বা loopback। Interface-এর নাম, flags এবং address আলাদা তথ্য।
 
-| শ্রেণি | অর্থ |
-|---|---|
-| loopback | একই host-এর communication; IPv4 127.0.0.0/8, IPv6 ::1 |
-| link-local | একই local link-এ ব্যবহারের জন্য |
-| private | RFC1918 IPv4 private range |
-| public | Global unicast, special-use নয় |
-| other | উপরের শ্রেণিতে পড়ে না বা বিশেষ-purpose |
+| শ্রেণি | IPv4-এর নিয়ম | IPv6-এর নিয়ম |
+|---|---|---|
+| loopback | 127.0.0.0/8 | ::1/128 |
+| link-local | 169.254.0.0/16 | fe80::/10 |
+| private / unique-local | RFC1918-এর 10/8, 172.16/12, 192.168/16 | Unique Local Address (ULA), fc00::/7 |
+| public | Global unicast এবং special-use নয় | Global unicast এবং special-use নয় |
+| other | উপরের শ্রেণিতে পড়ে না, অথবা special-purpose | উপরের শ্রেণিতে পড়ে না, অথবা special-purpose |
 
-“Private নয়” মানেই “Public” নয়। Documentation, multicast, unspecified, reserved এবং অন্যান্য special-use address-কে public বলা যাবে না।
+এখানে private শব্দটি IPv4-এর RFC1918 range বোঝায়; IPv6-এ সমতুল্য local-use শ্রেণির নাম **Unique Local Address (ULA)**। ULA prefix হলো fc00::/7। fc00::/8 বর্তমানে সাধারণভাবে ব্যবহৃত নয়, কিন্তু পুরো /7-কেই ULA শ্রেণি হিসেবে চিনবে।
+
+“Private/ULA নয়” মানেই “Public” নয়। Documentation, multicast, unspecified, reserved, benchmarking, transition এবং অন্যান্য special-use range-কে public বলা যাবে না। Public শ্রেণিতে ফেলবে কেবল এমন global-unicast address-কে, যা কোনো special-use range-এর অংশ নয়।
 
 ### Challenge specification
 
@@ -71,6 +73,9 @@ Interface: lo
 - IPv4 ও IPv6 আলাদা করে চিহ্নিত করবে।
 - Prefix পাওয়া গেলে দেখাবে; না থাকলে prefix বানাবে না।
 - Address classification consistent হবে।
+- IPv4 RFC1918-কে private এবং IPv6 fc00::/7-কে unique-local হিসেবে classify করবে।
+- IPv4 ও IPv6-এর loopback/link-local range আলাদাভাবে চিনবে।
+- IANA special-purpose range-কে public হিসেবে classify করবে না।
 - Address না থাকলে স্পষ্ট দেখাবে।
 - একটি address parsing ব্যর্থ হলে অন্য interface বাদ যাবে না।
 - Output deterministic হবে, যেমন interface name ও address-এর lexical order।
@@ -301,7 +306,8 @@ flowchart TD
 **Behavioral contract**
 - 02.1–02.3-এর logic reuse করবে।
 - একটি section ব্যর্থ হলেও independent section চালাবে।
-- Hostname একবার resolve করবে এবং documented deterministic rule-এ একটি address নির্বাচন করবে।
+- Hostname একবার resolve করবে এবং নিচের deterministic selection rule প্রয়োগ করবে: সব resolved address deduplicate করে family অনুযায়ী সাজাবে; IPv4 address থাকলে parsed IP byte sequence-এর ascending order-এ প্রথম IPv4 address নেবে। IPv4 না থাকলে একই নিয়মে প্রথম IPv6 address নেবে।
+- একই address একাধিকবার এলে একবারই থাকবে। Textual string order নয়, parsed address byte order ব্যবহার করবে।
 - নির্বাচিত IP literal-ই dial করবে; report-এ ঠিক সেই address দেখাবে। দ্বিতীয় DNS lookup দিয়ে অন্য address-এ dial নয়।
 - Resolution failure হলে error দেখাবে; address বানাবে না।
 - Interface enumeration ব্যর্থ হলে section 1-এ দেখিয়ে অন্য section চালাবে।
@@ -317,7 +323,7 @@ flowchart TD
 - Non-loopback target-এ authorization লাগবে।
 - Observation ও conclusion আলাদা থাকবে।
 
-**Edge cases:** সব section সফল, refused/timeout/unreachable, DNS failure, interface enumeration failure, malformed destination, multiple DNS answers, একটি interface address lookup failure, partial report।
+**Edge cases:** সব section সফল, refused/timeout/unreachable, DNS failure, interface enumeration failure, malformed destination, multiple DNS answers (IPv4 ও IPv6 মিশ্রিত, একই family-তে একাধিক, duplicate answer, IPv4 অনুপস্থিত), একটি interface address lookup failure, partial report।
 
 **Acceptance criteria**
 - তিনটি section-ই report-এ থাকে।
