@@ -32,18 +32,21 @@ Concept-কে যতটা সম্ভব meaningful ও reusable ছোট un
 
 General Concept-এর নিজস্ব explanation তার scope-এই সীমাবদ্ধ থাকবে। উদাহরণস্বরূপ, `Authentication` Node-এ definition, purpose, high-level types ও general flow থাকবে। `Password Authentication` এবং `Session Authentication` আলাদা Concept Node হবে; parent Node-এর explanation-এ তাদের বিস্তারিত পুনরাবৃত্তি করা হবে না।
 
-### 2.3 Hierarchy ও technical relationship আলাদা
+### 2.3 Relationship family, direction ও endpoint
 
-একটি Concept একাধিক parent-এর অধীনে থাকতে পারে। তাই hierarchy strict tree নয়, DAG। `parent_of` relationship-এ cycle নিষিদ্ধ।
+সব Knowledge Graph relationship-এর `source` ও `target` direction নির্দিষ্ট। Relationship-এর নাম দেখে endpoint অনুমান না করে নিচের contract অনুসরণ করতে হবে:
 
-Technical relationship আলাদা family। যেমন `uses`, `contains`, `depends_on`, `interacts_with`, `implements`, `part_of`। এগুলোতে cycle থাকতে পারে এবং এগুলো hierarchy বা learning prerequisite বোঝায় না।
+| Relationship type | Source node | Target node | অর্থ |
+|---|---|---|---|
+| `domain_contains` | Domain | Concept | Domain-এর অন্তর্ভুক্ত Concept; এটি Concept hierarchy নয় |
+| `parent_of` | Concept | Concept | General Concept থেকে child/specific Concept; hierarchy DAG, cycle নিষিদ্ধ |
+| `uses`, `contains`, `depends_on`, `interacts_with`, `implements`, `part_of` | Concept | Concept | Technical সম্পর্ক; `source` থেকে `target`-এর দিকে সম্পর্কটি পড়বে; cycle অনুমোদিত |
+| `requires`, `supports`, `related_to` | Learning Objective | Concept | LO-এর দৃষ্টিতে Concept-এর গুরুত্ব: আবশ্যক, সহায়ক বা প্রাসঙ্গিক |
+| `prerequisite_of` | Learning Objective | Learning Objective | Source LO হলো target LO-এর prerequisite; এই dependency DAG, cycle নিষিদ্ধ |
 
-### 2.4 Learning Objective relationship
+একটি Concept একাধিক Domain-এর সঙ্গে `domain_contains` link পেতে পারে এবং একাধিক parent Concept-এর অধীনেও থাকতে পারে। Domain membership ও Concept hierarchy আলাদা সম্পর্ক; `parent_of` দিয়ে Domain membership প্রকাশ করা যাবে না।
 
-- **Required:** LO অর্জনের জন্য Concept জানা আবশ্যক।
-- **Supporting:** Concept বোঝাপড়ায় সহায়তা করে, কিন্তু একা mandatory নয়।
-- **Related:** Concept প্রাসঙ্গিক, কিন্তু prerequisite নয়।
-- **Prerequisite:** LO-to-LO dependency। একটি LO অন্য LO-এর prerequisite হলে dependency graph acyclic হতে হবে।
+`requires`, `supports` ও `related_to`-এর source সবসময় LO এবং target সবসময় Concept। `prerequisite_of`-এর source prerequisite LO এবং target পরবর্তী/dependent LO। তাই relationship direction উল্টানো যাবে না।
 
 Concept-to-Concept technical relationship থেকে learning prerequisite অনুমান করা যাবে না।
 
