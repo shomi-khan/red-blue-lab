@@ -160,7 +160,7 @@ Concept ও LO আলাদা node। Concept-এর canonical identity এক�
 - Concept node তৈরি হবে যখন knowledge item independently meaningful, reusable, একাধিক LO-তে প্রাসঙ্গিক, অথবা নিজস্ব explanation/experiment/assessment পাওয়ার যোগ্য। প্রতিটি atomic detail আলাদা node হওয়া বাধ্যতামূলক নয়।
 - Graph structure ও learning path generation আলাদা দায়িত্ব।
 
-**Open:** Concrete node/edge schema, metadata fields, graph storage/format, validation tooling ও maintenance workflow।
+**Implementation contract:** Node/edge schema, storage, typed Learning-to-Knowledge relationships, Knowledge Coverage Analysis এবং Reader Learning Track-এর boundary [Graph Architecture](GRAPH-ARCHITECTURE.md)-এ নির্ধারিত। Graph catalog-এর canonical files হলো `knowledge/graph.yaml` ও `learning/graph.yaml`; schema contract `schemas/`-এ।
 
 
 ## 13. Content storage format
@@ -170,7 +170,7 @@ Project-এর মূল narrative ও learning content **Markdown file**-এ ca
 - **Markdown:** Novel, Concept Note, Lab, evidence pack, reference ও explanatory content-এর মূল format।
 - **YAML Frontmatter:** Content-এর structured metadata রাখার format। নির্দিষ্ট field schema ও validation rules পরবর্তী design phase-এ স্থির হবে।
 - **Mermaid:** Markdown-এর মধ্যে text-based diagram লেখার preferred option; diagram প্রয়োজন অনুযায়ী ব্যবহার হবে।
-- **Knowledge Graph:** ভবিষ্যতে Markdown content-এর structured metadata ও explicit references থেকে generate করা যেতে পারে। Graph আলাদা করে content-এর duplicate source of truth হবে না।
+- **Knowledge Graph metadata:** `knowledge/graph.yaml`-এ থাকবে। এটি Knowledge Node ও তাদের relationship-এর authoritative source।
 
 JSON বা database-কে মূল content storage হিসেবে ব্যবহার করা হবে না। ভবিষ্যতে derived graph, index বা tooling-এর জন্য সেগুলো ব্যবহার করা যেতে পারে, যদি প্রয়োজন ও design অনুমোদিত হয়।
 
@@ -190,3 +190,19 @@ Assessment-এর উদ্দেশ্য memorized information নয়, demonst
 - Assessment version, evaluator version এবং প্রয়োজনে code runner environment traceable হতে হবে।
 
 Assessment definition, generic Assessment Engine, deterministic Evaluators, Authoring Validator এবং Sandboxed Code Runner-এর দায়িত্ব ও বিস্তারিত নীতি [Assessment Architecture](ASSESSMENT-ARCHITECTURE.md)-এ।
+
+
+## 15. Separate Learning Graph and reader progress
+
+Knowledge Graph knowledge structure ও learning objective-এর dependency প্রকাশ করে। Learning Graph আলাদা catalog হিসেবে tutorial, notes, investigation, planning, experiment, walkthrough, lab ও reference-এর মতো Learning Node রাখে। প্রতিটি Learning Node Markdown content-এর দিকে নির্দেশ করে এবং Knowledge Node-এর সঙ্গে typed relationship ব্যবহার করে: `introduces`, `explains`, `demonstrates`, `applies`, `investigates`, `plans` অথবা `references`।
+
+Learning Node শুধু Peter-এর জন্য নয়। Story-এর যেকোনো POV character-এর study বা investigation থেকে reader-facing learning material তৈরি হতে পারে। তবে character-এর fictional knowledge journey এবং reader-এর ব্যক্তিগত progress আলাদা।
+
+Reader Learning Track একই Learning Graph-এর catalog ব্যবহার করে, কিন্তু প্রতিটি reader-এর নিজস্ব selected items, order ও progress রাখে। এই personal state shared repository graph file-এ থাকবে না; ভবিষ্যৎ reader-specific persistence layer-এ থাকবে। Reader completion Knowledge Coverage Analysis পরিবর্তন করে না।
+
+বিস্তারিত data contract, content gap analysis, relationship semantics, validation ও incremental update policy [Graph Architecture](GRAPH-ARCHITECTURE.md)-এ।
+
+
+### Knowledge Coverage Analysis
+
+নতুন Learning Node তৈরির আগে Agent বিদ্যমান Learning Node-গুলোর `explains` links ও `content_anchor` পরীক্ষা করে কোন Knowledge Node-এর scope আগে থেকেই ব্যাখ্যা করা হয়েছে তা শনাক্ত করবে। আগে ব্যাখ্যা করা scope পুনরাবৃত্তি না করে reference করতে হবে; নতুন বা unexplained child Concept-এর ব্যাখ্যা নতুন Learning Node-এ যোগ হবে। Parent Concept explain করা থাকলেই child Concept explained হবে না, এবং উল্টোটিও সত্য নয়। পূর্বের Learning Node-গুলো published হিসেবে গণ্য; publication status field বা আলাদা publication workflow নেই।

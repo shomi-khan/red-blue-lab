@@ -192,7 +192,7 @@ Domain layer-গুলো conceptual grouping, বাধ্যতামূলক
 5. আগে শেখা concept পরবর্তী incident-এ reinforce, integrate ও progressively harder context-এ reuse করো।
 6. Topic যোগ করো যখন story, system understanding বা competency-তে বাস্তব মূল্য যোগ হয়।
 
-Knowledge Dependency Graph prerequisite, concept relationship এবং incident-to-knowledge mapping দেখাবে। এর exact schema ও maintenance process আলাদা design decision।
+Knowledge Graph prerequisite, concept relationship এবং incident-to-knowledge mapping-এর typed structure প্রকাশ করবে। এর approved node ও relationship contract `docs/GRAPH-ARCHITECTURE.md`-এ এবং machine-readable schema `schemas/knowledge-graph.schema.json`-এ নির্ধারিত। Domain membership, Concept hierarchy, LO-to-Concept classification এবং LO prerequisite আলাদা relationship family; prerequisite DAG acyclic হতে হবে। Graph catalog incrementalভাবে evolve করবে; পুরো syllabus আগে থেকে তৈরি করা বাধ্যতামূলক নয়।
 
 ## 7. Knowledge integration ও verification
 

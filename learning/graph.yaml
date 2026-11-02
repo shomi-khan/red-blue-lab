@@ -1,0 +1,6 @@
+# Learning Graph catalog
+# Reader-specific progress is stored separately and never committed here.
+schema_version: 1
+graph_id: red-blue-lab-learning
+nodes: []
+knowledge_links: []

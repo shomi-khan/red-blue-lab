@@ -38,6 +38,10 @@ Request interpretation, relevant source, known facts, unknowns, proposed structu
 5. Example/experiment/lab প্রয়োজন কি না সিদ্ধান্ত।
 6. Verification ও limitation যোগ।
 7. Tool সত্যিই দরকার কি না পুনর্বিবেচনা।
+8. নতুন বা পরিবর্তিত reader-facing Learning Node হলে `AGENTS.md`-এর বাধ্যতামূলক Knowledge Coverage Analysis workflow অনুসরণ করো। Existing Knowledge ও Learning Graph এবং সংশ্লিষ্ট Markdown content inspect করে আগে explain করা scope পুনরাবৃত্তি এড়াও।
+9. প্রয়োজন অনুযায়ী `knowledge/graph.yaml`-এ Knowledge Node/relationship এবং `learning/graph.yaml`-এ Learning Node/Knowledge link update করো। প্রতিটি `explains` link-এর `content_anchor` বাস্তব section-এ resolve করে section-টি সংশ্লিষ্ট Concept সত্যিই explain করে কি না যাচাই করো।
+10. `docs/GRAPH-ARCHITECTURE.md`-এর relationship endpoint, DAG ও cross-file validation rules মেনে graph consistency যাচাই করো। Structural ও semantic validation কোনটি বাস্তবে করা হয়েছে তা আলাদা করে report করো.
+11. Narrative-only change হলে অকারণে Learning Node বা graph edge তৈরি কোরো না; কেন graph update প্রয়োজন হয়নি তা report করো।
 
 ### Review
 Narrative, character, mystery, technical correctness, learning depth, visual accuracy, Bengali quality, safety ও continuity আলাদা করে review করো। Concrete issue, impact, location ও suggested fix দাও।

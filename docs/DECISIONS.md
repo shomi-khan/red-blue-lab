@@ -93,9 +93,9 @@
 **Consequences:** Fictional system-এর architecture, dependency, trust boundary, failure mode ও limitation internally consistent হবে। বাস্তব engineering principle নাটকীয়তার জন্য বিকৃত করা যাবে না। ক্ষতিকর operational construction বা compromise guide নয়, safe analysis ও defensive engineering-এ focus থাকবে।
 
 ### D-026 — Markdown-first content storage
-**Decision:** Project-এর মূল narrative ও learning content Markdown file-এ সংরক্ষিত হবে। YAML Frontmatter structured metadata রাখবে; Mermaid Markdown-এর ভেতরে text-based diagram প্রকাশের standard option হবে। Knowledge Graph Markdown content ও তার structured metadata/explicit references থেকে ভবিষ্যতে generate করা যেতে পারে। Markdown হবে canonical content source; JSON বা database primary content storage নয়।
+**Decision:** Project-এর মূল narrative ও learning content Markdown file-এ সংরক্ষিত হবে। YAML Frontmatter content-specific structured metadata রাখতে পারে; Mermaid Markdown-এর ভেতরে text-based diagram প্রকাশের standard option হবে। Knowledge Graph metadata ও relationships-এর authoritative source হবে `knowledge/graph.yaml` এবং Learning Graph metadata ও links-এর authoritative source হবে `learning/graph.yaml`। Markdown content body-এর canonical source; YAML graph catalog graph metadata ও relationships-এর canonical source। JSON বা database primary content storage নয়।
 **Rationale:** Content human-readable, version-control-friendly, diff/reviewable এবং দীর্ঘমেয়াদে portable রাখা, একই সঙ্গে machine-readable knowledge structure তৈরির সুযোগ বজায় রাখা।
-**Consequences:** Content authoring Markdown-first হবে। Metadata contract, identifier/reference convention, validation rules এবং graph extraction implementation আলাদা design decision হিসেবে open থাকবে।
+**Consequences:** Content authoring Markdown-first হবে। Content-specific metadata প্রয়োজনে Markdown frontmatter-এ থাকতে পারে; graph node, relationship ও cross-file reference-এর authoritative metadata YAML graph catalog-এ থাকবে। Graph catalog Markdown থেকে auto-generate বা regenerate হবে না।
 
 ## Open decisions
 
@@ -135,7 +135,7 @@ Superseded decision মুছবে না; নতুন decision দিয়ে r
 ### D-023 — Hybrid Knowledge Graph
 **Decision:** Knowledge architecture হবে Hybrid Knowledge Graph। Graph-এ Domain, Concept ও Learning Objective (LO)-এর মতো typed knowledge node এবং একাধিক explicit relationship থাকবে। Concept ও LO আলাদা node type; একই concept-এর একটিই canonical identity থাকবে, যদিও তা একাধিক domain ও LO-এর সঙ্গে সম্পর্কিত হতে পারে।
 **Rationale:** Technical knowledge-এর cross-domain reuse এবং learner capability-র objective-কে একই structure-এ প্রকাশ করা, কিন্তু তাদের semantics গুলিয়ে না ফেলা।
-**Consequences:** Concept-to-Concept technical relationships এবং LO-to-LO prerequisite dependencies আলাদা relationship family হবে। Graph-এর exact schema ও implementation এখনো open।
+**Consequences:** Concept-to-Concept technical relationships এবং LO-to-LO prerequisite dependencies আলাদা relationship family হবে। Graph-এর node ও relationship contract `docs/GRAPH-ARCHITECTURE.md` এবং `schemas/knowledge-graph.schema.json`-এ নির্ধারিত; cross-file endpoint type ও DAG validation semantic validation-এর অংশ।
 
 ### D-024 — Learning Objective to Concept relationship semantics
 **Decision:** LO ও Concept-এর সম্পর্ক তিনভাবে শ্রেণিবদ্ধ হবে: **Required**, **Supporting** এবং **Related**। Required concept LO অর্জনের জন্য প্রয়োজনীয়; Supporting concept বোঝাপড়ায় সহায়তা করে; Related concept প্রাসঙ্গিক হলেও আবশ্যিক নয়। একই Concept ভিন্ন LO-তে ভিন্ন classification পেতে পারে। Related relationship prerequisite বোঝায় না।
@@ -160,3 +160,30 @@ Superseded decision মুছবে না; নতুন decision দিয়ে r
 - Assessment Authoring Validator, Linter, Test Harness ও Preview tooling থাকবে।
 - Sandboxed Code Runner আলাদা security boundary হবে।
 - Exact metadata schema, evaluator contract, persistence model ও runner implementation পরবর্তী technical design-এ স্থির হবে।
+
+
+### D-028 — Separate Knowledge Graph, Learning Graph and Reader Learning Track
+**Decision:** Knowledge Graph knowledge structure, typed knowledge relationships ও Learning Objective dependency-এর source হবে। Learning Graph আলাদা catalog হিসেবে reusable Learning Node এবং Knowledge Node-এর সঙ্গে explicit typed relationship রাখবে। Reader Learning Track একই Learning Node catalog ব্যবহার করলেও প্রতিটি reader-এর selection, order ও progress আলাদা personal state হিসেবে সংরক্ষণ করবে; তা shared repository graph-এ রাখা হবে না।
+**Rationale:** Knowledge কী, শেখার উপাদান কী এবং নির্দিষ্ট reader কীভাবে শিখছে, এই তিনটি আলাদা concern। একই Learning Node Peter-এর fictional journey এবং বহু reader-এর learning track-এ reuse করা যাবে, ব্যক্তিগত progress মিশে যাবে না।
+**Consequences:**
+- Learning-to-Knowledge link-এ `introduces`, `explains`, `demonstrates`, `applies`, `investigates`, `plans` বা `references` relationship স্পষ্ট থাকবে।
+- General Concept-এর নিজস্ব scope-এ explanation থাকবে; specific sub-concept আলাদা Concept Node হবে এবং parent-এ duplicate explanation হবে না।
+- Percentage-based Knowledge Node coverage, `self_explained` flag এবং ancestor coverage calculation থাকবে না।
+- নতুন Learning Node তৈরির আগে Agent পুরোনো Learning Node-এর `explains` relationship ও `content_anchor` দেখে content gap শনাক্ত করবে।
+- আগে explain করা scope পুনরাবৃত্তি না করে `references` link ব্যবহার করবে। Parent ও child Concept-এর explanation আলাদাভাবে বিবেচিত হবে।
+- পূর্বের Learning Node-গুলো published হিসেবে গণ্য; আলাদা publication status বা workflow থাকবে না।
+- Content gap analysis Agent-এর authoring/review workflow-এর অংশ; runtime script বা percentage metric নয়।
+- Canonical content Markdown; graph metadata YAML; JSON Schema structural validation এবং custom semantic validation ব্যবহার হবে।
+- Reader-specific progress repository-তে commit করা হবে না।
+- Detailed contract: `docs/GRAPH-ARCHITECTURE.md`.
+
+### D-029 — Graph source of truth and mandatory authoring consistency
+**Decision:** Markdown হবে narrative ও learning content body-এর canonical source। `knowledge/graph.yaml` হবে Knowledge Graph metadata ও relationships-এর authoritative source; `learning/graph.yaml` হবে Learning Node catalog ও Knowledge links-এর authoritative source। Agent নতুন বা পরিবর্তিত reader-facing learning content author করার সময় existing graph ও Markdown content inspect করবে, Knowledge Coverage Analysis করবে, প্রয়োজনমতো উভয় graph update করবে এবং cross-file semantic consistency verify করবে। Prior Learning Node-গুলো published হিসেবে গণ্য হবে; publication status field বা publication workflow থাকবে না।
+**Rationale:** Content, knowledge structure ও reusable learning material-এর ownership পরিষ্কার রাখা এবং content change-এর সঙ্গে graph drift, duplicate node ও duplicate explanation ঠেকানো।
+**Consequences:**
+- Markdown থেকে graph YAML নীরবে generate বা regenerate করা যাবে না।
+- নতুন Learning Node-এর প্রতিটি `explains` link-এ valid `content_anchor` থাকবে; Agent anchor-এর target section পড়ে নিশ্চিত করবে সেটি সংশ্লিষ্ট Concept-কে বাস্তবে explain করে।
+- Agent authoring workflow-এ duplicate ID/link, unresolved reference, invalid relationship endpoint/type, missing content path এবং DAG constraints পরীক্ষা করবে।
+- Automated validator না থাকলে Agent manual semantic check করবে এবং manual/automated verification আলাদা করে report করবে।
+- Reader-specific progress shared graph catalog-এ থাকবে না।
+- বিস্তারিত workflow `AGENTS.md` এবং contract `docs/GRAPH-ARCHITECTURE.md`-এ।
