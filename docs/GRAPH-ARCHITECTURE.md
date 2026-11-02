@@ -112,7 +112,7 @@ Learning Node হলো reader-এর শেখার উপাদান, Knowle
 | `plans` | Design বা planning context-এ ধারণাটি ব্যবহার করে |
 | `references` | পুনরায় ব্যাখ্যা না করে আগের explanation/reference-এর দিকে নির্দেশ করে |
 
-প্রয়োজনে link-এ `content_anchor` থাকবে, যেমন Markdown heading। এতে কোন section কোন Concept cover করে তা বোঝা যায়।
+প্রতিটি `explains` link-এ `content_anchor` আবশ্যক। Anchor অবশ্যই সংশ্লিষ্ট Markdown file-এর বাস্তব section/heading-এ resolve করতে হবে। Agent-কে section-এর content পড়ে নিশ্চিত করতে হবে যে সেটি সংশ্লিষ্ট Concept-এর scope সত্যিই explain করে। শুধু syntactically valid বা বিদ্যমান heading হলেই যথেষ্ট নয়। অন্য relationship-এ `content_anchor` optional; থাকলে সেটিও valid target-এ resolve করতে হবে।
 
 ### 4.3 Duplicate explanation এড়ানো
 
@@ -158,8 +158,9 @@ Graph update করার সময় অন্তত নিচের checks ক�
 4. Relationship type-এর source/target node type বৈধ।
 5. `parent_of` এবং mandatory LO prerequisite graph acyclic।
 6. Technical relationship cycle অনুমোদিত।
-7. `explains` link-এর target Knowledge Node হতে হবে; source একটি বিদ্যমান Learning Node হতে হবে এবং valid content anchor থাকতে হবে।
-9. `content_ref` path repository-তে বিদ্যমান canonical Markdown file-কে নির্দেশ করবে।
+7. `explains` link-এর target Knowledge Node হতে হবে; source একটি বিদ্যমান Learning Node হতে হবে এবং valid content anchor থাকতে হবে। Anchor target section বাস্তবে সংশ্লিষ্ট Concept explain করছে কি না semanticভাবে যাচাই করতে হবে।
+8. একই Learning Node ও Knowledge Node-এর জন্য duplicate relationship link রাখা যাবে না।
+9. `content_ref` path repository-তে বিদ্যমান canonical Markdown file-কে নির্দেশ করবে; সব content anchor সেই file-এর বিদ্যমান section-এ resolve করবে।
 10. Reader Track-এর Learning Node ID বিদ্যমান ও reader-এর জন্য available হতে হবে।
 
 
