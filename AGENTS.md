@@ -11,8 +11,8 @@
 5. docs/LEARNING-ARCHITECTURE.md
 6. docs/GRAPH-ARCHITECTURE.md
 7. docs/VISUAL-DESIGN-GUIDELINES.md
-7. docs/SECURITY-AND-SAFETY.md
-8. docs/AI-WORKFLOW.md এবং সংশ্লিষ্ট template।
+8. docs/SECURITY-AND-SAFETY.md
+9. docs/AI-WORKFLOW.md এবং সংশ্লিষ্ট template।
 
 তথ্য অনুপস্থিত থাকলে গুরুত্বপূর্ণ world-building decision নিজে থেকে নিও না। Unknown ও proposed বিষয় আলাদা করে human review চাও।
 
@@ -107,11 +107,29 @@ docs/SECURITY-AND-SAFETY.md বাধ্যতামূলক। Real unauthoriz
 
 - Knowledge Graph, Learning Graph এবং Reader Learning Track-কে আলাদা concern হিসেবে রাখো।
 - Graph-এর canonical contract `docs/GRAPH-ARCHITECTURE.md`; schema ও YAML catalog পরিবর্তনের আগে সেটি পড়ো।
+- Markdown হলো narrative ও learning content body-এর canonical source। `knowledge/graph.yaml` হলো Knowledge Graph metadata/relationships-এর authoritative source; `learning/graph.yaml` হলো Learning Graph catalog/links-এর authoritative source। Markdown থেকে YAML graph-কে নীরবে infer বা regenerate কোরো না।
 - Learning Node কেবল Peter-এর জন্য নয়; reader-facing reusable learning artifact।
-- Learning-to-Knowledge link-এ explicit relationship type ও প্রয়োজনমতো content anchor দাও।
-- একই Concept-এর explanation অকারণে পুনরাবৃত্তি কোরো না; specific sub-concept-এর নিজস্ব Node তৈরি করো।
+- Learning Node schema বা catalog-এ publication status/workflow যোগ কোরো না; পূর্বের Learning Node-গুলো published হিসেবে গণ্য।
 - Reader-specific progress, notes বা identity shared graph catalog-এ commit কোরো না।
-- নতুন Learning Node তৈরির আগে Knowledge Coverage Analysis করো: পুরোনো `explains` links ও content anchors দেখে আগে ব্যাখ্যা করা scope reference করো, পুনরাবৃত্তি নয়।
-- Parent Concept explain করা থাকলেই child Concept explain হয়েছে ধরে নিও না; প্রতিটি Node-এর scope আলাদাভাবে যাচাই করো।
-- পূর্বের Learning Node-গুলো published হিসেবে গণ্য; publication status field বা workflow যোগ কোরো না।
-- Structural JSON Schema validation-এর পাশাপাশি cross-file reference, endpoint type ও DAG constraint validate করো।
+
+### 12.1 বাধ্যতামূলক content authoring workflow
+
+যখনই নতুন reader-facing learning content তৈরি বা বিদ্যমান learning content পরিবর্তন করবে, নিচের সম্পূর্ণ workflow অনুসরণ করো। শুধু Markdown file তৈরি/সম্পাদনা করে কাজ শেষ হয়েছে বলে গণ্য করবে না।
+
+1. **Read current state:** `knowledge/graph.yaml`, `learning/graph.yaml`, সংশ্লিষ্ট JSON Schema, `docs/GRAPH-ARCHITECTURE.md` এবং সম্পর্কিত existing Markdown content পড়ো।
+2. **Identify knowledge scope:** Content কোন existing Domain, Concept ও Learning Objective ব্যবহার করছে তা নির্ধারণ করো। একই অর্থের Node আগে থেকেই থাকলে duplicate Node তৈরি কোরো না। নতুন Node কেবল নতুন, independently meaningful knowledge-এর জন্য।
+3. **Run Knowledge Coverage Analysis:** প্রতিটি প্রাসঙ্গিক Concept-এর আগের `explains` links ও `content_anchor` পরীক্ষা করো। Anchor-এর target section বাস্তবে আছে কি না এবং section-টি Concept-এর scope যথাযথভাবে explain করে কি না, Markdown খুলে যাচাই করো। Metadata একা যথেষ্ট প্রমাণ নয়। অনিশ্চিত হলে explained ধরে নিও না; gap/review-needed হিসেবে চিহ্নিত করো।
+4. **Plan reuse and gaps:** আগে explain করা scope পুনরাবৃত্তি না করে যথাযথ পুরোনো Learning Node-এ `references` link দাও। নতুন বা আলাদা scope হলে সেটি নতুন content-এ explain করো। Parent Concept ও child Concept-এর explanation আলাদাভাবে বিবেচনা করো।
+5. **Author content:** Approved Bengali-first authoring ও technical/safety rules মেনে Markdown content তৈরি বা update করো। Content-এর section heading স্থিতিশীল ও অর্থবহ রাখো, যাতে anchor নির্ভরযোগ্য হয়।
+6. **Update Knowledge Graph when needed:** নতুন Domain/Concept/LO সত্যিই প্রয়োজন হলে `knowledge/graph.yaml`-এ stable ID-সহ যোগ করো। প্রাসঙ্গিক typed relationship যোগ বা update করো। Existing Node-এর identity অকারণে বদলাবে না।
+7. **Update Learning Graph:** প্রতিটি নতুন বা পরিবর্তিত reader-facing Learning artifact-এর জন্য `learning/graph.yaml`-এ Learning Node create/update করো। সঠিক `content_ref`, title, type ও প্রাসঙ্গিক metadata দাও। প্রতিটি relevant Knowledge Node-এর সঙ্গে সঠিক typed relationship দাও। প্রতিটি `explains` link-এ বাস্তব, valid `content_anchor` আবশ্যক।
+8. **Verify graph consistency:** JSON Schema অনুযায়ী data shape; সব Node ও relationship ID unique; duplicate links নেই; সব content path বিদ্যমান; সব cross-file Node reference resolve করে; relationship-এর source/target type বৈধ; `parent_of` ও mandatory LO prerequisite DAG acyclic; technical relationship cycle অনুমোদিত; প্রতিটি `explains` anchor বিদ্যমান এবং সংশ্লিষ্ট Concept-কে বাস্তবে cover করে। Reader Track schema-তে catalog-এর বাইরে Learning Node reference নেই।
+9. **Report the graph changes:** Final response-এ আলাদা করে উল্লেখ করো কোন Markdown file বদলেছে, কোন Knowledge Node তৈরি/পরিবর্তিত হয়েছে, কোন Learning Node তৈরি/পরিবর্তিত হয়েছে, কোন relationship যোগ/পরিবর্তিত হয়েছে, কোন পূর্বের content reference করা হয়েছে এবং কোন validation বাস্তবে সম্পন্ন/অসম্পন্ন।
+
+যদি কাজটি কেবল narrative content হয় এবং কোনো reader-facing learning artifact বা Knowledge Graph scope পরিবর্তন না করে, অকারণে Learning Node বা graph edge তৈরি কোরো না। তবে এমন সিদ্ধান্তের কারণ report করো।
+
+### 12.2 Validation discipline
+
+- Structural validation এবং semantic validation আলাদা করে report করো।
+- JSON Schema parse/validation, YAML parse এবং cross-file semantic checks বাস্তবে না চালালে সেগুলো completed বলে দাবি কোরো না।
+- কোনো automated validator না থাকলে repository files ও relationships সরাসরি inspect করে Agent হিসেবে manual check করো; manual check-কে automated validation বলে উপস্থাপন কোরো না।
