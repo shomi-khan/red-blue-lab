@@ -198,7 +198,7 @@ Knowledge Graph knowledge structure ও learning objective-এর dependency প
 
 Learning Node শুধু Peter-এর জন্য নয়। Story-এর যেকোনো POV character-এর study বা investigation থেকে reader-facing learning material তৈরি হতে পারে। তবে character-এর fictional knowledge journey এবং reader-এর ব্যক্তিগত progress আলাদা।
 
-Reader Learning Track একই Learning Graph-এর catalog ব্যবহার করে, কিন্তু প্রতিটি reader-এর নিজস্ব selected items, order ও progress রাখে। এই personal state shared repository graph file-এ থাকবে না; ভবিষ্যৎ reader-specific persistence layer-এ থাকবে। Reader completion Knowledge Node-এর explained status বা project coverage পরিবর্তন করে না।
+Reader Learning Track একই Learning Graph-এর catalog ব্যবহার করে, কিন্তু প্রতিটি reader-এর নিজস্ব selected items, order ও progress রাখে। এই personal state shared repository graph file-এ থাকবে না; ভবিষ্যৎ reader-specific persistence layer-এ থাকবে। Reader completion Knowledge Coverage Analysis পরিবর্তন করে না।
 
 বিস্তারিত data contract, content gap analysis, relationship semantics, validation ও incremental update policy [Graph Architecture](GRAPH-ARCHITECTURE.md)-এ।
 
