@@ -1,0 +1,6 @@
+# Knowledge Graph catalog
+# Canonical content remains in Markdown; this file stores graph metadata and relationships.
+schema_version: 1
+graph_id: red-blue-lab-knowledge
+nodes: []
+relationships: []
