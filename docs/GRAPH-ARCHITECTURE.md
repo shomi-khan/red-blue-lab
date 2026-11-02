@@ -47,47 +47,39 @@ Technical relationship আলাদা family। যেমন `uses`, `contains`
 
 Concept-to-Concept technical relationship থেকে learning prerequisite অনুমান করা যাবে না।
 
-## 3. Explained status ও coverage
+## 3. Knowledge Coverage Analysis ও content gap
 
-প্রতিটি Domain/Concept Node-এর `self_explained` একটি boolean:
+Percentage-based Knowledge Node coverage, `self_explained` flag এবং ancestor coverage calculation রাখা হবে না। এগুলো content planning-এর জন্য প্রয়োজনীয় নয় এবং completeness সম্পর্কে বিভ্রান্তিকর precision তৈরি করতে পারে।
 
-- `false`: Node-এর নিজের scope এখনো সম্পূর্ণভাবে explain করা হয়নি।
-- `true`: Node-এর নিজের scope-এর explanation সম্পূর্ণ এবং review করা হয়েছে।
+এর বদলে Agent নতুন বা পরিবর্তিত Learning Node-এর Knowledge links বিশ্লেষণ করে **Knowledge Coverage Analysis** করবে। উদ্দেশ্য হলো কোন ধারণা নতুন করে explain করতে হবে, কোনটি আগের Learning Node থেকে reference করা যায়, আর কোন knowledge এখনো explain করা হয়নি তা শনাক্ত করা।
 
-Leaf Node-এর coverage তাই binary: 0% অথবা 100%। Parent Node-এর coverage নিজের explanation এবং direct child-দের coverage মিলিয়ে গণনা হবে।
+### 3.1 Analysis-এর নিয়ম
 
-ধরি:
+1. নতুন Learning Node-এর সঙ্গে যুক্ত প্রতিটি Knowledge Node-এর scope ও child Concept পরীক্ষা করো।
+2. আগের Learning Node-গুলোর `explains` relationship এবং `content_anchor` দেখে কোন Knowledge Node ইতিমধ্যে explain করা হয়েছে তা শনাক্ত করো।
+3. কোনো Node আগে explain করা থাকলে একই scope আবার লিখবে না; প্রাসঙ্গিক পুরোনো Learning Node-এ `references` link দাও এবং নতুন material-এ প্রয়োজনীয় নতুন context, application বা deeper scope যোগ করো।
+4. Parent Concept explain করা থাকলেই তার child Concept explain হয়েছে ধরে নিও না। যেমন `Authentication` explain করা থাকলেও `Password Authentication` বা `Session Authentication` আলাদা করে explain না হলে সেগুলো content gap।
+5. Child Concept explain করা থাকলেও parent Concept-এর নিজস্ব general scope explain হয়েছে ধরে নিও না।
+6. পূর্বের Learning Node-গুলো published content হিসেবে গণ্য হবে। আলাদা publication status field বা publication workflow প্রয়োজন নেই।
+7. প্রতিটি link-এর উদ্দেশ্য স্পষ্ট করো: `explains`, `introduces`, `demonstrates`, `applies`, `investigates`, `plans` অথবা `references`।
 
-- `self_explained` = false হলে 0, true হলে 1
-- `child_coverage` = প্রতিটি child-এর coverage, 0–100 scale-এ
-- `n` = direct child-এর সংখ্যা
+### 3.2 Authentication উদাহরণ
 
-```text
-coverage_percentage =
-  (100 * self_explained + sum(child_coverage))
-  / (1 + n)
-```
+ধরা যাক Learning Node A `Authentication` এবং `Password Authentication` explain করেছে। পরে Learning Node B-তে `Authentication` এবং `Session Authentication` প্রাসঙ্গিক হলো।
 
-এটি আগের normalized formula-এরই 0–100 scale-এ প্রকাশ। Parent-এর নিজের explanation এবং প্রতিটি direct child সমান weight পায়। Child না থাকলে ফল 0% বা 100% হবে।
+- `Authentication`: আগে explain করা হয়েছে; নতুন করে general explanation নয়, Node A-তে reference।
+- `Password Authentication`: আগে explain করা হয়েছে; Node B-তে পুনরাবৃত্তির প্রয়োজন নেই।
+- `Session Authentication`: এখনো explain করা হয়নি; Node B-তে এর explanation দিতে হবে।
 
-**Coverage মানে content coverage, reader mastery নয়।** এটি explanation-এর quality, correctness, retention বা কোনো reader-এর competency প্রমাণ করে না।
+এতে নতুন Learning Node শুধু নতুন knowledge যোগ করবে, পুরোনো explanation পুনরাবৃত্তি করবে না।
 
-### 3.1 Explained status কীভাবে নির্ধারিত হবে
+### 3.3 সীমা
 
-শুধু Learning Node-এর সঙ্গে link থাকলেই Knowledge Node explained হবে না। `self_explained: true` করার আগে:
-
-1. Node-এর নিজস্ব scope-এর উপযুক্ত published Learning Node থাকতে হবে।
-2. Learning Graph-এ সেই Learning Node থেকে Knowledge Node-এ `explains` relationship থাকতে হবে।
-3. Relationship-এ নির্দিষ্ট content anchor থাকতে হবে।
-4. Explanation review করে status explicitly update করতে হবে।
-
-`introduces`, `demonstrates`, `applies`, `investigates` বা `references` link একা explained status তৈরি করে না।
-
-### 3.2 Recalculation
-
-কোনো Node যোগ হলে, `self_explained` বদলালে অথবা hierarchy edge বদলালে তার সব ancestor-এর coverage পুনরায় হিসাব হবে। DAG-এ একটি Node-এর একাধিক parent থাকতে পারে, তাই প্রত্যেক affected ancestor একবার করে update করতে হবে।
-
-Coverage value derived data; YAML source-এ manually লিখে রাখা যাবে না। প্রয়োজনে tooling এটি calculate করে display/cache করতে পারে।
+- কোনো Learning Node-এর সঙ্গে link থাকলেই সেটি explained নয়; `explains` relationship এবং নির্দিষ্ট `content_anchor` থাকতে হবে।
+- `introduces`, `demonstrates`, `applies`, `investigates`, `plans` বা `references` একা কোনো Knowledge Node-কে explained হিসেবে চিহ্নিত করে না।
+- Parent-child hierarchy নিজে থেকে explanation inheritance তৈরি করে না।
+- Analysis হলো Agent-এর content planning সহায়তা; এটি explanation quality, correctness, reader mastery বা competency score নয়।
+- Agent uncertainty পেলে Node-কে already explained ধরে নেবে না; gap বা review প্রয়োজন বলে চিহ্নিত করবে।
 
 ## 4. Learning Graph
 
@@ -167,8 +159,7 @@ Graph update করার সময় অন্তত নিচের checks ক�
 4. Relationship type-এর source/target node type বৈধ।
 5. `parent_of` এবং mandatory LO prerequisite graph acyclic।
 6. Technical relationship cycle অনুমোদিত।
-7. `self_explained: true` হলে অন্তত একটি published `explains` link ও valid content anchor থাকতে হবে।
-8. `explains` link-এর target Knowledge Node হতে হবে; source published Learning Node হতে হবে।
+7. `explains` link-এর target Knowledge Node হতে হবে; source একটি বিদ্যমান Learning Node হতে হবে এবং valid content anchor থাকতে হবে।
 9. `content_ref` path repository-তে বিদ্যমান canonical Markdown file-কে নির্দেশ করবে।
 10. Reader Track-এর Learning Node ID বিদ্যমান ও reader-এর জন্য available হতে হবে।
 
