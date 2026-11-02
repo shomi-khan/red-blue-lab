@@ -56,13 +56,6 @@
             "type": "string",
             "minLength": 1
           },
-          "objective_refs": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "uniqueItems": true
-          },
           "story_context": {
             "type": "object",
             "additionalProperties": false,
@@ -109,7 +102,8 @@
             ]
           },
           "content_anchor": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "allOf": [
