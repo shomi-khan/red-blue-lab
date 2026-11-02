@@ -111,5 +111,7 @@ docs/SECURITY-AND-SAFETY.md বাধ্যতামূলক। Real unauthoriz
 - Learning-to-Knowledge link-এ explicit relationship type ও প্রয়োজনমতো content anchor দাও।
 - একই Concept-এর explanation অকারণে পুনরাবৃত্তি কোরো না; specific sub-concept-এর নিজস্ব Node তৈরি করো।
 - Reader-specific progress, notes বা identity shared graph catalog-এ commit কোরো না।
-- Coverage derived metric; manually edit বা reader mastery হিসেবে ব্যাখ্যা কোরো না।
+- নতুন Learning Node তৈরির আগে Knowledge Coverage Analysis করো: পুরোনো `explains` links ও content anchors দেখে আগে ব্যাখ্যা করা scope reference করো, পুনরাবৃত্তি নয়।
+- Parent Concept explain করা থাকলেই child Concept explain হয়েছে ধরে নিও না; প্রতিটি Node-এর scope আলাদাভাবে যাচাই করো।
+- পূর্বের Learning Node-গুলো published হিসেবে গণ্য; publication status field বা workflow যোগ কোরো না।
 - Structural JSON Schema validation-এর পাশাপাশি cross-file reference, endpoint type ও DAG constraint validate করো।
