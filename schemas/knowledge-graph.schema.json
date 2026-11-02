@@ -89,6 +89,7 @@
           },
           "type": {
             "enum": [
+              "domain_contains",
               "parent_of",
               "uses",
               "contains",
@@ -99,7 +100,7 @@
               "requires",
               "supports",
               "related_to",
-              "prerequisite_for"
+              "prerequisite_of"
             ]
           },
           "description": {
