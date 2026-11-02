@@ -1,7 +1,7 @@
 # Knowledge ও Learning Graph Architecture
 
 > Status: User-approved architecture
-> Scope: Knowledge Graph, Learning Graph, typed relationships, coverage calculation এবং reader-specific learning progress
+> Scope: Knowledge Graph, Learning Graph, typed relationships, content gap analysis এবং reader-specific learning progress
 > এই document graph-এর data contract নির্ধারণ করে। এটি কোনো application runtime বা Learning Path Generator implementation নয়।
 
 ## 1. তিনটি আলাদা দায়িত্ব
@@ -10,7 +10,7 @@
 |---|---|---|
 | **Knowledge Graph** | Domain, Concept, Learning Objective এবং তাদের জ্ঞানগত সম্পর্ক | Reader-এর progress বা learning route সংরক্ষণ করে না |
 | **Learning Graph** | Tutorial, Note, Investigation, Experiment ইত্যাদি Learning Node এবং Knowledge Node-এর সঙ্গে typed link | কোনো নির্দিষ্ট reader-এর completion state রাখে না |
-| **Reader Learning Track** | একজন reader কোন Learning Node বেছে নিয়েছে, কোন ক্রমে রাখছে এবং তার progress | Knowledge Node-এর explained status পরিবর্তন করে না |
+| **Reader Learning Track** | একজন reader কোন Learning Node বেছে নিয়েছে, কোন ক্রমে রাখছে এবং তার progress | Shared Knowledge বা Learning Graph পরিবর্তন করে না |
 
 একই Learning Node বহু reader ব্যবহার করতে পারবে। প্রত্যেক reader-এর progress আলাদা থাকবে।
 
