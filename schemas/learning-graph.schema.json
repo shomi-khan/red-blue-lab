@@ -26,8 +26,7 @@
           "id",
           "type",
           "title",
-          "content_ref",
-          "status"
+          "content_ref"
         ],
         "properties": {
           "id": {
@@ -56,13 +55,6 @@
           "content_ref": {
             "type": "string",
             "minLength": 1
-          },
-          "status": {
-            "enum": [
-              "draft",
-              "published",
-              "archived"
-            ]
           },
           "objective_refs": {
             "type": "array",
