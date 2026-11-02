@@ -160,3 +160,18 @@ Superseded decision মুছবে না; নতুন decision দিয়ে r
 - Assessment Authoring Validator, Linter, Test Harness ও Preview tooling থাকবে।
 - Sandboxed Code Runner আলাদা security boundary হবে।
 - Exact metadata schema, evaluator contract, persistence model ও runner implementation পরবর্তী technical design-এ স্থির হবে।
+
+
+### D-028 — Separate Knowledge Graph, Learning Graph and Reader Learning Track
+**Decision:** Knowledge Graph knowledge structure, typed knowledge relationships ও Learning Objective dependency-এর source হবে। Learning Graph আলাদা catalog হিসেবে reusable Learning Node এবং Knowledge Node-এর সঙ্গে explicit typed relationship রাখবে। Reader Learning Track একই Learning Node catalog ব্যবহার করলেও প্রতিটি reader-এর selection, order ও progress আলাদা personal state হিসেবে সংরক্ষণ করবে; তা shared repository graph-এ রাখা হবে না।
+**Rationale:** Knowledge কী, শেখার উপাদান কী এবং নির্দিষ্ট reader কীভাবে শিখছে, এই তিনটি আলাদা concern। একই Learning Node Peter-এর fictional journey এবং বহু reader-এর learning track-এ reuse করা যাবে, ব্যক্তিগত progress মিশে যাবে না।
+**Consequences:**
+- Learning-to-Knowledge link-এ `introduces`, `explains`, `demonstrates`, `applies`, `investigates`, `plans` বা `references` relationship স্পষ্ট থাকবে।
+- General Concept-এর নিজস্ব scope-এ explanation থাকবে; specific sub-concept আলাদা Concept Node হবে এবং parent-এ duplicate explanation হবে না।
+- Domain/Concept-এর `self_explained` boolean হবে। Leaf coverage 0% বা 100%; parent coverage নিজের explanation এবং direct child coverage-এর সমান-weight average।
+- Coverage content completeness বোঝাবে, reader mastery বা explanation quality নয়।
+- Learning Node-এর সঙ্গে link থাকলেই Concept explained হবে না; reviewed `explains` link, content anchor এবং explicit explained status প্রয়োজন।
+- Graph incrementally grow করবে; coverage derived হবে এবং affected ancestors recalculate হবে।
+- Canonical content Markdown; graph metadata YAML; JSON Schema structural validation এবং custom semantic validation ব্যবহার হবে।
+- Reader-specific progress repository-তে commit করা হবে না।
+- Detailed contract: `docs/GRAPH-ARCHITECTURE.md`.
