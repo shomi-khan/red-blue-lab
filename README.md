@@ -36,6 +36,9 @@ Novel পড়তে Cyber Lab করা বাধ্যতামূলক নয়�
 | docs/CONTENT-TEMPLATES.md | Reusable content templates |
 | docs/DECISIONS.md | Approved ও open decisions |
 | templates/ | Episode, concept ও image starter templates |
+| knowledge/graph.yaml | Knowledge Graph catalog |
+| learning/graph.yaml | Learning Graph catalog |
+| schemas/ | Graph ও Reader Learning Track JSON Schema contracts |
 
 ## 🧱 Foundation-এর সীমা
 
@@ -47,9 +50,10 @@ Foundation কোনো পূর্ণ character bible, plot, villain motivatio
 2. docs/CREATIVE-DIRECTION.md
 3. docs/AUTHORING-GUIDELINES.md
 4. docs/LEARNING-ARCHITECTURE.md
-5. docs/ASSESSMENT-ARCHITECTURE.md
-6. docs/VISUAL-DESIGN-GUIDELINES.md
-7. AI content তৈরির আগে AGENTS.md ও docs/AI-WORKFLOW.md
+5. docs/GRAPH-ARCHITECTURE.md
+6. docs/ASSESSMENT-ARCHITECTURE.md
+7. docs/VISUAL-DESIGN-GUIDELINES.md
+8. AI content তৈরির আগে AGENTS.md ও docs/AI-WORKFLOW.md
 
 ## 🌐 ভাষানীতি
 
