@@ -9,7 +9,8 @@
 3. docs/DECISIONS.md
 4. docs/AUTHORING-GUIDELINES.md
 5. docs/LEARNING-ARCHITECTURE.md
-6. docs/VISUAL-DESIGN-GUIDELINES.md
+6. docs/GRAPH-ARCHITECTURE.md
+7. docs/VISUAL-DESIGN-GUIDELINES.md
 7. docs/SECURITY-AND-SAFETY.md
 8. docs/AI-WORKFLOW.md এবং সংশ্লিষ্ট template।
 
@@ -100,3 +101,15 @@ docs/SECURITY-AND-SAFETY.md বাধ্যতামূলক। Real unauthoriz
 - [ ] Canon ও continuity ভাঙেনি।
 - [ ] Unknown ও human decision স্পষ্ট।
 - [ ] Verification status সত্যভাবে জানানো হয়েছে।
+
+
+## 12. Knowledge ও Learning Graph rules
+
+- Knowledge Graph, Learning Graph এবং Reader Learning Track-কে আলাদা concern হিসেবে রাখো।
+- Graph-এর canonical contract `docs/GRAPH-ARCHITECTURE.md`; schema ও YAML catalog পরিবর্তনের আগে সেটি পড়ো।
+- Learning Node কেবল Peter-এর জন্য নয়; reader-facing reusable learning artifact।
+- Learning-to-Knowledge link-এ explicit relationship type ও প্রয়োজনমতো content anchor দাও।
+- একই Concept-এর explanation অকারণে পুনরাবৃত্তি কোরো না; specific sub-concept-এর নিজস্ব Node তৈরি করো।
+- Reader-specific progress, notes বা identity shared graph catalog-এ commit কোরো না।
+- Coverage derived metric; manually edit বা reader mastery হিসেবে ব্যাখ্যা কোরো না।
+- Structural JSON Schema validation-এর পাশাপাশি cross-file reference, endpoint type ও DAG constraint validate করো।
