@@ -135,7 +135,7 @@ Superseded decision মুছবে না; নতুন decision দিয়ে r
 ### D-023 — Hybrid Knowledge Graph
 **Decision:** Knowledge architecture হবে Hybrid Knowledge Graph। Graph-এ Domain, Concept ও Learning Objective (LO)-এর মতো typed knowledge node এবং একাধিক explicit relationship থাকবে। Concept ও LO আলাদা node type; একই concept-এর একটিই canonical identity থাকবে, যদিও তা একাধিক domain ও LO-এর সঙ্গে সম্পর্কিত হতে পারে।
 **Rationale:** Technical knowledge-এর cross-domain reuse এবং learner capability-র objective-কে একই structure-এ প্রকাশ করা, কিন্তু তাদের semantics গুলিয়ে না ফেলা।
-**Consequences:** Concept-to-Concept technical relationships এবং LO-to-LO prerequisite dependencies আলাদা relationship family হবে। Graph-এর exact schema ও implementation এখনো open।
+**Consequences:** Concept-to-Concept technical relationships এবং LO-to-LO prerequisite dependencies আলাদা relationship family হবে। Graph-এর node ও relationship contract `docs/GRAPH-ARCHITECTURE.md` এবং `schemas/knowledge-graph.schema.json`-এ নির্ধারিত; cross-file endpoint type ও DAG validation semantic validation-এর অংশ।
 
 ### D-024 — Learning Objective to Concept relationship semantics
 **Decision:** LO ও Concept-এর সম্পর্ক তিনভাবে শ্রেণিবদ্ধ হবে: **Required**, **Supporting** এবং **Related**। Required concept LO অর্জনের জন্য প্রয়োজনীয়; Supporting concept বোঝাপড়ায় সহায়তা করে; Related concept প্রাসঙ্গিক হলেও আবশ্যিক নয়। একই Concept ভিন্ন LO-তে ভিন্ন classification পেতে পারে। Related relationship prerequisite বোঝায় না।
