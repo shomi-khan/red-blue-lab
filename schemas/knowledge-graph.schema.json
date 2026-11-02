@@ -46,9 +46,6 @@
           "description": {
             "type": "string"
           },
-          "self_explained": {
-            "type": "boolean"
-          },
           "content_refs": {
             "type": "array",
             "items": {
@@ -63,48 +60,7 @@
             },
             "uniqueItems": true
           }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "enum": [
-                    "domain",
-                    "concept"
-                  ]
-                }
-              },
-              "required": [
-                "type"
-              ]
-            },
-            "then": {
-              "required": [
-                "self_explained"
-              ]
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "learning_objective"
-                }
-              },
-              "required": [
-                "type"
-              ]
-            },
-            "then": {
-              "not": {
-                "required": [
-                  "self_explained"
-                ]
-              }
-            }
-          }
-        ]
+        }
       }
     },
     "relationships": {
