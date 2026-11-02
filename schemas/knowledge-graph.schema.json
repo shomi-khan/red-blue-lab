@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Red Blue Lab Knowledge Graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "graph_id",
+    "nodes",
+    "relationships"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "graph_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "title"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "type": {
+            "enum": [
+              "domain",
+              "concept",
+              "learning_objective"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "self_explained": {
+            "type": "boolean"
+          },
+          "content_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "enum": [
+                    "domain",
+                    "concept"
+                  ]
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "required": [
+                "self_explained"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "learning_objective"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "self_explained"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "source",
+          "target",
+          "type"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "enum": [
+              "parent_of",
+              "uses",
+              "contains",
+              "depends_on",
+              "interacts_with",
+              "implements",
+              "part_of",
+              "requires",
+              "supports",
+              "related_to",
+              "prerequisite_for"
+            ]
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "not": {
+          "properties": {
+            "source": {
+              "const": ""
+            },
+            "target": {
+              "const": ""
+            }
+          }
+        }
+      }
+    }
+  }
+}
