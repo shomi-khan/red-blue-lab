@@ -137,7 +137,6 @@ Reader Learning Track হলো একজন reader-এর নিজস্ব se
 
 **Privacy boundary:** Reader ID, progress, notes বা activity data repository-র shared YAML graph file-এ রাখা যাবে না। ভবিষ্যৎ application এগুলো reader-specific persistence layer-এ রাখবে। এই repository-তে শুধু data contract/schema থাকবে।
 
-Reader-এর completion Knowledge Node-এর `self_explained` বা graph coverage বদলাবে না। একজন reader কোনো material complete করলেই project-এর content coverage পরিবর্তিত হয় না।
 
 ## 6. Storage ও source of truth
 
@@ -163,7 +162,6 @@ Graph update করার সময় অন্তত নিচের checks ক�
 9. `content_ref` path repository-তে বিদ্যমান canonical Markdown file-কে নির্দেশ করবে।
 10. Reader Track-এর Learning Node ID বিদ্যমান ও reader-এর জন্য available হতে হবে।
 
-JSON Schema structural validation করবে। Unique cross-file reference, relationship endpoint type, DAG cycle এবং published content reference-এর মতো rule custom semantic validator-এ পরীক্ষা করতে হবে।
 
 ## 8. Incremental evolution
 
@@ -173,7 +171,6 @@ JSON Schema structural validation করবে। Unique cross-file reference, r
 - Learning Node প্রয়োজন হলে নতুন Knowledge Node যোগ করো।
 - নতুন Node-এর stable ID দাও এবং বিদ্যমান Node-এর সঙ্গে explicit relationship যোগ করো।
 - Leaf Node-এর explained status 0/100 থাকবে।
-- Node বা status পরিবর্তনের পর affected ancestor coverage পুনরায় calculate করো।
 - Existing Node-এর পরিচয় অকারণে বদলাবে না; rename বা merge হলে reference migration করো।
 
 Graph-এর উদ্দেশ্য পূর্ণাঙ্গ syllabus আগেভাগে বানানো নয়; গল্প ও learning content-এর সঙ্গে knowledge structure-কে ধাপে ধাপে বাড়ানো।
