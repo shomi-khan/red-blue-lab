@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Red Blue Lab Learning Graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "graph_id",
+    "nodes",
+    "knowledge_links"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "graph_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "title",
+          "content_ref",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "type": {
+            "enum": [
+              "tutorial",
+              "notes",
+              "investigation",
+              "planning",
+              "experiment",
+              "walkthrough",
+              "lab",
+              "reference"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "content_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "published",
+              "archived"
+            ]
+          },
+          "objective_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "story_context": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "story_ref": {
+                "type": "string"
+              },
+              "pov_character": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "knowledge_links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "learning_node_id",
+          "knowledge_node_id",
+          "relationship"
+        ],
+        "properties": {
+          "learning_node_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "knowledge_node_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "relationship": {
+            "enum": [
+              "introduces",
+              "explains",
+              "demonstrates",
+              "applies",
+              "investigates",
+              "plans",
+              "references"
+            ]
+          },
+          "content_anchor": {
+            "type": "string"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "relationship": {
+                  "const": "explains"
+                }
+              },
+              "required": [
+                "relationship"
+              ]
+            },
+            "then": {
+              "required": [
+                "content_anchor"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
