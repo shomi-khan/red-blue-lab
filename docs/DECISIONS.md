@@ -95,18 +95,7 @@
 ### D-026 — Markdown-first content storage
 **Decision:** Project-এর মূল narrative ও learning content Markdown file-এ সংরক্ষিত হবে। YAML Frontmatter content-specific structured metadata রাখতে পারে; Mermaid Markdown-এর ভেতরে text-based diagram প্রকাশের standard option হবে। Knowledge Graph metadata ও relationships-এর authoritative source হবে `knowledge/graph.yaml` এবং Learning Graph metadata ও links-এর authoritative source হবে `learning/graph.yaml`। Markdown content body-এর canonical source; YAML graph catalog graph metadata ও relationships-এর canonical source। JSON বা database primary content storage নয়।
 **Rationale:** Content human-readable, version-control-friendly, diff/reviewable এবং দীর্ঘমেয়াদে portable রাখা, একই সঙ্গে machine-readable knowledge structure তৈরির সুযোগ বজায় রাখা।
-**Consequences:** Content authoring Markdown-first হবে। Metadata contract, identifier/reference convention, validation rules এবং graph extraction implementation আলাদা design decision হিসেবে open থাকবে।
-
-### D-029 — Graph source of truth and mandatory authoring consistency
-**Decision:** Markdown হবে narrative ও learning content body-এর canonical source। `knowledge/graph.yaml` হবে Knowledge Graph metadata ও relationships-এর authoritative source; `learning/graph.yaml` হবে Learning Node catalog ও Knowledge links-এর authoritative source। Agent নতুন বা পরিবর্তিত reader-facing learning content author করার সময় existing graph ও Markdown content inspect করবে, Knowledge Coverage Analysis করবে, প্রয়োজনমতো উভয় graph update করবে এবং cross-file semantic consistency verify করবে। Prior Learning Node-গুলো published হিসেবে গণ্য হবে; publication status field বা publication workflow থাকবে না।
-**Rationale:** Content, knowledge structure ও reusable learning material-এর ownership পরিষ্কার রাখা এবং content change-এর সঙ্গে graph drift, duplicate node ও duplicate explanation ঠেকানো।
-**Consequences:**
-- Markdown থেকে graph YAML নীরবে generate বা regenerate করা যাবে না।
-- নতুন Learning Node-এর প্রতিটি `explains` link-এ valid `content_anchor` থাকবে; Agent anchor-এর target section পড়ে নিশ্চিত করবে সেটি সংশ্লিষ্ট Concept-কে বাস্তবে explain করে।
-- Agent authoring workflow-এ duplicate ID/link, unresolved reference, invalid relationship endpoint/type, missing content path এবং DAG constraints পরীক্ষা করবে।
-- Automated validator না থাকলে Agent manual semantic check করবে এবং manual/automated verification আলাদা করে report করবে।
-- Reader-specific progress shared graph catalog-এ থাকবে না।
-- বিস্তারিত workflow `AGENTS.md` এবং contract `docs/GRAPH-ARCHITECTURE.md`-এ।
+**Consequences:** Content authoring Markdown-first হবে। Content-specific metadata প্রয়োজনে Markdown frontmatter-এ থাকতে পারে; graph node, relationship ও cross-file reference-এর authoritative metadata YAML graph catalog-এ থাকবে। Graph catalog Markdown থেকে auto-generate বা regenerate হবে না।
 
 ## Open decisions
 
@@ -187,3 +176,14 @@ Superseded decision মুছবে না; নতুন decision দিয়ে r
 - Canonical content Markdown; graph metadata YAML; JSON Schema structural validation এবং custom semantic validation ব্যবহার হবে।
 - Reader-specific progress repository-তে commit করা হবে না।
 - Detailed contract: `docs/GRAPH-ARCHITECTURE.md`.
+
+### D-029 — Graph source of truth and mandatory authoring consistency
+**Decision:** Markdown হবে narrative ও learning content body-এর canonical source। `knowledge/graph.yaml` হবে Knowledge Graph metadata ও relationships-এর authoritative source; `learning/graph.yaml` হবে Learning Node catalog ও Knowledge links-এর authoritative source। Agent নতুন বা পরিবর্তিত reader-facing learning content author করার সময় existing graph ও Markdown content inspect করবে, Knowledge Coverage Analysis করবে, প্রয়োজনমতো উভয় graph update করবে এবং cross-file semantic consistency verify করবে। Prior Learning Node-গুলো published হিসেবে গণ্য হবে; publication status field বা publication workflow থাকবে না।
+**Rationale:** Content, knowledge structure ও reusable learning material-এর ownership পরিষ্কার রাখা এবং content change-এর সঙ্গে graph drift, duplicate node ও duplicate explanation ঠেকানো।
+**Consequences:**
+- Markdown থেকে graph YAML নীরবে generate বা regenerate করা যাবে না।
+- নতুন Learning Node-এর প্রতিটি `explains` link-এ valid `content_anchor` থাকবে; Agent anchor-এর target section পড়ে নিশ্চিত করবে সেটি সংশ্লিষ্ট Concept-কে বাস্তবে explain করে।
+- Agent authoring workflow-এ duplicate ID/link, unresolved reference, invalid relationship endpoint/type, missing content path এবং DAG constraints পরীক্ষা করবে।
+- Automated validator না থাকলে Agent manual semantic check করবে এবং manual/automated verification আলাদা করে report করবে।
+- Reader-specific progress shared graph catalog-এ থাকবে না।
+- বিস্তারিত workflow `AGENTS.md` এবং contract `docs/GRAPH-ARCHITECTURE.md`-এ।
