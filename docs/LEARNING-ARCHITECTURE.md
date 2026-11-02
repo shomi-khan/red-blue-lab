@@ -160,7 +160,7 @@ Concept ও LO আলাদা node। Concept-এর canonical identity এক�
 - Concept node তৈরি হবে যখন knowledge item independently meaningful, reusable, একাধিক LO-তে প্রাসঙ্গিক, অথবা নিজস্ব explanation/experiment/assessment পাওয়ার যোগ্য। প্রতিটি atomic detail আলাদা node হওয়া বাধ্যতামূলক নয়।
 - Graph structure ও learning path generation আলাদা দায়িত্ব।
 
-**Implementation contract:** Node/edge schema, storage, typed Learning-to-Knowledge relationships, coverage calculation এবং Reader Learning Track-এর boundary [Graph Architecture](GRAPH-ARCHITECTURE.md)-এ নির্ধারিত। Graph catalog-এর canonical files হলো `knowledge/graph.yaml` ও `learning/graph.yaml`; schema contract `schemas/`-এ।
+**Implementation contract:** Node/edge schema, storage, typed Learning-to-Knowledge relationships, Knowledge Coverage Analysis এবং Reader Learning Track-এর boundary [Graph Architecture](GRAPH-ARCHITECTURE.md)-এ নির্ধারিত। Graph catalog-এর canonical files হলো `knowledge/graph.yaml` ও `learning/graph.yaml`; schema contract `schemas/`-এ।
 
 
 ## 13. Content storage format
@@ -200,4 +200,9 @@ Learning Node শুধু Peter-এর জন্য নয়। Story-এর য�
 
 Reader Learning Track একই Learning Graph-এর catalog ব্যবহার করে, কিন্তু প্রতিটি reader-এর নিজস্ব selected items, order ও progress রাখে। এই personal state shared repository graph file-এ থাকবে না; ভবিষ্যৎ reader-specific persistence layer-এ থাকবে। Reader completion Knowledge Node-এর explained status বা project coverage পরিবর্তন করে না।
 
-বিস্তারিত data contract, coverage formula, relationship semantics, validation ও incremental update policy [Graph Architecture](GRAPH-ARCHITECTURE.md)-এ।
+বিস্তারিত data contract, content gap analysis, relationship semantics, validation ও incremental update policy [Graph Architecture](GRAPH-ARCHITECTURE.md)-এ।
+
+
+### Knowledge Coverage Analysis
+
+নতুন Learning Node তৈরির আগে Agent বিদ্যমান Learning Node-গুলোর `explains` links ও `content_anchor` পরীক্ষা করে কোন Knowledge Node-এর scope আগে থেকেই ব্যাখ্যা করা হয়েছে তা শনাক্ত করবে। আগে ব্যাখ্যা করা scope পুনরাবৃত্তি না করে reference করতে হবে; নতুন বা unexplained child Concept-এর ব্যাখ্যা নতুন Learning Node-এ যোগ হবে। Parent Concept explain করা থাকলেই child Concept explained হবে না, এবং উল্টোটিও সত্য নয়। পূর্বের Learning Node-গুলো published হিসেবে গণ্য; publication status field বা আলাদা publication workflow নেই।
