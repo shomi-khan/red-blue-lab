@@ -160,7 +160,7 @@ Concept ও LO আলাদা node। Concept-এর canonical identity এক�
 - Concept node তৈরি হবে যখন knowledge item independently meaningful, reusable, একাধিক LO-তে প্রাসঙ্গিক, অথবা নিজস্ব explanation/experiment/assessment পাওয়ার যোগ্য। প্রতিটি atomic detail আলাদা node হওয়া বাধ্যতামূলক নয়।
 - Graph structure ও learning path generation আলাদা দায়িত্ব।
 
-**Open:** Concrete node/edge schema, metadata fields, graph storage/format, validation tooling ও maintenance workflow।
+**Implementation contract:** Node/edge schema, storage, typed Learning-to-Knowledge relationships, coverage calculation এবং Reader Learning Track-এর boundary [Graph Architecture](GRAPH-ARCHITECTURE.md)-এ নির্ধারিত। Graph catalog-এর canonical files হলো `knowledge/graph.yaml` ও `learning/graph.yaml`; schema contract `schemas/`-এ।
 
 
 ## 13. Content storage format
@@ -190,3 +190,14 @@ Assessment-এর উদ্দেশ্য memorized information নয়, demonst
 - Assessment version, evaluator version এবং প্রয়োজনে code runner environment traceable হতে হবে।
 
 Assessment definition, generic Assessment Engine, deterministic Evaluators, Authoring Validator এবং Sandboxed Code Runner-এর দায়িত্ব ও বিস্তারিত নীতি [Assessment Architecture](ASSESSMENT-ARCHITECTURE.md)-এ।
+
+
+## 15. Separate Learning Graph and reader progress
+
+Knowledge Graph knowledge structure ও learning objective-এর dependency প্রকাশ করে। Learning Graph আলাদা catalog হিসেবে tutorial, notes, investigation, planning, experiment, walkthrough, lab ও reference-এর মতো Learning Node রাখে। প্রতিটি Learning Node Markdown content-এর দিকে নির্দেশ করে এবং Knowledge Node-এর সঙ্গে typed relationship ব্যবহার করে: `introduces`, `explains`, `demonstrates`, `applies`, `investigates`, `plans` অথবা `references`।
+
+Learning Node শুধু Peter-এর জন্য নয়। Story-এর যেকোনো POV character-এর study বা investigation থেকে reader-facing learning material তৈরি হতে পারে। তবে character-এর fictional knowledge journey এবং reader-এর ব্যক্তিগত progress আলাদা।
+
+Reader Learning Track একই Learning Graph-এর catalog ব্যবহার করে, কিন্তু প্রতিটি reader-এর নিজস্ব selected items, order ও progress রাখে। এই personal state shared repository graph file-এ থাকবে না; ভবিষ্যৎ reader-specific persistence layer-এ থাকবে। Reader completion Knowledge Node-এর explained status বা project coverage পরিবর্তন করে না।
+
+বিস্তারিত data contract, coverage formula, relationship semantics, validation ও incremental update policy [Graph Architecture](GRAPH-ARCHITECTURE.md)-এ।
