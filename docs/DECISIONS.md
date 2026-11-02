@@ -168,10 +168,11 @@ Superseded decision মুছবে না; নতুন decision দিয়ে r
 **Consequences:**
 - Learning-to-Knowledge link-এ `introduces`, `explains`, `demonstrates`, `applies`, `investigates`, `plans` বা `references` relationship স্পষ্ট থাকবে।
 - General Concept-এর নিজস্ব scope-এ explanation থাকবে; specific sub-concept আলাদা Concept Node হবে এবং parent-এ duplicate explanation হবে না।
-- Domain/Concept-এর `self_explained` boolean হবে। Leaf coverage 0% বা 100%; parent coverage নিজের explanation এবং direct child coverage-এর সমান-weight average।
-- Coverage content completeness বোঝাবে, reader mastery বা explanation quality নয়।
-- Learning Node-এর সঙ্গে link থাকলেই Concept explained হবে না; reviewed `explains` link, content anchor এবং explicit explained status প্রয়োজন।
-- Graph incrementally grow করবে; coverage derived হবে এবং affected ancestors recalculate হবে।
+- Percentage-based Knowledge Node coverage, `self_explained` flag এবং ancestor coverage calculation থাকবে না।
+- নতুন Learning Node তৈরির আগে Agent পুরোনো Learning Node-এর `explains` relationship ও `content_anchor` দেখে content gap শনাক্ত করবে।
+- আগে explain করা scope পুনরাবৃত্তি না করে `references` link ব্যবহার করবে। Parent ও child Concept-এর explanation আলাদাভাবে বিবেচিত হবে।
+- পূর্বের Learning Node-গুলো published হিসেবে গণ্য; আলাদা publication status বা workflow থাকবে না।
+- Content gap analysis Agent-এর authoring/review workflow-এর অংশ; runtime script বা percentage metric নয়।
 - Canonical content Markdown; graph metadata YAML; JSON Schema structural validation এবং custom semantic validation ব্যবহার হবে।
 - Reader-specific progress repository-তে commit করা হবে না।
 - Detailed contract: `docs/GRAPH-ARCHITECTURE.md`.
