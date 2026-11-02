@@ -170,7 +170,6 @@ Graph update করার সময় অন্তত নিচের checks ক�
 - Story বা research প্রয়োজন তৈরি করলে নতুন Learning Node যোগ করো।
 - Learning Node প্রয়োজন হলে নতুন Knowledge Node যোগ করো।
 - নতুন Node-এর stable ID দাও এবং বিদ্যমান Node-এর সঙ্গে explicit relationship যোগ করো।
-- Leaf Node-এর explained status 0/100 থাকবে।
 - Existing Node-এর পরিচয় অকারণে বদলাবে না; rename বা merge হলে reference migration করো।
 
 Graph-এর উদ্দেশ্য পূর্ণাঙ্গ syllabus আগেভাগে বানানো নয়; গল্প ও learning content-এর সঙ্গে knowledge structure-কে ধাপে ধাপে বাড়ানো।
