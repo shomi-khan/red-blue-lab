@@ -155,11 +155,11 @@ Graph update করার সময় অন্তত নিচের checks ক�
 1. প্রতিটি graph-এর `schema_version` supported।
 2. Node ID ও relationship ID graph-এর মধ্যে unique।
 3. প্রতিটি edge-এর source ও target বিদ্যমান Node-কে reference করে।
-4. Relationship type-এর source/target node type বৈধ।
+4. Relationship endpoint matrix অনুযায়ী প্রতিটি edge-এর source/target node type বৈধ: Domain → Concept, Concept → Concept, LO → Concept অথবা prerequisite LO → dependent LO।
 5. `parent_of` এবং mandatory LO prerequisite graph acyclic।
 6. Technical relationship cycle অনুমোদিত।
 7. `explains` link-এর target Knowledge Node হতে হবে; source একটি বিদ্যমান Learning Node হতে হবে এবং valid content anchor থাকতে হবে। Anchor target section বাস্তবে সংশ্লিষ্ট Concept explain করছে কি না semanticভাবে যাচাই করতে হবে।
-8. একই Learning Node ও Knowledge Node-এর জন্য duplicate relationship link রাখা যাবে না।
+8. একই source, target ও relationship type-এর semantic duplicate edge রাখা যাবে না। একই node pair-এর জন্য আলাদা relationship type বৈধ; content link-এ একই relationship type-এর পৃথক anchor-ও আলাদা scope প্রকাশ করলে বৈধ হতে পারে।
 9. `content_ref` path repository-তে বিদ্যমান canonical Markdown file-কে নির্দেশ করবে; সব content anchor সেই file-এর বিদ্যমান section-এ resolve করবে।
 10. Reader Track-এর Learning Node ID বিদ্যমান ও reader-এর জন্য available হতে হবে।
 
