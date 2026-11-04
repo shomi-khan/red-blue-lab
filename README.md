@@ -27,6 +27,7 @@ Novel পড়তে Cyber Lab করা বাধ্যতামূলক নয়�
 | AGENTS.md | AI agent-এর বাধ্যতামূলক operating rules |
 | docs/PROJECT-CHARTER.md | Project identity, goals ও non-goals |
 | docs/CREATIVE-DIRECTION.md | User-approved narrative ও learning direction |
+| docs/WORLD-BIBLE.md | Approved world identity, continuity, geography, technology ও world rules |
 | docs/AUTHORING-GUIDELINES.md | Narrative ও explanatory content rules |
 | docs/LEARNING-ARCHITECTURE.md | Competency-first learning model ও knowledge structure |
 | docs/GRAPH-ARCHITECTURE.md | Knowledge Graph, Learning Graph ও reader progress-এর contract |
@@ -44,7 +45,7 @@ Novel পড়তে Cyber Lab করা বাধ্যতামূলক নয়�
 
 ## 🧱 Foundation-এর সীমা
 
-Foundation কোনো পূর্ণ character bible, plot, villain motivation, setting, AI system বা world rule স্থির করে না। Approved creative direction-এ প্রাথমিক character references ও narrative/learning principles আছে; পূর্ণ canon ও world-building পরবর্তী phase-এ human review-এর মাধ্যমে স্থির হবে।
+Foundation-এর পরবর্তী world-building phase শুরু হয়েছে। docs/WORLD-BIBLE.md-এ approved world-level baseline ও rules নথিভুক্ত; proposed district details এবং open decisions এখনো canon নয়। Character-এর পূর্ণ history, psychology, relationships ও capability docs/CHARACTER-BIBLE.md-এ আলাদাভাবে নির্ধারিত হবে।
 
 ## 🚦কোথা থেকে শুরু করবে?
 
