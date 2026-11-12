@@ -365,9 +365,29 @@ Peter-এর মনে হলো, এক পয়সার ঘটনাটি আ�
 
 কিছুক্ষণ পড়ার পর সে চেয়ারে হেলান দিল।
 
-Salami slicing হলো এমন financial fraud, যেখানে প্রতিটি victim-এর কাছ থেকে খুব অল্প পরিমাণ অর্থ নেওয়া হয়। আলাদা করে দেখলে প্রতিটি ঘটনা তুচ্ছ মনে হয়; কিন্তু বহু account বা বহু transaction জুড়ে সেই ক্ষুদ্র অংশগুলো জমে বড় অঙ্ক তৈরি করে। ঐতিহাসিক উদাহরণে rounding calculation-এর discarded fraction অন্য account-এ জমা করার কৌশলও দেখা যায়।
+Peter Nadia-কে বোঝানোর ভঙ্গিতে বলল, “ধরো, আমি তোমার কাছ থেকে এক পয়সা নিলাম। তুমি হয়তো খেয়ালই করবে না। Ryan-এর কাছ থেকেও এক পয়সা নিলাম। সেও হয়তো কিছু বলবে না। এবার যদি একই কাজ এক লাখ মানুষের সঙ্গে করি?”
 
-এখানে Larfleeze-এর সম্ভাব্য পদ্ধতি আরও সরাসরি: প্রতিটি eligible account থেকে এক পয়সা debit, তারপর matching credit নিজের নিয়ন্ত্রণাধীন destination-এ।
+Nadia বলল, “তাহলে এক লাখ পয়সা।”
+
+“ঠিক। একজনের ক্ষতি সামান্য, কিন্তু সবার ক্ষতি একসঙ্গে করলে অঙ্কটা আর সামান্য থাকে না। এই কৌশলকেই Salami Slicing Attack বলা হয়।”
+
+এ ধরনের আক্রমণের কিছু পরিচিত উদাহরণে হিসাবের rounding-এর পর পড়ে থাকা ভগ্নাংশ চুরি করা হয়। তবে BigBank-এর ঘটনায় আপাতত rounding-এর প্রমাণ নেই। এখানে প্রতিটি account থেকে সরাসরি এক পয়সা কাটা হচ্ছে বলে মনে হচ্ছে।
+
+Peter whiteboard-এ সম্ভাব্য flow আঁকল:
+
+```mermaid
+flowchart TD
+    A[Eligible customer accounts] --> B[Scheduled adjustment batch]
+    B --> C[Micro-Adjustment Service]
+    C --> D[Each account: debit ৳0.01]
+    D --> E[Matching credit]
+    E --> F[Larfleeze-controlled destination]
+    C --> G[Ledger and audit journal]
+```
+
+**চিত্র ৪: সম্ভাব্য salami-slicing flow।** প্রতিটি account থেকে কাটা এক পয়সার বিপরীতে matching credit তৈরি হয়। একেকটি debit ছোট হলেও সব credit একই destination-এ জমা হয়।
+
+“এটা আমাদের hypothesis,” Peter বলল। “এখন প্রমাণ করতে হবে, batch-টা কে চালাচ্ছে, beneficiary কে, আর request-টা অনুমোদিত ছিল কি না।”
 
 Peter কাগজে হিসাব করল।
 
