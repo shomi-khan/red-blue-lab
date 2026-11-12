@@ -3,6 +3,30 @@
 schema_version: 1
 graph_id: red-blue-lab-learning
 nodes:
+  - id: volume-01-salami-slicing-practice
+    type: lab
+    title: BigBank: The One-Poisha Trail
+    description: Peter-এর POV থেকে synthetic transaction journal বিশ্লেষণ করে Transaction Evidence Analyzer তৈরি ও ব্যবহার করার optional practice।
+    content_ref: practice/bigbank-salami-slicing/README.md
+    story_context:
+      story_ref: volumes/volume-01/README.md
+      pov_character: Peter Parker
+  - id: volume-01-change-audit-practice
+    type: lab
+    title: BigBank: Who Changed the Adjustment Rules?
+    description: Adrian ও incident team-এর POV থেকে synthetic configuration audit trail বিশ্লেষণ করে change ও authorization review tool তৈরির optional practice।
+    content_ref: practice/bigbank-change-audit/README.md
+    story_context:
+      story_ref: volumes/volume-01/README.md
+      pov_character: Adrian Rahman
+  - id: volume-01-recovery-validation-practice
+    type: lab
+    title: BigBank: Verify the Recovery
+    description: Nadia ও recovery team-এর POV থেকে compensating entry, reconciliation ও idempotency যাচাই করার optional practice।
+    content_ref: practice/bigbank-recovery-validation/README.md
+    story_context:
+      story_ref: volumes/volume-01/README.md
+      pov_character: Nadia Karim
   - id: volume-01-salami-slicing-notes
     type: notes
     title: BigBank Incident: Salami Slicing and Financial Controls
@@ -12,6 +36,33 @@ nodes:
       story_ref: volumes/volume-01/README.md
       pov_character: Peter Parker
 knowledge_links:
+  - learning_node_id: volume-01-salami-slicing-practice
+    knowledge_node_id: salami-slicing-attack
+    relationship: applies
+  - learning_node_id: volume-01-salami-slicing-practice
+    knowledge_node_id: double-entry-ledger
+    relationship: investigates
+  - learning_node_id: volume-01-salami-slicing-practice
+    knowledge_node_id: bank-reconciliation
+    relationship: applies
+  - learning_node_id: volume-01-change-audit-practice
+    knowledge_node_id: authorization
+    relationship: investigates
+  - learning_node_id: volume-01-change-audit-practice
+    knowledge_node_id: least-privilege
+    relationship: investigates
+  - learning_node_id: volume-01-change-audit-practice
+    knowledge_node_id: incident-response
+    relationship: supports
+  - learning_node_id: volume-01-recovery-validation-practice
+    knowledge_node_id: bank-reconciliation
+    relationship: applies
+  - learning_node_id: volume-01-recovery-validation-practice
+    knowledge_node_id: idempotency
+    relationship: investigates
+  - learning_node_id: volume-01-recovery-validation-practice
+    knowledge_node_id: double-entry-ledger
+    relationship: validates
   - learning_node_id: volume-01-salami-slicing-notes
     knowledge_node_id: salami-slicing-attack
     relationship: explains
