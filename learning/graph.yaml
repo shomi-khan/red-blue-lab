@@ -2,5 +2,37 @@
 # Reader-specific progress is stored separately and never committed here.
 schema_version: 1
 graph_id: red-blue-lab-learning
-nodes: []
-knowledge_links: []
+nodes:
+  - id: volume-01-salami-slicing-notes
+    type: notes
+    title: BigBank Incident: Salami Slicing and Financial Controls
+    description: Volume 1-এর সঙ্গে যুক্ত technical companion; attack pattern, ledger, reconciliation, authorization ও incident response ব্যাখ্যা করে।
+    content_ref: docs/VOLUME-01-TECHNICAL-NOTES.md
+    story_context:
+      story_ref: volumes/volume-01/README.md
+      pov_character: Peter Parker
+knowledge_links:
+  - learning_node_id: volume-01-salami-slicing-notes
+    knowledge_node_id: salami-slicing-attack
+    relationship: explains
+    content_anchor: "## 1. Salami Slicing Attack"
+  - learning_node_id: volume-01-salami-slicing-notes
+    knowledge_node_id: double-entry-ledger
+    relationship: explains
+    content_anchor: "## 3. Double-entry ledger"
+  - learning_node_id: volume-01-salami-slicing-notes
+    knowledge_node_id: bank-reconciliation
+    relationship: explains
+    content_anchor: "## 4. Reconciliation-এর সীমা"
+  - learning_node_id: volume-01-salami-slicing-notes
+    knowledge_node_id: authorization
+    relationship: explains
+    content_anchor: "### Least privilege ও authorization boundary"
+  - learning_node_id: volume-01-salami-slicing-notes
+    knowledge_node_id: least-privilege
+    relationship: explains
+    content_anchor: "### Least privilege ও authorization boundary"
+  - learning_node_id: volume-01-salami-slicing-notes
+    knowledge_node_id: incident-response
+    relationship: explains
+    content_anchor: "## 6. Incident response"
