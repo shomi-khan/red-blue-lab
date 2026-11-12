@@ -8,6 +8,8 @@
 
 Peter Parker নিজের banking app খুলল।
 
+সে BigBrains-এ backend engineer। তিন বছর আগে BigBrains যখন BigBank-এর নতুন digital banking platform তৈরির contract পায়, Peter তখন সেই development team-এর একজন ছিল। Account service, transaction API এবং ledger integration নিয়ে সে কাজ করেছিল। Production system এখন তার হাতে নেই, আর সে জানে না গত তিন বছরে কী কী বদলেছে। তবু system-এর পুরোনো design decision-গুলো তার মাথায় আছে। কোনো অস্বাভাবিক আচরণ দেখলে সে component আর data flow নিয়ে ভাবতে পারে।
+
 বেতন জমা হয়েছে।
 
 সে প্রথমে payslip-এর সঙ্গে amount মিলিয়ে দেখল। তারপর account statement খুলল। Salary credit-এর পরের balance হিসাব করল। একবার। আবার।
@@ -65,6 +67,12 @@ Nadia তার পাশে এসে দাঁড়াল। “আমারট�
 দুটো statement-এ একই adjustment description। Timestamp-ও কাছাকাছি। Ryan-এরটাও প্রায় একই সময়ে।
 
 তিনজনের account। একই bank। একই দিনে। একই অঙ্ক।
+
+Peter তাদের transaction-এর সময় মিলিয়ে দেখল। কয়েক মিনিটের ব্যবধান। Salary credit-এর পরেই adjustment। সে Nadia-কে বলল, “একটা জিনিস খেয়াল করো। Payroll advice-এ net payable ঠিক আছে। Bank প্রথমে পুরো salary credit করেছে। তারপর আলাদা transaction তৈরি হয়েছে। যদি BigBrains কম টাকা পাঠাত, statement-এ salary credit-টাই কম দেখাত।”
+
+Nadia বলল, “মানে সমস্যা payroll-এ নয়, bank-এর পরের processing-এ?”
+
+“এখনই নিশ্চিত নই। কিন্তু আমাদের evidence ওই দিকেই ইঙ্গিত করছে।”
 
 “Customer support-এ জানাও,” Nadia বলল।
 
@@ -148,6 +156,10 @@ Peter নতুন একটি message লিখল। এবার অভি�
 
 তারপর সে অপেক্ষা করল।
 
+বিকেলের দিকে Peter পুরোনো project notes খুলল। BigBank-এর platform development-এর সময় তারা transaction processing-কে আলাদা service-এ ভাগ করেছিল। Account service balance ও account state সামলাত; transaction service request validate করে ledger posting শুরু করত; ledger নিজে debit-credit record রাখত। সে মনে করার চেষ্টা করল, Micro-Adjustment Service তখনও ছিল কি না। তার মনে পড়ল, সেটি ছিল Core Operations-এর একটি ছোট internal tool। কিন্তু সে সেটির implementation করেনি।
+
+তিন বছর আগের architecture diagram production-এর বর্তমান সত্য নয়। Peter নিজেকে মনে করিয়ে দিল, “পুরোনো knowledge hypothesis বানাতে সাহায্য করবে। Evidence-এর বিকল্প হবে না।”
+
 ---
 
 ## অধ্যায় ৩: Adrian Rahman
@@ -186,6 +198,10 @@ Engineer উত্তর দিতে পারল না।
 
 Adrian Peter-কে ফোন করলেন।
 
+Adrian প্রথমে নিজের team-কে বলেছিলেন, customer complaint-এ মাত্র এক পয়সা উল্লেখ আছে বলে এটিকে low priority করা যায়। কিন্তু email-এর শেষ প্রশ্নটি তাকে থামিয়েছিল। Matching credit কোথায় গেছে? একজন customer শুধু balance নিয়ে অভিযোগ করলে support ticket হতে পারত। কিন্তু একজন engineer যখন debit-এর opposite side, policy এবং transaction origin জানতে চায়, তখন সেটি system integrity-এর প্রশ্ন।
+
+তিনি জানতেন, bank-এর বড় ঝুঁকি সবসময় বড় অঙ্ক দিয়ে শুরু হয় না। কখনো কখনো বড় ক্ষতির প্রথম চিহ্ন এমন ছোট হয় যে প্রতিষ্ঠান নিজেই সেটিকে গুরুত্ব দিতে চায় না।
+
 “Mr. Parker? আমি Adrian Rahman, BigBank থেকে বলছি। আপনার report পেয়েছি।”
 
 “ধন্যবাদ। আমি শুধু জানতে চাই transaction-টা কেন হয়েছে।”
@@ -217,6 +233,10 @@ Maya বললেন, “Service-এর scope বড়। কিন্তু স�
 Adrian স্ক্রিনের দিকে তাকালেন। “তাহলে আমরা প্রথমে জানতে চাইব, এই নির্দিষ্ট adjustment-এর authorization কোথা থেকে এসেছে।”
 
 সেদিন Peter কোনো production access পেল না। কোনো secret dashboard-ও খুলে দেওয়া হলো না। কিন্তু সে investigation-এর অংশ হলো।
+
+Adrian একটি সীমা পরিষ্কার করে দিলেন। “আপনি system-এর আগের development team-এ ছিলেন, তাই আপনার context মূল্যবান। কিন্তু production evidence শুধু authorized bank staff সংগ্রহ করবে। আপনি sanitized data নিয়ে analysis করতে পারবেন। আমরা চাই investigation-টা clean থাকুক।”
+
+Peter এতে স্বস্তি পেল। সে সাহায্য করতে এসেছে, নিজের পুরোনো access দেখাতে নয়।
 
 Conference room থেকে বের হওয়ার আগে Adrian বললেন, “এক পয়সা ছোট হতে পারে। কিন্তু যদি একই কাজ হাজার হাজার account-এ ঘটে, সেটা আর ছোট থাকে না।”
 
@@ -281,6 +301,10 @@ Reconciliation-ও একইভাবে দুই বা তার বেশি
 
 Adrian একটি প্রশ্ন করলেন, “যদি সব debit-এর matching credit একই account-এ যায়?”
 
+Peter এবার ledger-এর দিকে নয়, transaction-এর business meaning-এর দিকে তাকাল। “আমরা যদি শুধু debit total আর credit total মিলাই, তাহলে money movement-এর arithmetic বুঝব। কিন্তু customer কেন টাকা দিল, সেই debit-এর authority কী, beneficiary কে, এবং adjustment code-টা সেই কাজের জন্য অনুমোদিত কি না, সেগুলো আলাদা control।”
+
+Maya বললেন, “তুমি ঠিক বলছ। Ledger আমাদের বলে কী record হয়েছে। Authorization record বলে কে কী করতে পারত। Business policy বলে কোন কাজটি করা উচিত ছিল।”
+
 Maya report filter করলেন।
 
 একটি destination reference বারবার দেখা যাচ্ছে।
@@ -329,6 +353,12 @@ Peter কাগজে হিসাব করল।
 
 পরদিন সে Adrian-কে বলল, “আমার মনে হয় এটা Salami Slicing Attack-এর একটি variation।”
 
+Adrian বললেন, “নামটা শুনেছি। কিন্তু আমি চাই তুমি নামের সঙ্গে evidence-ও দেখাও।”
+
+Peter একটি ছোট calculation sheet দেখাল। “একটি account-এ এক পয়সা। দশটি account-এ দশ পয়সা। এক লাখ account-এ এক হাজার টাকা। প্রতিটি customer-এর চোখে amount প্রায় অদৃশ্য, কিন্তু system-এর aggregate view-তে সেটা আলাদা হওয়া উচিত।”
+
+Nadia report-এ account count-এর distribution যোগ করল। Ryan timestamp group করল। তারা কেউই attacker-এর intent প্রমাণ করতে পারছিল না, কিন্তু একই service path ও beneficiary-এর সঙ্গে repeated one-paisa entry-এর সম্পর্ক ক্রমশ স্পষ্ট হচ্ছিল।
+
 Adrian জিজ্ঞেস করলেন, “তুমি কতটা নিশ্চিত?”
 
 “এখনো hypothesis। কিন্তু repeated micro-debit, একই destination, আর একই service path—এই তিনটি clue একসঙ্গে আছে।”
@@ -348,6 +378,14 @@ Adrian ধীরে বললেন, “তাহলে কেউ একটা l
 Peter স্ক্রিনে তাকিয়ে রইল।
 
 “কেউ জানে Micro-Adjustment Service কীভাবে কাজ করে। অথবা কেউ এমন access পেয়েছে, যেটা দিয়ে service-কে ভুল নির্দেশ দেওয়া যায়।”
+
+### অন্য প্রান্তে
+
+একটি ছোট ঘরে Larfleeze monitor-এর দিকে তাকিয়ে ছিল। তার সামনে কোনো flashy dashboard ছিল না। কয়েকটি সংখ্যা, একটি running total, আর প্রতিদিনের status। প্রতিটি account থেকে কাটা অংশ এত ক্ষুদ্র যে আলাদা করে কেউ সময় নষ্ট করবে না, এটাই তার ধারণা। তার কাছে customer-দের সংখ্যা ছিল opportunity; আর bank-এর routine adjustment process ছিল আড়াল।
+
+সে balance বাড়তে দেখল। পরিমাণটা এখনও তার প্রত্যাশার তুলনায় ছোট, কিন্তু প্রতিদিনের পুনরাবৃত্তি তাকে ধৈর্য ধরতে শিখিয়েছে। সে জানত, বড় চুরি মানুষের চোখে পড়ে। ছোট চুরি মানুষের অভ্যাসের ফাঁক দিয়ে ঢুকে যায়।
+
+সে জানত না, BigBank-এর ভেতরে কয়েকজন মানুষ ইতিমধ্যে সেই pattern গুনতে শুরু করেছে।
 
 ---
 
@@ -401,6 +439,14 @@ Investigation team আরও তিনটি control gap চিহ্নিত �
 
 এখনো তারা জানত না Larfleeze ঠিক কীভাবে initial access পেয়েছে। Configuration change-এর audit trail সন্দেহজনক, কিন্তু attribution-এর জন্য আরও evidence দরকার।
 
+Maya একটি গুরুত্বপূর্ণ finding তুলে ধরলেন। Micro-Adjustment Service-এর service identity আগে সীমিত correction request process করত। পরে তার scope বাড়ানো হয়েছিল। নতুন permission-এ bulk account adjustment এবং beneficiary mapping-এর মতো sensitive operation এসে যায়। Change request-এ business justification ছিল, কিন্তু risk review এবং independent approval-এর evidence অসম্পূর্ণ।
+
+“এই change কে করেছে?” Peter জিজ্ঞেস করল।
+
+“একটি authorized operator identity দিয়ে change submit হয়েছে,” Maya বললেন। “কিন্তু identity ব্যবহার করেছে যে ব্যক্তি, সে-ই প্রকৃত actor কি না, সেটা আমরা এখনো জানি না।”
+
+Adrian বললেন, “Attribution পরে। এখন আমরা জানি, একটি identity-র ক্ষমতা প্রয়োজনের চেয়ে বেশি। আর সেই ক্ষমতা ব্যবহার করে customer account থেকে debit তৈরি করা হয়েছে।”
+
 Peter বলল, “আমরা attacker-এর নাম জানার অপেক্ষা করতে পারি না। এই permission দিয়ে টাকা সরানো সম্ভব হলে আগে সেই পথ বন্ধ করতে হবে।”
 
 Adrian তার দিকে তাকালেন। “ঠিক। প্রথম লক্ষ্য containment।”
@@ -449,6 +495,10 @@ Team একটি controlled recovery batch তৈরি করল। প্র�
 
 সব test pass করার পর Adrian production change অনুমোদন করলেন।
 
+তবে containment-এর আগে তারা একটি শেষ প্রশ্ন করল: Micro-Adjustment Service পুরোপুরি বন্ধ করলে legitimate customer correction আটকে যাবে কি না? Operations team জানাল, manual exception process চালু আছে। Bulk sweep বন্ধ রেখেও জরুরি correction dual approval দিয়ে করা যাবে। তাই bank পুরো ledger বা transaction platform বন্ধ না করে শুধু সন্দেহজনক scheduled path pause করার সিদ্ধান্ত নিল।
+
+এটাই ছিল proportionate containment: ঝুঁকির পথ বন্ধ করা, কিন্তু প্রয়োজনীয় banking service অকারণে অচল না করা।
+
 Micro-Adjustment bulk job বন্ধ হলো।
 
 একটি ছোট status update screen-এ দেখা গেল:
@@ -487,7 +537,11 @@ Peter-এর account-এও correction এলো।
 
 “আমার account-এ হ্যাঁ। কিন্তু শুধু আমারটা ঠিক হলেই হবে না।”
 
-Bank-wide verification চলল। নতুন sweep আর তৈরি হয়নি। Suspicious service identity-এর authority সীমিত। Beneficiary configuration change-এ dual approval বাধ্যতামূলক। Monitoring rule-এ amount threshold-এর পাশাপাশি account count, shared destination, service identity এবং repeated adjustment pattern যোগ হয়েছে।
+Bank-wide verification চলল। নতুন sweep আর তৈরি হয়নি।
+
+তারা শুধু একটি successful test দেখে থামেনি। পরবর্তী scheduled window-গুলোতে নতুন debit তৈরি হচ্ছে কি না পর্যবেক্ষণ করা হলো। Monitoring alert-এ beneficiary concentration, per-account adjustment frequency, service identity এবং reason-code distribution যোগ করা হলো। Bulk adjustment-এর জন্য maximum scope, explicit business purpose, independent approval এবং time-bound authorization বাধ্যতামূলক করা হলো।
+
+Adrian একটি review meeting-এ বললেন, “আমরা শুধু এই attack বন্ধ করব না। একই control weakness অন্য কোনো service-এ আছে কি না, সেটাও খুঁজব।” Suspicious service identity-এর authority সীমিত। Beneficiary configuration change-এ dual approval বাধ্যতামূলক। Monitoring rule-এ amount threshold-এর পাশাপাশি account count, shared destination, service identity এবং repeated adjustment pattern যোগ হয়েছে।
 
 Reconciliation report-এ সব affected entry explain করা গেছে। কোনো unexplained difference বাকি নেই। Recovery batch-এর duplicate effect পাওয়া যায়নি।
 
@@ -503,7 +557,15 @@ Peter মাথা নাড়ল। “আমরা সবাই করেছি�
 
 Adrian একটি report বন্ধ করলেন। “আমাদের তদন্ত এখনো শেষ হয়নি। কে প্রথম configuration বদলেছে, তার পেছনে কে ছিল, সব প্রশ্নের উত্তর পাইনি। কিন্তু unauthorized sweep বন্ধ। Customers-এর ক্ষতি সংশোধন হচ্ছে। আপাতত সেটাই সবচেয়ে জরুরি।”
 
-সেদিন সন্ধ্যায় Peter BigBrains-এ ফিরল। Ryan তার desk-এর পাশে এসে দাঁড়াল।
+সেদিন সন্ধ্যায় Peter BigBrains-এ ফিরল।
+
+Oliver তার desk-এর পাশে এসে দাঁড়াল। “তোমার bank investigation কেমন হলো?”
+
+“একটা বড় problem ছিল। আমরা সেটা থামিয়েছি। এখন recovery আর verification চলছে।”
+
+Oliver বললেন, “তুমি তো ওই system বানানোর সময় team-এ ছিলে। কেমন লাগছে?”
+
+Peter কিছুক্ষণ ভেবে বলল, “একটা system তৈরি করার সময় আমরা feature আর correctness নিয়ে ভাবি। কিন্তু production-এ system-এর permission, operation আর oversight ঠিক আছে কি না, সেটাও সমান জরুরি। Code ঠিক থাকলেও control ভুল হতে পারে।” Ryan তার desk-এর পাশে এসে দাঁড়াল।
 
 “এক পয়সা,” Ryan বলল, “শেষ পর্যন্ত বেশ দামি হয়ে গেল।”
 
