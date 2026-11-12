@@ -58,8 +58,6 @@ Red Blue Lab-এর নিজস্ব world history, character history, timelin
 | Peter Parker | একজন নতুন hacker ও learner |
 | Spider | Peter-এর cyber identity; defensive hacker |
 | Joker | Sadistic hacker; chaos ও psychological manipulation-এ আগ্রহী |
-| Ultron | Evil AI |
-| Jim Gordon | Police Commissioner |
 | Larfleeze | Greed-driven hacker; access, information ও power অর্জনে আগ্রহী |
 
 এগুলো প্রাথমিক approved creative mapping। পূর্ণ character personality, history, motivation, expertise, relationships এবং character arc CHARACTER-BIBLE.md-এ নির্ধারিত হবে।
@@ -372,7 +370,6 @@ AI system-কে omniscient বা automatically trustworthy হিসেবে 
 - [ ] Digital identity ecosystem
 - [ ] Critical infrastructure architecture
 - [ ] Fictional technology inventory
-- [ ] Ultron's technical architecture and constraints
 
 ### Continuity
 - [ ] Character histories
