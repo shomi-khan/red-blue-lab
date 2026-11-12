@@ -1,18 +1,24 @@
 # Volume 1: The One-Poisha Theft
 
-> BigBank-এর গ্রাহকদের account থেকে প্রতিদিন এক পয়সা করে উধাও হচ্ছে। Peter-এর চোখে প্রথম ধরা পড়া সেই ক্ষুদ্র ঘাটতিই খুলে দেয় এক বিশাল financial fraud-এর দরজা।
+> এক পয়সা হারালে কেউ হয়তো খেয়ালও করবে না। কিন্তু সেই এক পয়সা যদি প্রতিদিন লাখ লাখ account থেকে উধাও হয়?
+
+BigBank-এর গ্রাহকেরা জানে না, তাদের account থেকে প্রতিদিন অতি সামান্য টাকা সরে যাচ্ছে। Peter Parker প্রথমে নিজের account-এ সেই চিহ্ন দেখে। তারপর একটি ছোট প্রশ্ন তাকে এমন এক financial attack-এর সামনে দাঁড় করায়, যার শক্তি লুকিয়ে আছে তার ক্ষুদ্রতায়।
+
+**এই গল্পে Peter-এর লক্ষ্য Larfleeze-কে ধরা নয়। তার লক্ষ্য, পরের এক পয়সাটি যেন আর কারও account থেকে না হারায়।**
 
 ## অধ্যায় ১: এক পয়সার হিসাব
 
 মাসের শেষ বৃহস্পতিবার। BigBrains-এর অফিসে দুপুরের পর কাজের গতি একটু ঢিলে হয়ে এসেছে। কয়েকজন developer lunch-এর পর কফি নিয়ে নিজেদের desk-এ ফিরেছে। Slack-এ release notification, code review আর production metrics-এর ভিড়।
 
-Peter Parker নিজের banking app খুলল।
+Peter Parker নিজের ব্যাংক অ্যাপ খুলল। বেতন জমা হওয়ার notification এসেছে। সে সাধারণত notification দেখেই ফোন রেখে দেয়। আজ payslip-এর সঙ্গে টাকার অঙ্কটা মিলিয়ে দেখতে ইচ্ছে হলো।
 
-সে BigBrains-এ backend engineer। তিন বছর আগে BigBrains যখন BigBank-এর নতুন digital banking platform তৈরির contract পায়, Peter তখন সেই development team-এর একজন ছিল। Account service, transaction API এবং ledger integration নিয়ে সে কাজ করেছিল। Production system এখন তার হাতে নেই, আর সে জানে না গত তিন বছরে কী কী বদলেছে। তবু system-এর পুরোনো design decision-গুলো তার মাথায় আছে। কোনো অস্বাভাবিক আচরণ দেখলে সে component আর data flow নিয়ে ভাবতে পারে।
+Peter BigBrains-এর backend engineer। তিন বছর আগে BigBrains যখন BigBank-এর নতুন digital banking platform তৈরির contract পায়, Peter তখন সেই development team-এর একজন ছিল। Account service, transaction API এবং ledger integration নিয়ে সে কাজ করেছিল। Production system এখন তার হাতে নেই, আর সে জানে না গত তিন বছরে কী কী বদলেছে। তবু system-এর পুরোনো design decision-গুলো তার মাথায় আছে। কোনো অস্বাভাবিক আচরণ দেখলে সে component আর data flow নিয়ে ভাবতে পারে।
 
-বেতন জমা হয়েছে।
+বেতন জমা হয়েছে। payslip-এ net salary লেখা ৳52,500.00। ব্যাংকের notification-এও একই অঙ্ক।
 
-সে প্রথমে payslip-এর সঙ্গে amount মিলিয়ে দেখল। তারপর account statement খুলল। Salary credit-এর পরের balance হিসাব করল। একবার। আবার।
+কিন্তু statement খুলে পরের transaction-গুলো দেখতেই তার চোখ আটকে গেল।
+
+Salary credit-এর কয়েক মিনিট পর একটি ছোট debit।
 
 এক পয়সা কম।
 
@@ -54,9 +60,9 @@ Ryan অনিচ্ছায় app খুলল। প্রথমে সে ক�
 
 Ryan উত্তর দিল না। সে ফোন পকেটে রেখে কাজে ফিরে গেল।
 
-Peter আবার statement দেখল। Salary credit ঠিক। তারপর debit। অর্থাৎ BigBrains payroll file থেকে টাকা কম পাঠানো হয়নি। ব্যাংক account-এ টাকা জমা হওয়ার পর আলাদা transaction ঘটেছে।
+Peter আবার statement দেখল। Salary credit পুরো এসেছে। তারপর আলাদা একটি transaction-এ এক পয়সা কাটা হয়েছে। অর্থাৎ BigBrains কম বেতন পাঠায়নি। টাকা account-এ জমা হওয়ার পর BigBank-এর ভেতরেই আরেকটি লেনদেন ঘটেছে।
 
-এটা গুরুত্বপূর্ণ পার্থক্য।
+পার্থক্যটা ছোট, কিন্তু গুরুত্বপূর্ণ। সমস্যাটি payroll file-এ নয়, অন্তত এখন পর্যন্ত পাওয়া তথ্য তা-ই বলছে।
 
 সে BigBrains-এর payroll portal থেকে payslip download করল। Gross salary, deductions, net payable। সব ঠিক। তারপর ব্যাংকের statement export করল। দুই record পাশাপাশি রাখল।
 
@@ -78,11 +84,11 @@ Nadia বলল, “মানে সমস্যা payroll-এ নয়, bank-এ
 
 Peter মাথা নাড়ল। “জানাব। কিন্তু আগে transaction reference-গুলো লিখে রাখি।”
 
-সে তিনটি reference ID, posting time, amount এবং description একটি ছোট note-এ লিখল। তারপর BigBank-এর support portal-এ complaint তৈরি করল।
+সে তিনটি transaction reference, সময়, অঙ্ক এবং বিবরণ লিখে রাখল। তারপর BigBank-এর support portal-এ complaint তৈরি করল।
 
-**Subject:** Unexplained ৳0.01 debit after salary credit
+**বিষয়:** বেতন জমার পর account থেকে অজানা ৳0.01 debit
 
-বর্ণনায় সে লিখল যে salary credit-এর পর account থেকে আলাদা করে এক পয়সা debit হয়েছে। একই ঘটনা তার দুই colleague-এর account-এও দেখা গেছে। সে জানতে চাইল, এই adjustment-এর business purpose কী এবং কোন policy অনুযায়ী এটি নেওয়া হয়েছে।
+বর্ণনায় সে জানাল, বেতনের পুরো টাকা জমা হওয়ার কয়েক মিনিট পর আলাদা transaction-এ এক পয়সা কাটা হয়েছে। একই ঘটনা তার দুই সহকর্মীর account-এও দেখা গেছে। এই adjustment কেন করা হয়েছে এবং কোন নিয়মে করা হয়েছে, সে ব্যাখ্যা চাইল।
 
 Submit করার পর confirmation screen এল।
 
@@ -94,7 +100,7 @@ Peter browser বন্ধ করল না। সে statement-এর দিক
 
 কেউ না কেউ এই এক পয়সার হিসাব জানে।
 
-Peter তখনও জানত না, একই মুহূর্তে BigBank-এর লাখ লাখ account-এ একই ছোট entry তৈরি হচ্ছে।
+Peter তখনও জানত না, BigBank-এর অনেক account-এ একই ধরনের transaction নিয়মিত তৈরি হচ্ছে। এক পয়সার এই কাটা টাকা কোনো বিচ্ছিন্ন ঘটনা নয়।
 
 ---
 
@@ -106,9 +112,9 @@ Peter তখনও জানত না, একই মুহূর্তে BigBa
 
 Peter উত্তরটা দুবার পড়ল।
 
-“Balance normalization?” সে নিজের মনে বলল।
+“Balance normalization?” সে বিড়বিড় করল।
 
-তার account balance আগে থেকেই দুই decimal place-এ প্রদর্শিত হয়। এক পয়সা debit করার প্রয়োজন কী? আর adjustment হলে সেটি কোন rule-এর অধীনে? Customer agreement-এ কি এমন কোনো charge আছে?
+তার account balance তো আগেই পয়সা পর্যন্ত দেখানো হয়। তাহলে balance ঠিক করতে আবার এক পয়সা কাটার দরকার কী? আর সত্যিই কোনো adjustment হলে, সেটির নিয়ম কোথায় লেখা আছে?
 
 সে support ticket-এ reply করল। Policy reference চাইল। Transaction category এবং beneficiary information জানতে চাইল।
 
@@ -116,7 +122,7 @@ Peter উত্তরটা দুবার পড়ল।
 
 > বিষয়টি আমাদের standard processing-এর অংশ। আপনার account নিরাপদ আছে।
 
-এবার Peter বিরক্ত হলো। সে account নিরাপদ কি না জিজ্ঞেস করেনি। সে জানতে চেয়েছে টাকা কেন কাটা হয়েছে।
+Peter এবার বিরক্ত হলো। সে account নিরাপদ কি না জানতে চায়নি। সে জানতে চেয়েছে, টাকা কাটার কারণ কী।
 
 সে Nadia-কে message করল। Nadia-ও নিজের account-এ একই description পেয়েছে। Ryan বলল, support-এ যোগাযোগ করে লাভ নেই, এক পয়সা নিয়ে আর সময় নষ্ট করতে চায় না।
 
@@ -139,9 +145,7 @@ Peter নিজের laptop-এ একটি ছোট table বানাল:
 
 সে আরেকটি বিষয় লক্ষ্য করল। Salary credit আর adjustment-এর timestamp-এর ব্যবধান খুব কম। এটি random manual correction-এর মতো দেখাচ্ছে না। একই pattern Nadia এবং Ryan-এর account-এও।
 
-তিনটি observation থেকে এখনো fraud প্রমাণ হয় না। একই system-generated rule তিনটি account-এ legitimateভাবেও চলতে পারে।
-
-কিন্তু legitimate হলে bank-এর policy থাকা উচিত।
+তিনটি account-এ একই transaction পাওয়া মানেই fraud নয়। কোনো বৈধ automated rule থেকেও এমন হতে পারে। কিন্তু সেটি বৈধ হলে bank-কে তার কারণ ও policy দেখাতে পারার কথা।
 
 Peter নতুন একটি message লিখল। এবার অভিযোগের বদলে প্রশ্নগুলো সাজাল:
 
@@ -150,15 +154,15 @@ Peter নতুন একটি message লিখল। এবার অভি�
 - একই সময়ে একাধিক account-এ একই adjustment কেন হয়েছে?
 - Adjustment-এর matching credit কোন ledger account-এ গেছে?
 
-শেষ প্রশ্নটি সে ইচ্ছা করেই রেখেছিল। Debit হলে accounting system-এ তার বিপরীত entry থাকা উচিত। টাকা কোথাও না কোথাও গেছে, অথবা কোনো accounting account-এ record হয়েছে।
+শেষ প্রশ্নটাই সবচেয়ে জরুরি। ব্যাংকের হিসাবের খাতায় কোনো debit একা থাকে না। তার বিপরীতে কোথাও একটি credit entry থাকার কথা। টাকা কোথায় জমা হলো?
 
-এইবার সে support ticket-এর পাশাপাশি BigBank-এর official technical contact address-এও লিখল। সে উল্লেখ করল, BigBrains-এর banking platform development team-এ সে আগে কাজ করেছে। সে কোনো privileged access চাইছে না; শুধু একটি unexplained transaction-এর accountable explanation চাইছে।
+এবার সে customer support-এর পাশাপাশি BigBank-এর technical contact address-এও লিখল। জানাল, BigBrains-এর হয়ে সে একসময় BigBank-এর banking platform তৈরির কাজে ছিল। তবে সে কোনো system access চাইছে না। শুধু একটি অজানা transaction-এর ব্যাখ্যা চায়।
 
 তারপর সে অপেক্ষা করল।
 
 বিকেলের দিকে Peter পুরোনো project notes খুলল। BigBank-এর platform development-এর সময় তারা transaction processing-কে আলাদা service-এ ভাগ করেছিল। Account service balance ও account state সামলাত; transaction service request validate করে ledger posting শুরু করত; ledger নিজে debit-credit record রাখত। সে মনে করার চেষ্টা করল, Micro-Adjustment Service তখনও ছিল কি না। তার মনে পড়ল, সেটি ছিল Core Operations-এর একটি ছোট internal tool। কিন্তু সে সেটির implementation করেনি।
 
-তিন বছর আগের architecture diagram production-এর বর্তমান সত্য নয়। Peter নিজেকে মনে করিয়ে দিল, “পুরোনো knowledge hypothesis বানাতে সাহায্য করবে। Evidence-এর বিকল্প হবে না।”
+কিন্তু তিন বছর আগের architecture আর আজকের production system এক নয়। Peter নিজেকে মনে করিয়ে দিল, “পুরোনো অভিজ্ঞতা আমাকে ভালো প্রশ্ন করতে সাহায্য করতে পারে। কিন্তু উত্তরটা evidence থেকেই বের করতে হবে।”
 
 ---
 
@@ -180,9 +184,9 @@ Adrian নিচে scroll করলেন।
 
 তিনি Head of Core Banking Engineering-কে ডাকলেন। “গত রাতের account adjustment batch-এর summary আনুন।”
 
-দশ মিনিট পর একটি internal dashboard খুলল। Daily micro-adjustment count স্বাভাবিক range-এর মধ্যে। Total debit ও credit সমান। Failed transaction নেই।
+দশ মিনিট পর একটি internal dashboard খুলল। সেখানে batch job সফল দেখাচ্ছে। মোট debit ও credit-এর অঙ্কও সমান। কোনো failed transaction নেই।
 
-“সব ঠিক আছে,” engineer বলল।
+“দেখুন, batch তো ঠিকমতো শেষ হয়েছে,” engineer বলল।
 
 Adrian জিজ্ঞেস করলেন, “এই adjustment-এর business owner কে?”
 
@@ -196,9 +200,9 @@ Engineer কিছুক্ষণ থামল। “Core Operations-এর এ�
 
 Engineer উত্তর দিতে পারল না।
 
-Adrian Peter-কে ফোন করলেন।
+Adrian কিছুক্ষণ চুপ করে রইলেন। প্রথমে তিনি ভেবেছিলেন, এক পয়সার অভিযোগকে জরুরি incident হিসেবে দেখার দরকার নেই। কিন্তু dashboard-এ batch সফল দেখানো আর transaction বৈধ হওয়া এক কথা নয়। Report-এ মোট debit-credit মিলে গেছে, কিন্তু টাকা কোন beneficiary-র কাছে যাচ্ছে, সেটি সেখানে স্পষ্ট নয়।
 
-Adrian প্রথমে নিজের team-কে বলেছিলেন, customer complaint-এ মাত্র এক পয়সা উল্লেখ আছে বলে এটিকে low priority করা যায়। কিন্তু email-এর শেষ প্রশ্নটি তাকে থামিয়েছিল। Matching credit কোথায় গেছে? একজন customer শুধু balance নিয়ে অভিযোগ করলে support ticket হতে পারত। কিন্তু একজন engineer যখন debit-এর opposite side, policy এবং transaction origin জানতে চায়, তখন সেটি system integrity-এর প্রশ্ন।
+তিনি Peter-কে ফোন করলেন।
 
 তিনি জানতেন, bank-এর বড় ঝুঁকি সবসময় বড় অঙ্ক দিয়ে শুরু হয় না। কখনো কখনো বড় ক্ষতির প্রথম চিহ্ন এমন ছোট হয় যে প্রতিষ্ঠান নিজেই সেটিকে গুরুত্ব দিতে চায় না।
 
@@ -214,9 +218,9 @@ Adrian প্রথমে নিজের team-কে বলেছিলেন, 
 
 ফোন রাখার পর Peter কিছুক্ষণ চুপ করে বসে রইল। Support team যেটাকে standard adjustment বলে বন্ধ করতে চেয়েছিল, Technical Head সেটিকে investigation-এর বিষয় হিসেবে দেখছেন।
 
-বিকেলে BigBank-এর conference room-এ Peter-এর সামনে বসে ছিলেন Adrian, Core Banking Engineering-এর Maya Sen এবং Fraud Operations-এর Daniel Brooks।
+বিকেলে BigBank-এর conference room-এ Peter-এর সঙ্গে বসলেন Adrian, Core Banking Engineering-এর Maya Sen এবং Fraud Operations-এর Daniel Brooks।
 
-Adrian শুরু করলেন, “আমরা এখনো জানি না এটা fraud কি না। আপনার observation একটি anomaly। আমাদের কাজ হলো evidence দিয়ে সেটি যাচাই করা।”
+Adrian শুরু করলেন, “আমরা এখনো জানি না এটা fraud কি না,” Adrian বললেন। “আপনি একটি অস্বাভাবিক transaction দেখেছেন। এখন আমাদের কাজ, অনুমান না করে তথ্য দিয়ে বিষয়টি যাচাই করা।”
 
 Peter মাথা নাড়ল। “আমি একমত।”
 
@@ -224,11 +228,11 @@ Maya তিনটি transaction reference পরীক্ষা করলেন
 
 “এই service কী করে?” Peter জিজ্ঞেস করল।
 
-“Customer account-এর ছোট correction, কিছু rounding-related entry, আর approved operational adjustment। সব transaction ledger-এ record হয়।”
+“ভুল posting সংশোধন, কিছু rounding adjustment, আর অনুমোদিত operational correction-এর জন্য। সব entry ledger-এ যায়।”
 
 “এটা কি প্রতিটি customer account-এ চালানো যায়?”
 
-Maya বললেন, “Service-এর scope বড়। কিন্তু সব operation অনুমোদিত workflow দিয়ে হতে হয়।”
+Maya বললেন, “Service-টি অনেক account নিয়ে কাজ করতে পারে। তবে প্রতিটি operation-এর জন্য অনুমোদিত workflow থাকার কথা।”
 
 Adrian স্ক্রিনের দিকে তাকালেন। “তাহলে আমরা প্রথমে জানতে চাইব, এই নির্দিষ্ট adjustment-এর authorization কোথা থেকে এসেছে।”
 
@@ -246,6 +250,21 @@ Peter উত্তর দিল, “আমি সেটাই ভাবছি।
 
 ## অধ্যায় ৪: হিসাব মিলে যাচ্ছে
 
+Peter whiteboard-এ একটি সরল flow আঁকল। “আমাদের বুঝতে হবে, এক পয়সাটা ঠিক কোন ধাপে account থেকে বেরিয়ে যাচ্ছে।”
+
+```mermaid
+flowchart TD
+    A[Customer account] --> B[Micro-Adjustment Service]
+    B --> C{Adjustment request বৈধ?}
+    C -->|হ্যাঁ| D[Core Ledger]
+    C -->|না| E[Request reject]
+    D --> F[Customer account debit]
+    D --> G[অনুমোদিত destination-এ credit]
+    D --> H[Audit journal]
+```
+
+**চিত্র ১: Micro-Adjustment Service-এর সরলীকৃত flow।** বৈধ correction হলে debit ও credit দুটোই ledger-এ record হবে। কিন্তু request-এর authorization ভুল হলে ledger-এর হিসাব মিলে গেলেও transaction অবৈধ হতে পারে।
+
 পরের দিন Maya একটি sanitized transaction extract নিয়ে এলেন। এতে customer name, account number বা ব্যক্তিগত তথ্য ছিল না। শুধু synthetic investigation ID, amount, timestamp, transaction type, source reference এবং destination ledger reference।
 
 Peter প্রথমে amount column দেখল।
@@ -258,7 +277,7 @@ Peter প্রথমে amount column দেখল।
 
 Maya বললেন, “হ্যাঁ। তবে সবগুলো একই batch-এর নয়।”
 
-Daniel বললেন, “আমাদের fraud system amount threshold ব্যবহার করে। এক পয়সার transaction আলাদা করে high-risk হিসেবে mark হয়নি।”
+Daniel বললেন, “আমাদের fraud monitoring-এ individual transaction amount-এর threshold আছে। এক পয়সার entry সেই threshold-এর অনেক নিচে। তাই আলাদা করে alert ওঠেনি।”
 
 Peter বলল, “কিন্তু amount ছোট হলেই risk ছোট হয় না।”
 
@@ -365,13 +384,13 @@ Adrian জিজ্ঞেস করলেন, “তুমি কতটা ন�
 
 Daniel বললেন, “আমাদের fraud model individual transaction amount দেখে। এক পয়সা threshold-এর নিচে।”
 
-Peter উত্তর দিল, “তাহলে amount নয়, pattern দেখতে হবে। কতগুলো account আক্রান্ত, একই destination-এ কত credit, একই service identity থেকে কত adjustment, এবং সময়ের সঙ্গে total কত বাড়ছে।”
+Peter বলল, “তাহলে শুধু একেকটা transaction দেখলে হবে না। দেখতে হবে, কত account থেকে টাকা কাটা হচ্ছে, সব credit কোথায় জমা হচ্ছে, কোন service identity কাজটি করছে, আর প্রতিদিন মোট অঙ্ক কত বাড়ছে।”
 
 Maya report-এ aggregate view যোগ করলেন।
 
-একটি daily pattern স্পষ্ট হতে শুরু করল। Adjustment-এর সংখ্যা অস্বাভাবিকভাবে বড়। প্রতিটি amount ছোট, কিন্তু destination concentration অত্যন্ত বেশি।
+একটি pattern স্পষ্ট হতে শুরু করল। প্রতিটি transaction-এর অঙ্ক ছোট, কিন্তু একই destination-এ credit জমা হচ্ছে। আলাদা account ধরে দেখলে ঘটনাটি তুচ্ছ; সব account একসঙ্গে দেখলে ছবিটা ভয়ংকর।
 
-“এটা rounding residue নয়,” Maya বললেন। “Rounding residual বিভিন্ন transaction থেকে আসতে পারে। কিন্তু এখানে প্রতিটি debit-এর amount একই এবং destination-ও একই।”
+“এটা rounding residue বলে মনে হচ্ছে না,” Maya বললেন। “Rounding-এর কারণে ভগ্নাংশ আলাদা হতে পারে। কিন্তু এখানে প্রতিটি debit ঠিক এক পয়সা, আর credit একই destination-এ যাচ্ছে।”
 
 Adrian ধীরে বললেন, “তাহলে কেউ একটা legitimate workflow-কে অন্য কাজে ব্যবহার করছে।”
 
@@ -390,6 +409,21 @@ Peter স্ক্রিনে তাকিয়ে রইল।
 ---
 
 ## অধ্যায় ৬: অদৃশ্য অনুমতি
+
+Maya architecture diagram খুললেন। “কে adjustment-এর নিয়ম বদলাতে পারে, আর কোন service সেই নিয়ম চালায়, সেটাও বুঝতে হবে।”
+
+```mermaid
+flowchart LR
+    A[Operations credential] -->|Configuration change| B[Adjustment policy]
+    B --> C[Micro-Adjustment Service]
+    C --> D[Customer accounts]
+    C --> E[Beneficiary destination]
+    C --> F[Core ledger]
+    C --> G[Audit log]
+    H[Independent approval] -.->|Should authorize| B
+```
+
+**চিত্র ২: configuration ও execution-এর সম্পর্ক।** configuration পরিবর্তনের অনুমতি এবং bulk adjustment চালানোর ক্ষমতা যথেষ্ট শক্তভাবে আলাদা করা হয়নি।
 
 Maya investigation room-এর display-তে Micro-Adjustment Service-এর architecture দেখালেন।
 
@@ -416,9 +450,9 @@ Peter diagram-এর Authorization Check অংশে আঙুল রাখল�
 
 Maya কিছুক্ষণ চুপ করে থাকলেন। “এটাই আমরা যাচাই করছি।”
 
-Audit team configuration history পরীক্ষা করল। কয়েক সপ্তাহ আগে Micro-Adjustment workflow-এর একটি policy change হয়েছিল। Change request-এ routine maintenance লেখা ছিল। কিন্তু change-এর scope ও approval trail যথেষ্ট পরিষ্কার ছিল না।
+Audit team configuration history পরীক্ষা করল। কয়েক সপ্তাহ আগে Micro-Adjustment workflow-এর একটি পরিবর্তন করা হয়েছিল। Change request-এ একে routine maintenance বলা হয়েছে। কিন্তু পরিবর্তনটির পরিধি, অনুমোদন এবং কে কী দায়িত্বে এটি করেছে, তার record অসম্পূর্ণ।
 
-আরও গভীরে গিয়ে তারা একটি service identity পেল, যার permission প্রয়োজনের চেয়ে বেশি। এটি operational correction-এর জন্য তৈরি, কিন্তু তার authority দিয়ে অনেক account-এ adjustment চালানো সম্ভব।
+আরও পরীক্ষা করে তারা দেখল, Micro-Adjustment Service-এর একটি service identity-কে প্রয়োজনের চেয়ে অনেক বেশি permission দেওয়া হয়েছে। এটি মূলত operational correction-এর জন্য তৈরি, কিন্তু এর মাধ্যমে বিপুল সংখ্যক account-এ adjustment চালানো সম্ভব।
 
 Peter বলল, “তাহলে authentication ঠিক থাকলেও authorization ভুল হতে পারে।”
 
@@ -437,7 +471,7 @@ Investigation team আরও তিনটি control gap চিহ্নিত �
 2. Beneficiary destination পরিবর্তনের জন্য independent approval যথেষ্ট শক্ত ছিল না।
 3. Monitoring individual amount দেখলেও beneficiary concentration এবং repeated pattern যথেষ্ট গুরুত্ব দিয়ে দেখছিল না।
 
-এখনো তারা জানত না Larfleeze ঠিক কীভাবে initial access পেয়েছে। Configuration change-এর audit trail সন্দেহজনক, কিন্তু attribution-এর জন্য আরও evidence দরকার।
+তারা এখনো জানে না Larfleeze কীভাবে ওই operations credential পেয়েছিল। Phishing, credential reuse, নাকি অন্য কোনো পথ, তা প্রমাণ করার মতো তথ্য নেই। গল্পের এই পর্যায়ে attacker-এর পরিচয় নয়, তার তৈরি করা ঝুঁকিটিই সবচেয়ে জরুরি।
 
 Maya একটি গুরুত্বপূর্ণ finding তুলে ধরলেন। Micro-Adjustment Service-এর service identity আগে সীমিত correction request process করত। পরে তার scope বাড়ানো হয়েছিল। নতুন permission-এ bulk account adjustment এবং beneficiary mapping-এর মতো sensitive operation এসে যায়। Change request-এ business justification ছিল, কিন্তু risk review এবং independent approval-এর evidence অসম্পূর্ণ।
 
@@ -455,9 +489,26 @@ Adrian তার দিকে তাকালেন। “ঠিক। প্র
 
 ## অধ্যায় ৭: বন্ধ করার সময়
 
+Adrian whiteboard-এ incident response-এর ধাপগুলো লিখলেন। “আমরা attacker-কে খুঁজব, কিন্তু প্রথমে customer-দের ক্ষতি থামাব। তারপর evidence অক্ষত রেখে recovery করব।”
+
+```mermaid
+flowchart TD
+    A[Detect anomaly] --> B[Preserve evidence]
+    B --> C[Pause suspicious bulk job]
+    C --> D[Revoke excessive authority]
+    D --> E[Identify affected accounts]
+    E --> F[Post traceable compensating credits]
+    F --> G[Reconcile and validate]
+    G --> H[Monitor for recurrence]
+```
+
+**চিত্র ৩: BigBank-এর incident response sequence।** তাড়াহুড়ো করে recovery করলে evidence নষ্ট হতে পারে বা duplicate credit তৈরি হতে পারে।
+
 Adrian incident response team-কে আনুষ্ঠানিকভাবে সক্রিয় করলেন।
 
-তারা প্রথমে কোনো code deploy করল না। কোনো database row delete করল না। কোনো log পরিষ্কার করল না।
+“আমরা তাড়াহুড়ো করে কিছু বন্ধ করব না,” তিনি বললেন। “আগে evidence নিরাপদ করি। তারপর এমনভাবে attack থামাব, যাতে বৈধ banking operation অকারণে বন্ধ না হয়।”
+
+কেউ নতুন code deploy করল না। কোনো database row delete করল না। কোনো log মুছে ফেলা হলো না।
 
 প্রথম কাজ ছিল evidence সংরক্ষণ।
 
@@ -491,7 +542,7 @@ Team একটি controlled recovery batch তৈরি করল। প্র�
 - Total debit ও credit আবার reconcile হয়।
 - Retry হলে duplicate refund তৈরি না হয়।
 
-শেষের বিষয়টি গুরুত্বপূর্ণ। Distributed system-এ retry স্বাভাবিক। কোনো request-এর response হারিয়ে গেলে client বা scheduler আবার চেষ্টা করতে পারে। Idempotency এমনভাবে operation design করে, যাতে একই logical request একাধিকবার এলেও duplicate financial effect না ঘটে।
+শেষের বিষয়টি গুরুত্বপূর্ণ। Distributed system-এ কোনো request-এর উত্তর হারিয়ে গেলে সেটি আবার পাঠানো হতে পারে। Idempotency এমন একটি নকশা, যেখানে একই logical request একাধিকবার এলেও আর্থিক প্রভাব দ্বিতীয়বার তৈরি হয় না। অর্থাৎ একই refund request retry হলেও customer যেন দুইবার টাকা না পান।
 
 সব test pass করার পর Adrian production change অনুমোদন করলেন।
 
@@ -571,17 +622,21 @@ Peter কিছুক্ষণ ভেবে বলল, “একটা system �
 
 Peter হেসে ফেলল। “এক পয়সা দামি ছিল না। আমরা সেটাকে গুরুত্ব দিইনি, সেটাই দামি হয়ে যাচ্ছিল।”
 
-অন্যদিকে, শহরের অন্য প্রান্তে একটি অন্ধকার ঘরে কেউ একটি account dashboard বন্ধ করল।
+শহরের অন্য প্রান্তে Larfleeze তার dashboard-এর দিকে তাকিয়ে ছিল। কয়েক দিন ধরে যে সংখ্যা ধীরে ধীরে বাড়ছিল, সেটি হঠাৎ থেমে গেছে।
 
-Larfleeze-এর প্রত্যাশিত balance আর বাড়ছে না।
+সে জানত, প্রতিটি account থেকে এক পয়সা সরালে কেউ আলাদা করে খুব বেশি ক্ষতি টের পাবে না। তার পরিকল্পনা ছিল প্রতিদিন একই কাজ চালিয়ে যাওয়া। BigBank-এর account সংখ্যা তার কাছে ছিল হিসাবের অংশ, মানুষ নয়।
 
-সে কোনো arrest notice দেখল না। কোনো police siren শুনল না। শুধু একটি scheduled transfer status বদলে গেছে।
+কিন্তু এখন screen-এ একটি status:
 
-**FAILED — AUTHORIZATION REVOKED**
+**Scheduled sweep: PAUSED**
 
-সে কিছুক্ষণ screen-এর দিকে তাকিয়ে রইল।
+তারপর আরেকটি:
 
-তারপর ধীরে laptop বন্ধ করল।
+**Service authority: REVOKED**
+
+Larfleeze চোয়াল শক্ত করল। কেউ তার টাকা কোথায় যাচ্ছে, সেটা খুঁজে পেয়েছে। সে ধরা পড়েনি, কিন্তু তার পথ বন্ধ হয়ে গেছে।
+
+সে laptop বন্ধ করল।
 
 Peter জানত না Larfleeze কোথায়। Adrian-ও জানতেন না। কিন্তু BigBank-এর customer account থেকে আর এক পয়সাও ওই পথে যাচ্ছে না।
 
