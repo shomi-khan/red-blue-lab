@@ -3,6 +3,14 @@
 schema_version: 1
 graph_id: red-blue-lab-learning
 nodes:
+  - id: volume-01-salami-slicing-practice
+    type: lab
+    title: BigBank: The One-Poisha Trail
+    description: Peter ও BigBank investigation team-এর POV থেকে synthetic transaction journal বিশ্লেষণ করে নিজের Transaction Evidence Analyzer তৈরি ও ব্যবহার করার optional practice।
+    content_ref: practice/bigbank-salami-slicing/README.md
+    story_context:
+      story_ref: volumes/volume-01/README.md
+      pov_character: Peter Parker
   - id: volume-01-salami-slicing-notes
     type: notes
     title: BigBank Incident: Salami Slicing and Financial Controls
@@ -12,6 +20,15 @@ nodes:
       story_ref: volumes/volume-01/README.md
       pov_character: Peter Parker
 knowledge_links:
+  - learning_node_id: volume-01-salami-slicing-practice
+    knowledge_node_id: salami-slicing-attack
+    relationship: applies
+  - learning_node_id: volume-01-salami-slicing-practice
+    knowledge_node_id: double-entry-ledger
+    relationship: investigates
+  - learning_node_id: volume-01-salami-slicing-practice
+    knowledge_node_id: bank-reconciliation
+    relationship: applies
   - learning_node_id: volume-01-salami-slicing-notes
     knowledge_node_id: salami-slicing-attack
     relationship: explains
