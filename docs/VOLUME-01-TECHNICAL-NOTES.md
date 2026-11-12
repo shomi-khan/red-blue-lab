@@ -1,10 +1,10 @@
 # Volume 1 — Technical Notes
 
-এই নোটগুলো গল্পে ব্যবহৃত system model-এর technical companion। Fictional BigBank-এর architecture বাস্তব ব্যাংকের একমাত্র বা universal design নয়; এটি শেখার জন্য একটি grounded model।
+এই নোটগুলো গল্পের প্রযুক্তিগত বিষয়গুলো আরেকটু বিস্তারিত বোঝার জন্য। BigBank কাল্পনিক; এখানে দেখানো architecture বাস্তব সব ব্যাংকের architecture নয়। শেখার সুবিধার জন্য একটি বিশ্বাসযোগ্য উদাহরণ হিসেবে তৈরি করা হয়েছে।
 
 ## 1. Salami Slicing Attack
 
-Salami slicing-এ attacker প্রতিটি transaction বা account থেকে খুব অল্প অঙ্ক সরায়। Individual loss এত ছোট হয় যে victim বা monitoring threshold সেটিকে উপেক্ষা করতে পারে। বহু victim ও repeated execution-এ aggregate amount বড় হয়।
+Salami slicing-এ আক্রমণকারী প্রতিটি account বা transaction থেকে খুব অল্প অঙ্ক সরায়। একজন গ্রাহকের ক্ষতি এত ছোট হয় যে তিনি হয়তো খেয়াল করেন না। কিন্তু অনেক account-এ একই কাজ বারবার হলে সব ক্ষুদ্র অঙ্ক মিলে বড় অঙ্ক হয়।
 
 গল্পের fictional model:
 - Eligible account count: 2,400,000
@@ -41,24 +41,24 @@ Reconciliation বিভিন্ন independent record মিলিয়ে discr
 
 ## 5. Root cause: control failure
 
-Volume 1-এর root cause একটি single magic exploit নয়। এটি একাধিক control weakness-এর সমন্বয়:
-- Over-privileged service identity।
-- Bulk adjustment-এর জন্য দুর্বল authorization boundary।
-- Beneficiary change-এর independent approval যথেষ্ট নয়।
-- Monitoring amount-centric; aggregate pattern ও destination concentration কম দেখা হয়।
-- Business purpose ও customer-level authorization যথাযথভাবে enforce হয় না।
+Volume 1-এ আক্রমণটি কয়েকটি দুর্বলতার সমন্বয়ে সম্ভব হয়েছে:
+- Micro-Adjustment Service-এর operations credential-এর অপব্যবহার করে adjustment policy বদলানো হয়েছে।
+- Service identity-কে প্রয়োজনের চেয়ে বেশি ক্ষমতা দেওয়া হয়েছিল।
+- Bulk adjustment চালানোর আগে account scope ও beneficiary destination যথেষ্ট শক্তভাবে যাচাই করা হয়নি।
+- Beneficiary পরিবর্তনে স্বাধীন অনুমোদন বাধ্যতামূলক ছিল না।
+- Monitoring একেকটি transaction-এর অঙ্ক দেখেছে; একই destination-এ জমা হওয়া ক্ষুদ্র credit-গুলোর মোট প্রভাব ধরতে পারেনি।
 
 ### Least privilege ও authorization boundary
 
-Least Privilege হলো কোনো user বা service identity-কে তার নির্দিষ্ট কাজ সম্পন্ন করার জন্য প্রয়োজনীয় সর্বনিম্ন permission দেওয়া। একটি identity authenticated হলেই সে সব account debit, beneficiary change বা bulk operation চালাতে পারবে, এমন নয়। Authorization-এ identity, action, resource, business purpose, scope এবং approval context যাচাই করা প্রয়োজন।
+Least Privilege-এর অর্থ, কোনো user বা service identity-কে তার কাজের জন্য যতটুকু permission দরকার, ঠিক ততটুকুই দেওয়া। কোনো পরিচয় সঠিকভাবে যাচাই হয়েছে (authentication) মানেই সে সব account থেকে টাকা কাটতে বা beneficiary বদলাতে পারবে, এমন নয়। Authorization-এ দেখতে হয়: কে কাজটি করছে, কী কাজ করছে, কোন account বা resource-এ করছে, কেন করছে, কত বড় পরিসরে করছে এবং প্রয়োজনীয় অনুমোদন আছে কি না।
 
 ## 6. Incident response
 
-- **Containment:** সন্দেহজনক scheduled job pause; অতিরিক্ত permission revoke/limit।
-- **Evidence preservation:** logs, configuration history, batch metadata, journal references read-only preserve।
-- **Scope:** affected account ও transaction population নির্ধারণ।
-- **Recovery:** original ledger entry না মুছে compensating credit/reversal।
-- **Validation:** reconciliation, duplicate prevention, regression test এবং নতুন sweep হচ্ছে কি না monitor।
+- **Evidence preservation:** audit log, configuration history, batch metadata ও journal reference-এর অপরিবর্তিত কপি সংরক্ষণ।
+- **Containment:** সন্দেহজনক scheduled job থামানো এবং অতিরিক্ত permission বাতিল বা সীমিত করা।
+- **Scope:** কোন কোন account ও transaction আক্রান্ত হয়েছে, তা নির্ধারণ।
+- **Recovery:** পুরোনো ledger entry না মুছে তার বিপরীতে traceable compensating credit দেওয়া।
+- **Validation:** হিসাব মিলিয়ে দেখা, duplicate credit ঠেকানো, regression test চালানো এবং নতুন sweep হচ্ছে কি না পর্যবেক্ষণ।
 
 ## 7. Key engineering lessons
 
