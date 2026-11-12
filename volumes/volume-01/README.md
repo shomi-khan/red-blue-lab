@@ -249,7 +249,20 @@ Peter উত্তর দিল, “আমি সেটাই ভাবছি।
 ---
 
 ## অধ্যায় ৪: হিসাব মিলে যাচ্ছে
+Peter whiteboard-এ একটি সরল flow আঁকল। “আমাদের বুঝতে হবে, এক পয়সাটা ঠিক কোন ধাপে account থেকে বেরিয়ে যাচ্ছে।”
 
+```mermaid
+flowchart TD
+    A[Customer account] --> B[Micro-Adjustment Service]
+    B --> C{Adjustment request বৈধ?}
+    C -->|হ্যাঁ| D[Core Ledger]
+    C -->|না| E[Request reject]
+    D --> F[Customer account debit]
+    D --> G[অনুমোদিত destination-এ credit]
+    D --> H[Audit journal]
+```
+
+**চিত্র ১: Micro-Adjustment Service-এর সরলীকৃত flow।** বৈধ correction হলে debit ও credit দুটোই ledger-এ record হবে। কিন্তু request-এর authorization ভুল হলে ledger-এর হিসাব মিলে গেলেও transaction অবৈধ হতে পারে।
 Peter whiteboard-এ একটি সরল flow আঁকল। “আমাদের বুঝতে হবে, এক পয়সাটা ঠিক কোন ধাপে account থেকে বেরিয়ে যাচ্ছে।”
 
 ```mermaid
@@ -370,7 +383,7 @@ Peter কাগজে হিসাব করল।
 
 প্রতিটি customer হয়তো এক পয়সা দেখে shrug করবে। কিন্তু সব customer-এর ক্ষতি একসঙ্গে করলে সেটি আর ছোট নয়।
 
-পরদিন সে Adrian-কে বলল, “আমার মনে হয় এটা Salami Slicing Attack-এর একটি variation।”
+পরদিন সে Adrian-কে বলল, “আমার ধারণা, আমরা Salami Slicing Attack-এর মুখোমুখি হয়েছি। তবে আগে সংখ্যাগুলো যাচাই করতে হবে।”
 
 Adrian বললেন, “নামটা শুনেছি। কিন্তু আমি চাই তুমি নামের সঙ্গে evidence-ও দেখাও।”
 
@@ -409,7 +422,20 @@ Peter স্ক্রিনে তাকিয়ে রইল।
 ---
 
 ## অধ্যায় ৬: অদৃশ্য অনুমতি
+Maya architecture diagram খুললেন। “কে adjustment-এর নিয়ম বদলাতে পারে, আর কোন service সেই নিয়ম চালায়, সেটাও বুঝতে হবে।”
 
+```mermaid
+flowchart LR
+    A[Operations credential] -->|Configuration change| B[Adjustment policy]
+    B --> C[Micro-Adjustment Service]
+    C --> D[Customer accounts]
+    C --> E[Beneficiary destination]
+    C --> F[Core ledger]
+    C --> G[Audit log]
+    H[Independent approval] -.->|Should authorize| B
+```
+
+**চিত্র ২: configuration ও execution-এর সম্পর্ক।** configuration পরিবর্তনের অনুমতি এবং bulk adjustment চালানোর ক্ষমতা যথেষ্ট শক্তভাবে আলাদা করা হয়নি।
 Maya architecture diagram খুললেন। “কে adjustment-এর নিয়ম বদলাতে পারে, আর কোন service সেই নিয়ম চালায়, সেটাও বুঝতে হবে।”
 
 ```mermaid
@@ -425,20 +451,9 @@ flowchart LR
 
 **চিত্র ২: configuration ও execution-এর সম্পর্ক।** configuration পরিবর্তনের অনুমতি এবং bulk adjustment চালানোর ক্ষমতা যথেষ্ট শক্তভাবে আলাদা করা হয়নি।
 
-Maya investigation room-এর display-তে Micro-Adjustment Service-এর architecture দেখালেন।
+Maya investigation room-এর display-তে সেই flow-এর policy boundary দেখালেন।
 
-~~~mermaid
-flowchart TD
-    A[Approved Adjustment Request] --> B[Authorization Check]
-    B --> C[Micro-Adjustment Service]
-    C --> D[Core Ledger]
-    D --> E[Customer Account Debit]
-    D --> F[Beneficiary Credit]
-    D --> G[Audit Journal]
-    G --> H[Reconciliation]
-~~~
-
-“এই service-এর উদ্দেশ্য খারাপ নয়,” Maya বললেন। “Operational correction-এর জন্য দরকার হয়। কোনো ভুল posting হলে approved correction করা যায়। কিন্তু production-এ এর ক্ষমতা সীমাবদ্ধ থাকা উচিত।”
+“এই service-এর উদ্দেশ্য খারাপ নয়,” Maya বললেন। “ভুল posting সংশোধনের জন্য এমন workflow দরকার। কিন্তু production-এ কে request করতে পারবে, কতগুলো account-এ চালাতে পারবে, আর beneficiary কে হবে, প্রতিটি বিষয় আলাদা করে অনুমোদিত হওয়া উচিত।”
 
 Peter diagram-এর Authorization Check অংশে আঙুল রাখল।
 
@@ -590,7 +605,7 @@ Peter-এর account-এও correction এলো।
 
 Bank-wide verification চলল। নতুন sweep আর তৈরি হয়নি।
 
-তারা শুধু একটি successful test দেখে থামেনি। পরবর্তী scheduled window-গুলোতে নতুন debit তৈরি হচ্ছে কি না পর্যবেক্ষণ করা হলো। Monitoring alert-এ beneficiary concentration, per-account adjustment frequency, service identity এবং reason-code distribution যোগ করা হলো। Bulk adjustment-এর জন্য maximum scope, explicit business purpose, independent approval এবং time-bound authorization বাধ্যতামূলক করা হলো।
+তারা শুধু একটি test সফল হয়েছে দেখে থামেনি। পরবর্তী কয়েকটি scheduled window পর্যবেক্ষণ করা হলো, নতুন debit তৈরি হচ্ছে কি না তা নিশ্চিত করতে। Monitoring alert-এ beneficiary concentration, per-account adjustment frequency, service identity এবং reason-code distribution যোগ করা হলো। Bulk adjustment-এর জন্য maximum scope, explicit business purpose, independent approval এবং time-bound authorization বাধ্যতামূলক করা হলো।
 
 Adrian একটি review meeting-এ বললেন, “আমরা শুধু এই attack বন্ধ করব না। একই control weakness অন্য কোনো service-এ আছে কি না, সেটাও খুঁজব।” Suspicious service identity-এর authority সীমিত। Beneficiary configuration change-এ dual approval বাধ্যতামূলক। Monitoring rule-এ amount threshold-এর পাশাপাশি account count, shared destination, service identity এবং repeated adjustment pattern যোগ হয়েছে।
 
@@ -610,7 +625,7 @@ Adrian একটি report বন্ধ করলেন। “আমাদের
 
 সেদিন সন্ধ্যায় Peter BigBrains-এ ফিরল।
 
-Oliver তার desk-এর পাশে এসে দাঁড়াল। “তোমার bank investigation কেমন হলো?”
+Oliver তার desk-এর পাশে এসে দাঁড়ালেন। “BigBank-এর investigation কেমন হলো?”
 
 “একটা বড় problem ছিল। আমরা সেটা থামিয়েছি। এখন recovery আর verification চলছে।”
 
