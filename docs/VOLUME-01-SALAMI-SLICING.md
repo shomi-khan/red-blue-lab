@@ -10,16 +10,16 @@
 2. **Dismissal:** BigBank-এর support বিষয়টিকে ক্ষুদ্র adjustment বলে উড়িয়ে দেয়।
 3. **Investigation begins:** Adrian Rahman pattern-এর সম্ভাবনা বুঝে Peter-কে যুক্ত করেন।
 4. **Scope:** একই ধরনের adjustment বহু account-এ দেখা যায়।
-5. **Technical reveal:** একটি privileged micro-adjustment workflow অপব্যবহার করে এক পয়সার debit ও একটি beneficiary account-এ matching credit তৈরি হচ্ছে।
+5. **Technical reveal:** একটি compromised operations credential দিয়ে Micro-Adjustment policy বদলানো হয়েছে। অতিরিক্ত permission-যুক্ত service identity সেই policy অনুযায়ী scheduled bulk adjustment চালিয়ে প্রতিটি eligible account থেকে এক পয়সা debit করে একই beneficiary destination-এ matching credit পাঠাচ্ছে।
 6. **Root cause:** Ledger mathematically balanced, কিন্তু transaction authorization ও beneficiary governance ব্যর্থ হয়েছে।
 7. **Containment:** Bank নির্দিষ্ট adjustment job থামায়, compromised authority revoke করে, evidence সংরক্ষণ করে।
 8. **Recovery:** affected customers-কে compensating credit দেওয়া হয়; control redesign ও verification হয়।
-9. **Resolution:** টাকা চুরি বন্ধ। Larfleeze-এর পরিচয়/অবস্থান সম্পূর্ণ নিশ্চিত নয়; গ্রেপ্তার হয়নি।
+9. **Resolution:** টাকা চুরি বন্ধ। Larfleeze-এর পরিচয়/অবস্থান সম্পূর্ণ নিশ্চিত নয়; গ্রেপ্তার হয়নি। Attack বন্ধ করাই resolution।
 
 ## Core technical model
 - প্রতিটি customer debit-এর matching credit আছে; double-entry ledger তাই মোট অঙ্কে balanced।
 - সমস্যা arithmetic imbalance নয়; debit-এর authorization, business purpose এবং beneficiary destination বৈধ ছিল না।
-- BigBank-এর Micro-Adjustment Service বৈধ correction workflow-এর জন্য তৈরি। একটি over-privileged service identity ও দুর্বল approval boundary-এর অপব্যবহারে একই ক্ষুদ্র adjustment বহু account-এ প্রয়োগ হয়।
+- BigBank-এর Micro-Adjustment Service বৈধ correction workflow-এর জন্য তৈরি। একটি operations credential-এর অপব্যবহারে adjustment policy বদলানো হয়। অতিরিক্ত permission-যুক্ত service identity scheduled batch-এর মাধ্যমে একই ক্ষুদ্র debit বহু account-এ প্রয়োগ করে। Beneficiary change ও bulk scope-এর independent approval দুর্বল ছিল।
 - Customer statement-এ debit Account Adjustment নামে দেখা যায়; আলাদা অঙ্ক ছোট হওয়ায় অনেকেই উপেক্ষা করে।
 - Fraud detection শুধু amount threshold ও aggregate balancing-এ নির্ভর করায় pattern শুরুতে ধরা পড়ে না।
 - Investigation-এর মূল evidence: salary advice বনাম bank statement, adjustment reason code, journal references, beneficiary concentration, service identity audit events, configuration change history, scheduler run metadata।
