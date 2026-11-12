@@ -425,6 +425,10 @@ Peter স্ক্রিনে তাকিয়ে রইল।
 
 সে জানত না, BigBank-এর ভেতরে কয়েকজন মানুষ ইতিমধ্যে সেই pattern গুনতে শুরু করেছে।
 
+
+> **ঐচ্ছিক হাতে-কলমে অনুশীলন | Peter-এর investigation**  
+> এবার তুমি investigator-এর জায়গায় বসে synthetic transaction journal বিশ্লেষণ করতে পারো। [BigBank: The One-Poisha Trail Practice](../../practice/bigbank-salami-slicing/) খুলে নিজের Transaction Evidence Analyzer তৈরি করো। গল্প পড়ার জন্য practice করা বাধ্যতামূলক নয়।
+
 ---
 
 ## অধ্যায় ৬: অদৃশ্য অনুমতি
