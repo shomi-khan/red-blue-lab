@@ -263,20 +263,6 @@ flowchart TD
 ```
 
 **চিত্র ১: Micro-Adjustment Service-এর সরলীকৃত flow।** বৈধ correction হলে debit ও credit দুটোই ledger-এ record হবে। কিন্তু request-এর authorization ভুল হলে ledger-এর হিসাব মিলে গেলেও transaction অবৈধ হতে পারে।
-Peter whiteboard-এ একটি সরল flow আঁকল। “আমাদের বুঝতে হবে, এক পয়সাটা ঠিক কোন ধাপে account থেকে বেরিয়ে যাচ্ছে।”
-
-```mermaid
-flowchart TD
-    A[Customer account] --> B[Micro-Adjustment Service]
-    B --> C{Adjustment request বৈধ?}
-    C -->|হ্যাঁ| D[Core Ledger]
-    C -->|না| E[Request reject]
-    D --> F[Customer account debit]
-    D --> G[অনুমোদিত destination-এ credit]
-    D --> H[Audit journal]
-```
-
-**চিত্র ১: Micro-Adjustment Service-এর সরলীকৃত flow।** বৈধ correction হলে debit ও credit দুটোই ledger-এ record হবে। কিন্তু request-এর authorization ভুল হলে ledger-এর হিসাব মিলে গেলেও transaction অবৈধ হতে পারে।
 
 পরের দিন Maya একটি sanitized transaction extract নিয়ে এলেন। এতে customer name, account number বা ব্যক্তিগত তথ্য ছিল না। শুধু synthetic investigation ID, amount, timestamp, transaction type, source reference এবং destination ledger reference।
 
@@ -442,20 +428,6 @@ Peter স্ক্রিনে তাকিয়ে রইল।
 ---
 
 ## অধ্যায় ৬: অদৃশ্য অনুমতি
-Maya architecture diagram খুললেন। “কে adjustment-এর নিয়ম বদলাতে পারে, আর কোন service সেই নিয়ম চালায়, সেটাও বুঝতে হবে।”
-
-```mermaid
-flowchart LR
-    A[Operations credential] -->|Configuration change| B[Adjustment policy]
-    B --> C[Micro-Adjustment Service]
-    C --> D[Customer accounts]
-    C --> E[Beneficiary destination]
-    C --> F[Core ledger]
-    C --> G[Audit log]
-    H[Independent approval] -.->|Should authorize| B
-```
-
-**চিত্র ২: configuration ও execution-এর সম্পর্ক।** configuration পরিবর্তনের অনুমতি এবং bulk adjustment চালানোর ক্ষমতা যথেষ্ট শক্তভাবে আলাদা করা হয়নি।
 Maya architecture diagram খুললেন। “কে adjustment-এর নিয়ম বদলাতে পারে, আর কোন service সেই নিয়ম চালায়, সেটাও বুঝতে হবে।”
 
 ```mermaid
