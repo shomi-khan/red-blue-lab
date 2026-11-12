@@ -126,7 +126,7 @@ Flexible timeline ব্যবহার করে continuity error গ্রহ�
 
 #### C. Civic and Administrative District
 
-সম্ভাব্য স্থাপনা: police headquarters, government offices, municipal administration, public service centers এবং emergency coordination facilities। Jim Gordon-এর institutional context এই district-এর সঙ্গে যুক্ত হতে পারে।
+সম্ভাব্য স্থাপনা: police headquarters, government offices, municipal administration, public service centers এবং emergency coordination facilities।
 
 #### D. Residential Districts
 
