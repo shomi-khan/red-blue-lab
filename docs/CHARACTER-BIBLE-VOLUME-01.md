@@ -40,4 +40,4 @@
 - **Narrative rule:** Volume 1-এ তাকে গ্রেপ্তার করা বাধ্যতামূলক নয়। Attack বন্ধ হওয়াই Peter-এর victory।
 
 ## Naming note
-সব চরিত্রের নাম fictional story names হিসেবে ব্যবহৃত। এই Volume-এ Jim Gordon ও Ultron নেই।
+সব চরিত্রের নাম fictional story names হিসেবে ব্যবহৃত।
