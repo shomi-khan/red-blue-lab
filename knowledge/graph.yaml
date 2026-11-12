@@ -2,5 +2,129 @@
 # Canonical content remains in Markdown; this file stores graph metadata and relationships.
 schema_version: 1
 graph_id: red-blue-lab-knowledge
-nodes: []
-relationships: []
+nodes:
+  - id: software-application-engineering
+    type: domain
+    title: Software & Application Engineering
+    description: Software system design, transaction processing, databases and operational behavior.
+    content_refs:
+      - docs/VOLUME-01-TECHNICAL-NOTES.md
+    tags: [software, systems, banking]
+  - id: cyber-security-core
+    type: domain
+    title: Cyber Security Core
+    description: Security threats, authorization boundaries, least privilege and incident response.
+    content_refs:
+      - docs/VOLUME-01-TECHNICAL-NOTES.md
+    tags: [security, fraud, defense]
+  - id: salami-slicing-attack
+    type: concept
+    title: Salami Slicing Attack
+    description: Repeatedly taking tiny amounts from many accounts or transactions so the aggregate becomes significant.
+    content_refs:
+      - docs/VOLUME-01-TECHNICAL-NOTES.md
+    tags: [financial-fraud, attack-pattern]
+  - id: double-entry-ledger
+    type: concept
+    title: Double-Entry Ledger
+    description: Accounting records with corresponding debit and credit entries.
+    content_refs:
+      - docs/VOLUME-01-TECHNICAL-NOTES.md
+    tags: [accounting, ledger]
+  - id: bank-reconciliation
+    type: concept
+    title: Bank Reconciliation
+    description: Comparing independent financial records and explaining differences.
+    content_refs:
+      - docs/VOLUME-01-TECHNICAL-NOTES.md
+    tags: [accounting, verification]
+  - id: authorization
+    type: concept
+    title: Authorization
+    description: Determining whether an identity may perform a specific action on a resource within a valid business context.
+    content_refs:
+      - docs/VOLUME-01-TECHNICAL-NOTES.md
+    tags: [access-control, security]
+  - id: least-privilege
+    type: concept
+    title: Least Privilege
+    description: Granting an identity only the minimum permissions required for its task.
+    content_refs:
+      - docs/VOLUME-01-TECHNICAL-NOTES.md
+    tags: [access-control, security-design]
+  - id: incident-response
+    type: concept
+    title: Incident Response
+    description: Coordinated detection, containment, evidence preservation, recovery and validation.
+    content_refs:
+      - docs/VOLUME-01-TECHNICAL-NOTES.md
+    tags: [defense, operations]
+  - id: lo-explain-salami-slicing
+    type: learning_objective
+    title: Explain Salami Slicing Fraud
+    description: Explain how tiny repeated debits can accumulate into significant financial loss.
+  - id: lo-analyze-financial-evidence
+    type: learning_objective
+    title: Analyze Financial Transaction Evidence
+    description: Distinguish ledger arithmetic, reconciliation, authorization and transaction legitimacy.
+  - id: lo-design-incident-containment
+    type: learning_objective
+    title: Design Incident Containment
+    description: Select proportionate containment, evidence preservation and traceable recovery controls.
+relationships:
+  - id: domain-software-ledger
+    source: software-application-engineering
+    target: double-entry-ledger
+    type: domain_contains
+  - id: domain-software-reconciliation
+    source: software-application-engineering
+    target: bank-reconciliation
+    type: domain_contains
+  - id: domain-security-salami
+    source: cyber-security-core
+    target: salami-slicing-attack
+    type: domain_contains
+  - id: domain-security-authorization
+    source: cyber-security-core
+    target: authorization
+    type: domain_contains
+  - id: domain-security-least-privilege
+    source: cyber-security-core
+    target: least-privilege
+    type: domain_contains
+  - id: domain-security-incident-response
+    source: cyber-security-core
+    target: incident-response
+    type: domain_contains
+  - id: lo-salami-requires-attack
+    source: lo-explain-salami-slicing
+    target: salami-slicing-attack
+    type: requires
+  - id: lo-evidence-requires-ledger
+    source: lo-analyze-financial-evidence
+    target: double-entry-ledger
+    type: requires
+  - id: lo-evidence-requires-reconciliation
+    source: lo-analyze-financial-evidence
+    target: bank-reconciliation
+    type: requires
+  - id: lo-evidence-requires-authorization
+    source: lo-analyze-financial-evidence
+    target: authorization
+    type: requires
+  - id: lo-containment-requires-least-privilege
+    source: lo-design-incident-containment
+    target: least-privilege
+    type: requires
+  - id: lo-containment-requires-incident-response
+    source: lo-design-incident-containment
+    target: incident-response
+    type: requires
+  - id: lo-salami-before-evidence
+    source: lo-explain-salami-slicing
+    target: lo-analyze-financial-evidence
+    type: prerequisite_of
+  - id: lo-evidence-before-containment
+    source: lo-analyze-financial-evidence
+    target: lo-design-incident-containment
+    type: prerequisite_of
