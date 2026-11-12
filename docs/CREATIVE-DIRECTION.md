@@ -209,9 +209,7 @@ Illustrative examples:
 | Character | সম্ভাব্য tool category |
 |---|---|
 | Peter / Spider | Network analysis, log parsing, defensive detection utility |
-| Jim Gordon | Evidence correlation ও forensic analysis utility |
 | Joker | Attack simulation বা reconnaissance analysis |
-| Ultron | AI monitoring ও model evaluation |
 | Larfleeze | Data collection ও asset analysis |
 
 এগুলো সম্ভাব্য উদাহরণ, approved tool inventory নয়। Character-specific tool-এর exact capability, implementation ও story use আলাদা করে review করতে হবে।
