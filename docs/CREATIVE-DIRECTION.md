@@ -33,8 +33,6 @@
 | Peter Parker | বাস্তব জীবনে একজন নতুন hacker ও learner |
 | Spider (Spider-Man নয়) | Peter-এর cyber identity; ছোটখাটো attack সামলানো defensive hacker |
 | Joker | Sadistic hacker; chaos ও psychological manipulation-এ আগ্রহী |
-| Ultron | Evil AI |
-| Jim Gordon | Police Commissioner |
 | Larfleeze | লোভী hacker; access, information ও power অর্জনে চালিত |
 
 এই mapping প্রাথমিক creative direction। Character-এর পূর্ণ personality, backstory, motivation, relationship, expertise, limitation, chronology এবং plot role আলাদা World Bible ও Character Bible-এ তৈরি ও review হবে। অনুমোদিত mapping-এর বাইরে কোনো নতুন canon নিজে থেকে যোগ করা যাবে না।
@@ -59,8 +57,6 @@
 
 - Peter / Spider: শেখা, investigation, experimentation ও defense।
 - Joker: attack design, target reasoning, counter-investigation ও strategic adaptation।
-- Jim Gordon: investigation, evidence collection, correlation ও institutional decision-making।
-- Ultron: AI-driven objective, system-level decision ও strategic consequence।
 - Larfleeze: opportunity seeking, greed-driven decision এবং resource/access pursuit।
 
 এই তালিকা POV বা chapter quota নয়। গল্পের প্রয়োজন অনুযায়ী চরিত্রের গুরুত্ব ও উপস্থিতি বদলাবে।
