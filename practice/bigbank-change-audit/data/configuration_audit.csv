@@ -1,0 +1,11 @@
+event_id,timestamp_utc,actor,service_identity,action,resource,previous_value,new_value,approval_ref,result
+EVT-1001,2026-10-04T08:10:00Z,ops.user.14,svc-ops-console,UPDATE_POLICY,micro_adjustment.max_accounts,1000,1000,APR-441,success
+EVT-1002,2026-10-04T08:22:00Z,ops.user.14,svc-ops-console,UPDATE_POLICY,micro_adjustment.max_accounts,1000,2500000,APR-441,success
+EVT-1003,2026-10-04T08:24:00Z,ops.user.14,svc-ops-console,UPDATE_BENEFICIARY,micro_adjustment.beneficiary_ref,BENEFICIARY-12,BENEFICIARY-77,,success
+EVT-1004,2026-10-04T08:25:00Z,svc-adjust-bulk,svc-adjust-bulk,EXECUTE_JOB,micro_adjustment.daily_sweep,paused,enabled,,success
+EVT-1005,2026-10-04T08:26:00Z,ops.user.22,svc-ops-console,APPROVE_CHANGE,micro_adjustment.review,pending,approved,APR-441,success
+EVT-1007,2026-10-04T08:29:00Z,ops.user.22,svc-ops-console,APPROVE_CHANGE,micro_adjustment.review,pending,approved,APR-448,success
+EVT-1006,2026-10-04T08:30:00Z,ops.user.31,svc-ops-console,UPDATE_POLICY,micro_adjustment.max_accounts,2500000,5000,APR-448,success
+EVT-1008,2026-10-04T08:35:00Z,svc-adjust-bulk,svc-adjust-bulk,EXECUTE_JOB,micro_adjustment.daily_sweep,enabled,enabled,,success
+EVT-1009,2026-10-04T08:40:00Z,ops.user.14,svc-ops-console,UPDATE_POLICY,micro_adjustment.reason_code,STANDARD_ADJUSTMENT,MICRO_ADJUSTMENT,,success
+EVT-1010,2026-10-04T08:42:00Z,ops.user.22,svc-ops-console,APPROVE_CHANGE,micro_adjustment.review,pending,approved,APR-452,success

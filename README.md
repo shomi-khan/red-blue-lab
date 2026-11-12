@@ -41,6 +41,7 @@ Novel পড়তে Cyber Lab করা বাধ্যতামূলক নয়�
 | templates/ | Episode, concept ও image starter templates |
 | knowledge/graph.yaml | Knowledge Graph catalog |
 | learning/graph.yaml | Learning Graph catalog |
+| practice/ | Character-driven, optional hands-on practice labs ও synthetic evidence |
 | schemas/ | Graph ও Reader Learning Track JSON Schema contracts |
 
 ## 🧱 Foundation-এর সীমা
