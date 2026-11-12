@@ -496,6 +496,9 @@ Peter বলল, “আমরা attacker-এর নাম জানার অ�
 
 Adrian তার দিকে তাকালেন। “ঠিক। প্রথম লক্ষ্য containment।”
 
+> **ঐচ্ছিক হাতে-কলমে অনুশীলন | Adrian-এর change audit**
+> Chapter 6-এর configuration ও authorization evidence নিয়ে কাজ করতে [BigBank: Who Changed the Adjustment Rules?](../../practice/bigbank-change-audit/) খুলে Configuration Change & Authorization Auditor তৈরি করো।
+
 ---
 
 ## অধ্যায় ৭: বন্ধ করার সময়
@@ -606,6 +609,9 @@ Bank-wide verification চলল। নতুন sweep আর তৈরি হ�
 Adrian একটি review meeting-এ বললেন, “আমরা শুধু এই attack বন্ধ করব না। একই control weakness অন্য কোনো service-এ আছে কি না, সেটাও খুঁজব।” Suspicious service identity-এর authority সীমিত। Beneficiary configuration change-এ dual approval বাধ্যতামূলক। Monitoring rule-এ amount threshold-এর পাশাপাশি account count, shared destination, service identity এবং repeated adjustment pattern যোগ হয়েছে।
 
 Reconciliation report-এ সব affected entry explain করা গেছে। কোনো unexplained difference বাকি নেই। Recovery batch-এর duplicate effect পাওয়া যায়নি।
+
+> **ঐচ্ছিক হাতে-কলমে অনুশীলন | Nadia-এর recovery verification**
+> Chapter 8-এর recovery ও idempotency ধারণা হাতে-কলমে যাচাই করতে [BigBank: Verify the Recovery](../../practice/bigbank-recovery-validation/) খুলে Recovery & Reconciliation Validator তৈরি করো।
 
 Adrian conference room-এ Peter-কে ডাকলেন।
 
