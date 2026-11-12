@@ -48,6 +48,10 @@ Volume 1-এর root cause একটি single magic exploit নয়। এটি
 - Monitoring amount-centric; aggregate pattern ও destination concentration কম দেখা হয়।
 - Business purpose ও customer-level authorization যথাযথভাবে enforce হয় না।
 
+### Least privilege ও authorization boundary
+
+Least Privilege হলো কোনো user বা service identity-কে তার নির্দিষ্ট কাজ সম্পন্ন করার জন্য প্রয়োজনীয় সর্বনিম্ন permission দেওয়া। একটি identity authenticated হলেই সে সব account debit, beneficiary change বা bulk operation চালাতে পারবে, এমন নয়। Authorization-এ identity, action, resource, business purpose, scope এবং approval context যাচাই করা প্রয়োজন।
+
 ## 6. Incident response
 
 - **Containment:** সন্দেহজনক scheduled job pause; অতিরিক্ত permission revoke/limit।
